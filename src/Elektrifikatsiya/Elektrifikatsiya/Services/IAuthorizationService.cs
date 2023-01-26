@@ -1,5 +1,7 @@
 ﻿using Elektrifikatsiya.Models;
 
+using FluentResults;
+
 namespace Elektrifikatsiya.Services;
 
 public interface IAuthorizationService
@@ -9,5 +11,5 @@ public interface IAuthorizationService
     /// </summary>
     /// <param name="requiredRole">The minimum required role.</param>
     /// <returns>A <see cref="Task"/> to <see langword="await"/> and a <see cref="bool"/> that indicates if the user is authorized.</returns>
-    Task<bool> IsAuthorized(Role requiredRole);
+    Task<Result<bool>> IsAuthorized(Role requiredRole);
 }
