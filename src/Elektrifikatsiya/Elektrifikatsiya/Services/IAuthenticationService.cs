@@ -18,7 +18,7 @@ public interface IAuthenticationService
     /// <param name="email">The E-mail address of the user.</param>
     /// <returns>A <see cref="Task"/> to <see langword="await"/>.</returns>
 
-    Task<Result> RegisterUserAsync(string name, string password);
+    Task<Result> RegisterUserAsync(string name, string password, Role role);
 
     /// <summary>
     /// Logs a user in.
@@ -38,7 +38,7 @@ public interface IAuthenticationService
     /// </summary>
     /// <param name="deletionToken">The deletion token.</param>
     /// <returns>A <see cref="Task"/> to <see langword="await"/> and a <see cref="bool"/> that indicates if the operation was successful.</returns>
-    Task<Result> DeleteUserAsync(string deletionToken);
+    Task<Result> DeleteUserAsync();
 
     /// <summary>
     /// Checks if a user exists.

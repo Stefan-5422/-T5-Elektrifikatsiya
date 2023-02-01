@@ -23,7 +23,7 @@ public class AuthorizationService : IAuthorizationService
         }
         else
         {
-            return Result.Fail("Use doesn't have the required role!");
+            return Result.Fail("User doesn't have the required role!");
         }
     }
 }
