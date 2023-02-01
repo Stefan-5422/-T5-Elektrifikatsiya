@@ -14,13 +14,19 @@
 		<Copyright>Copyright 2018-2022 Megabit</Copyright>
 		<UserSecretsId>bd144edc-e5c5-4b97-84d6-38c6b1edcbf9</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Blazorise" Version="1.1.*" />
 		<PackageReference Include="Blazorise.Material" Version="1.1.*" />
 		<PackageReference Include="Blazorise.Icons.Material" Version="1.1.*" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.2" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Model\" />
 	</ItemGroup>
 
 </Project>
