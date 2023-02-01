@@ -1,4 +1,6 @@
 ﻿@page "/"
+@using Blazorise.Components
+@using Elektrifikatsiya.Models;
 @inject IVersionProvider VersionProvider
 <Row>
 	<Column ColumnSize="ColumnSize.Is5">
@@ -9,10 +11,10 @@
 					<Row>
 						<Column ColumnSize="ColumnSize.Is8">
 							<Row>
-								<Column ColumnSize="ColumnSize.Is4">
+								<Column ColumnSize="ColumnSize.Is7">
 									<Heading Size="HeadingSize.Is6" Margin="Margin.Is1.FromBottom">Plug #@i</Heading>
 								</Column>
-								<Column ColumnSize="ColumnSize.Is1">
+								<Column ColumnSize="ColumnSize.Is5">
 									<Paragraph Margin="Margin.Is1.OnY">60W</Paragraph>
 								</Column>
 							</Row>
@@ -28,11 +30,30 @@
 							<Button Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
 								<BarIcon IconName="IconName.Bolt" />
 							</Button>
-					</Column>
-				</Row>
-			</ListGroupItem>
+						</Column>
+					</Row>
+				</ListGroupItem>
 			}
 		</ListGroup>
 	</Column>
+	<Column ColumnSize="ColumnSize.Is5">
+		<ListView TItem="Event"
+				  Data="@events"
+				  TextField="(item) => item.EventName"
+				  ValueField="(item) => item.Description"
+				  Mode="ListGroupMode.Static"
+				  MaxHeight="300px">
+			<ItemTemplate>
+				<Div Flex="Flex.InlineFlex.JustifyContent.Between" Width="Width.Is100">
+					<Heading Size="HeadingSize.Is6" Margin="Margin.Is2.FromBottom">@context.Item.EventName</Heading>
+					<Small>@context.Item.Date</Small>
+				</Div>
+				<Paragraph Margin="Margin.Is2.FromBottom">@context.Item.Description</Paragraph>
+			</ItemTemplate>
+		</ListView>
+	</Column>
 </Row>
+@code {
+	List<Event> events = new List<Event>() { new Event("Jude", "Alles kaputt", DateTime.Now), new Event("Jude", "Alles kaputt", DateTime.Now), new Event("Jude", "Alles kaputt", DateTime.Now) };
+}
 
