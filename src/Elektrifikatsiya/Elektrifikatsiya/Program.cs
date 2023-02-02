@@ -11,7 +11,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddDbContext<UserDatabaseContext>(options => options.UseSqlite("/host/UserDatabase.sqlite"));
+builder.Services.AddDbContext<UserDatabaseContext>(options => options.UseSqlite("Data Source=./UserDatabase.sqlite"));
 
 AddBlazorise(builder.Services);
 
@@ -32,6 +32,9 @@ app.UseStaticFiles();
 app.UseRouting();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+
+IServiceScope serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
+serviceScope.ServiceProvider.GetRequiredService<UserDatabaseContext>().Database.EnsureCreated();
 
 app.Run();
 
