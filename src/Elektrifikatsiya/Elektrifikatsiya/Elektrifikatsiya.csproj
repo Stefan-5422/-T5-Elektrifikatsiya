@@ -14,6 +14,7 @@
 		<Copyright>Copyright 2018-2022 Megabit</Copyright>
 		<UserSecretsId>bd144edc-e5c5-4b97-84d6-38c6b1edcbf9</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -29,6 +30,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Middleware\" />
+	  <Folder Include="Model\" />
 	</ItemGroup>
 
 </Project>
