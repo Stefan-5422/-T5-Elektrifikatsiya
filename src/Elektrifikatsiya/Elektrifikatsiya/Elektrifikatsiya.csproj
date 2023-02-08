@@ -18,10 +18,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Blazorise" Version="1.1.*" />
-		<PackageReference Include="Blazorise.Components" Version="1.1.6" />
-		<PackageReference Include="Blazorise.Material" Version="1.1.*" />
-		<PackageReference Include="Blazorise.Icons.Material" Version="1.1.*" />
+		<PackageReference Include="Blazorise" Version="1.2.0" />
+		<PackageReference Include="Blazorise.Charts" Version="1.2.0" />
+		<PackageReference Include="Blazorise.Components" Version="1.2.0" />
+		<PackageReference Include="Blazorise.Material" Version="1.2.0" />
+		<PackageReference Include="Blazorise.Icons.Material" Version="1.2.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.2" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
 	</ItemGroup>

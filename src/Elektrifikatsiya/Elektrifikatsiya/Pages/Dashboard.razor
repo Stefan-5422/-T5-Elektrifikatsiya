@@ -2,7 +2,8 @@
 @using Blazorise.Components;
 @using Elektrifikatsiya.Models;
 @inject IVersionProvider VersionProvider
-<Row>
+
+<Row Padding="Padding.Is3">
 	<Column ColumnSize="ColumnSize.Is6">
 		<ListView TItem="Device"
 				  Data="@plugs"
@@ -55,8 +56,67 @@
 		</ListView>
 	</Column>
 </Row>
+<Row Padding="Padding.Is3">
+	<Column>
+		<Button Color="Color.Primary" Clicked="@(async () => await HandleRedraw())">Aktualisieren</Button>
+		<LineChart @ref="lineChart" TItem="double" />
+	</Column>
+</Row>
+
 @code {
-	List<Event> events = new List<Event>() { new Event("Jude", "Alles kaputt", DateTime.Now), new Event("Jude", "Alles kaputt", DateTime.Now), new Event("Jude", "Alles kaputt", DateTime.Now) };
+	//TODO: insert new event here if plug produces one
+	List<Event> events = new List<Event>() { new Event("Placeholder", "Placeholder", DateTime.Now), new Event("Placeholder", "Placeholder", DateTime.Now), new Event("Placeholder", "Placeholder", DateTime.Now) };
+	//TODO: insert new Device here if user adds one
 	List<Device> plugs = new List<Device>() { new Device("Placeholder", "Plug", System.Net.IPAddress.Broadcast, 60, "Oldin", "4AHINF"), new Device("Placeholder", "Plug", System.Net.IPAddress.Broadcast, 60, "Oldin", "4AHINF"), new Device("Placeholder", "Plug", System.Net.IPAddress.Broadcast, 60, "Oldin", "4AHINF") };
+
+	//code for graph
+	LineChart<double> lineChart;
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			await HandleRedraw();
+		}
+	}
+
+	async Task HandleRedraw()
+	{
+		await lineChart.Clear();
+
+		await lineChart.AddLabelsDatasetsAndUpdate(Labels, GetLineChartDataset());
+	}
+
+	//TODO: insert dataset of current and last voltage usages
+	LineChartDataset<double> GetLineChartDataset()
+	{
+		return new LineChartDataset<double>
+			{
+				Label = "# of random number in thousands",
+				Data = RandomizeData(),
+				BackgroundColor = backgroundColors,
+				BorderColor = borderColors,
+				Fill = true,
+				PointRadius = 3,
+				CubicInterpolationMode = "monotone",
+			};
+	}
+
+	string[] Labels = { "Red", "Blue", "Yellow", "Green", "Purple", "Orange" };
+	List<string> backgroundColors = new List<string> { ChartColor.FromRgba(255, 99, 132, 0.2f), ChartColor.FromRgba(54, 162, 235, 0.2f), ChartColor.FromRgba(255, 206, 86, 0.2f), ChartColor.FromRgba(75, 192, 192, 0.2f), ChartColor.FromRgba(153, 102, 255, 0.2f), ChartColor.FromRgba(255, 159, 64, 0.2f) };
+	List<string> borderColors = new List<string> { ChartColor.FromRgba(255, 99, 132, 1f), ChartColor.FromRgba(54, 162, 235, 1f), ChartColor.FromRgba(255, 206, 86, 1f), ChartColor.FromRgba(75, 192, 192, 1f), ChartColor.FromRgba(153, 102, 255, 1f), ChartColor.FromRgba(255, 159, 64, 1f) };
+
+	List<double> RandomizeData()
+	{
+		var r = new Random(DateTime.Now.Millisecond);
+
+		return new List<double> {
+		r.Next( 3, 50 ) * r.NextDouble(),
+		r.Next( 3, 50 ) * r.NextDouble(),
+		r.Next( 3, 50 ) * r.NextDouble(),
+		r.Next( 3, 50 ) * r.NextDouble(),
+		r.Next( 3, 50 ) * r.NextDouble(),
+		r.Next( 3, 50 ) * r.NextDouble() };
+	}
 }
 
