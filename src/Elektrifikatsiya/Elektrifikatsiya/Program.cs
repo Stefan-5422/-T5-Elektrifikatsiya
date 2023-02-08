@@ -1,4 +1,5 @@
 using Blazorise;
+using Blazorise.Bootstrap;
 using Blazorise.Icons.Material;
 using Blazorise.Material;
 
@@ -46,3 +47,9 @@ void AddBlazorise(IServiceCollection services)
         .AddMaterialProviders()
         .AddMaterialIcons();
 }
+builder.Services
+    .AddBlazorise(options =>
+    {
+        options.Immediate = true;
+    })
+    .AddBootstrapProviders();
