@@ -1,31 +1,122 @@
 ﻿@page "/"
+@using Blazorise.Components;
+@using Elektrifikatsiya.Models;
 @inject IVersionProvider VersionProvider
-<Heading Size="HeadingSize.Is1" Margin="Margin.Is3.FromBottom">Blazorise</Heading>
 
-<Paragraph>
-    Blazorise is a component library built on top of Blazor and CSS frameworks like <Anchor To="https://getbootstrap.com/" Target="Target.Blank">Bootstrap</Anchor>, <Anchor To="https://bulma.io/" Target="Target.Blank">Bulma</Anchor>, <Anchor To="https://ant.design/" Target="Target.Blank">Ant Design</Anchor>, and <Anchor To="http://daemonite.github.io/material/" Target="Target.Blank">Material</Anchor>. It can be used to build responsive, single-page web applications.
-</Paragraph>
+<Row Padding="Padding.Is3">
+	<Column ColumnSize="ColumnSize.Is6">
+		<ListView TItem="Device"
+				  Data="@plugs"
+				  TextField="@((_)=>(""))"
+				  ValueField="@((_)=>(""))"
+				  Mode="ListGroupMode.Static">
+			<ItemTemplate>
+				<ListGroupItem>
+					<Row>
+						<Column ColumnSize="ColumnSize.Is8">
+							<Row>
+								<Column ColumnSize="ColumnSize.Is7">
+								<Heading Size="HeadingSize.Is6" Margin="Margin.Is1.FromBottom">@context.Item.Name</Heading>
+								</Column>
+							</Row>
+							<Row>
+								<Column>
+									<Small>User: @context.Item.User</Small>
+									<br />
+									<Small>Room: @context.Item.Room</Small>
+								</Column>
+								<Column ColumnSize="ColumnSize.Is5">
+									<Paragraph Margin="Margin.Is1.OnY">@context.Item.PowerUsage W</Paragraph>
+								</Column>
+							</Row>
+						</Column>
+						<Column ColumnSize="ColumnSize.Is4">
+							<Button Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
+								<BarIcon IconName="IconName.Bolt" />
+							</Button>
+						</Column>
+					</Row>
+				</ListGroupItem>
+			</ItemTemplate>
+		</ListView>
+	</Column>
+	<Column ColumnSize="ColumnSize.Is6">
+		<ListView TItem="Event"
+				  Data="@events"
+				  TextField="@((_)=>(""))"
+				  ValueField="@((_)=>(""))"
+				  Mode="ListGroupMode.Static">
+			<ItemTemplate>
+				<Div Flex="Flex.InlineFlex.JustifyContent.Between" Width="Width.Is100">
+					<Heading Size="HeadingSize.Is6" Margin="Margin.Is2.FromBottom">@context.Item.EventName</Heading>
+					<Small>@context.Item.Date</Small>
+				</Div>
+				<Paragraph Margin="Margin.Is2.FromBottom">@context.Item.Description</Paragraph>
+			</ItemTemplate>
+		</ListView>
+	</Column>
+</Row>
+<Row Padding="Padding.Is3">
+	<Column>
+		<Button Color="Color.Primary" Clicked="@(async () => await HandleRedraw())">Aktualisieren</Button>
+		<LineChart @ref="lineChart" TItem="double" />
+	</Column>
+</Row>
 
-<Alert Color="Color.Info" Visible>
-    <Paragraph>
-        This is a Blazorise Starting Template allowing you to quickly get started building your project!
-    </Paragraph>
+@code {
+	//TODO: insert new event here if plug produces one
+	List<Event> events = new List<Event>() { new Event("Placeholder", "Placeholder", DateTime.Now), new Event("Placeholder", "Placeholder", DateTime.Now), new Event("Placeholder", "Placeholder", DateTime.Now) };
+	//TODO: insert new Device here if user adds one
+	List<Device> plugs = new List<Device>() { new Device("Placeholder", "Plug", System.Net.IPAddress.Broadcast, 60, "Oldin", "4AHINF"), new Device("Placeholder", "Plug", System.Net.IPAddress.Broadcast, 60, "Oldin", "4AHINF"), new Device("Placeholder", "Plug", System.Net.IPAddress.Broadcast, 60, "Oldin", "4AHINF") };
 
-    <Paragraph>
-        The bare minimum has been installed for you:
-        <ul>
-            <li>Blazorise @($"v{VersionProvider.MilestoneVersion}")</li>
-            <li>The Blazorise Provider you have selected</li>
-            <li>The corresponding icon provider</li>
-        </ul>
-        However Blazorise has many more extensions at your disposal.
-        You can find them <Anchor To="https://blazorise.com/docs/extensions" Target="Target.Blank">here</Anchor>.
-    </Paragraph>
+	//code for graph
+	LineChart<double> lineChart;
 
-    <Paragraph>
-        Please visit the official <Anchor To="https://bootstrapdemo.blazorise.com/" Target="Target.Blank">Blazorise Demo</Anchor> for component examples.
-    </Paragraph>
-    <Paragraph>
-        Please visit the official <Anchor To="https://blazorise.com/docs/" Target="Target.Blank">Blazorise Documentation</Anchor> to learn more about the available components.
-    </Paragraph>
-</Alert>
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			await HandleRedraw();
+		}
+	}
+
+	async Task HandleRedraw()
+	{
+		await lineChart.Clear();
+
+		await lineChart.AddLabelsDatasetsAndUpdate(Labels, GetLineChartDataset());
+	}
+
+	//TODO: insert dataset of current and last voltage usages
+	LineChartDataset<double> GetLineChartDataset()
+	{
+		return new LineChartDataset<double>
+			{
+				Label = "# of random number in thousands",
+				Data = RandomizeData(),
+				BackgroundColor = backgroundColors,
+				BorderColor = borderColors,
+				Fill = true,
+				PointRadius = 3,
+				CubicInterpolationMode = "monotone",
+			};
+	}
+
+	string[] Labels = { "Red", "Blue", "Yellow", "Green", "Purple", "Orange" };
+	List<string> backgroundColors = new List<string> { ChartColor.FromRgba(255, 99, 132, 0.2f), ChartColor.FromRgba(54, 162, 235, 0.2f), ChartColor.FromRgba(255, 206, 86, 0.2f), ChartColor.FromRgba(75, 192, 192, 0.2f), ChartColor.FromRgba(153, 102, 255, 0.2f), ChartColor.FromRgba(255, 159, 64, 0.2f) };
+	List<string> borderColors = new List<string> { ChartColor.FromRgba(255, 99, 132, 1f), ChartColor.FromRgba(54, 162, 235, 1f), ChartColor.FromRgba(255, 206, 86, 1f), ChartColor.FromRgba(75, 192, 192, 1f), ChartColor.FromRgba(153, 102, 255, 1f), ChartColor.FromRgba(255, 159, 64, 1f) };
+
+	List<double> RandomizeData()
+	{
+		var r = new Random(DateTime.Now.Millisecond);
+
+		return new List<double> {
+		r.Next( 3, 50 ) * r.NextDouble(),
+		r.Next( 3, 50 ) * r.NextDouble(),
+		r.Next( 3, 50 ) * r.NextDouble(),
+		r.Next( 3, 50 ) * r.NextDouble(),
+		r.Next( 3, 50 ) * r.NextDouble(),
+		r.Next( 3, 50 ) * r.NextDouble() };
+	}
+}
+
