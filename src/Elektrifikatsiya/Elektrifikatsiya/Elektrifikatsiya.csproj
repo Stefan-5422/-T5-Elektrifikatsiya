@@ -18,14 +18,18 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
 		<PackageReference Include="Blazorise" Version="1.1.*" />
 		<PackageReference Include="Blazorise.Material" Version="1.1.*" />
 		<PackageReference Include="Blazorise.Icons.Material" Version="1.1.*" />
+		<PackageReference Include="FluentResults" Version="3.15.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.2" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.2" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="Middleware\" />
 	  <Folder Include="Model\" />
 	</ItemGroup>
 

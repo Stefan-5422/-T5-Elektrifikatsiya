@@ -2,11 +2,16 @@ using Blazorise;
 using Blazorise.Icons.Material;
 using Blazorise.Material;
 
+using Elektrifikatsiya.Database;
+
+using Microsoft.EntityFrameworkCore;
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddDbContext<UserDatabaseContext>(options => options.UseSqlite("Data Source=./UserDatabase.sqlite"));
 
 AddBlazorise(builder.Services);
 
@@ -25,12 +30,11 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.MapBlazorHub();
+app.MapFallbackToPage("/_Host");
 
-app.UseEndpoints(endpoints =>
-{
-    _ = endpoints.MapBlazorHub();
-    _ = endpoints.MapFallbackToPage("/_Host");
-});
+IServiceScope serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
+serviceScope.ServiceProvider.GetRequiredService<UserDatabaseContext>().Database.EnsureCreated();
 
 app.Run();
 
