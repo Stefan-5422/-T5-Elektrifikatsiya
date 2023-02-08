@@ -1,28 +1,31 @@
 ﻿@page "/"
-@using Blazorise.Components
+@using Blazorise.Components;
 @using Elektrifikatsiya.Models;
 @inject IVersionProvider VersionProvider
 <Row>
-	<Column ColumnSize="ColumnSize.Is5">
-		<ListGroup>
-			@for (int i = 0; i < 3; i++)
-			{
+	<Column ColumnSize="ColumnSize.Is6">
+		<ListView TItem="Device"
+				  Data="@plugs"
+				  TextField="@((_)=>(""))"
+				  ValueField="@((_)=>(""))"
+				  Mode="ListGroupMode.Static">
+			<ItemTemplate>
 				<ListGroupItem>
 					<Row>
 						<Column ColumnSize="ColumnSize.Is8">
 							<Row>
 								<Column ColumnSize="ColumnSize.Is7">
-									<Heading Size="HeadingSize.Is6" Margin="Margin.Is1.FromBottom">Plug #@i</Heading>
-								</Column>
-								<Column ColumnSize="ColumnSize.Is5">
-									<Paragraph Margin="Margin.Is1.OnY">60W</Paragraph>
+								<Heading Size="HeadingSize.Is6" Margin="Margin.Is1.FromBottom">@context.Item.Name</Heading>
 								</Column>
 							</Row>
 							<Row>
 								<Column>
-									<Small>User: ....</Small>
+									<Small>User: @context.Item.User</Small>
 									<br />
-									<Small>Room: ....</Small>
+									<Small>Room: @context.Item.Room</Small>
+								</Column>
+								<Column ColumnSize="ColumnSize.Is5">
+									<Paragraph Margin="Margin.Is1.OnY">@context.Item.PowerUsage W</Paragraph>
 								</Column>
 							</Row>
 						</Column>
@@ -33,16 +36,15 @@
 						</Column>
 					</Row>
 				</ListGroupItem>
-			}
-		</ListGroup>
+			</ItemTemplate>
+		</ListView>
 	</Column>
-	<Column ColumnSize="ColumnSize.Is5">
+	<Column ColumnSize="ColumnSize.Is6">
 		<ListView TItem="Event"
 				  Data="@events"
-				  TextField="(item) => item.EventName"
-				  ValueField="(item) => item.Description"
-				  Mode="ListGroupMode.Static"
-				  MaxHeight="300px">
+				  TextField="@((_)=>(""))"
+				  ValueField="@((_)=>(""))"
+				  Mode="ListGroupMode.Static">
 			<ItemTemplate>
 				<Div Flex="Flex.InlineFlex.JustifyContent.Between" Width="Width.Is100">
 					<Heading Size="HeadingSize.Is6" Margin="Margin.Is2.FromBottom">@context.Item.EventName</Heading>
@@ -55,5 +57,6 @@
 </Row>
 @code {
 	List<Event> events = new List<Event>() { new Event("Jude", "Alles kaputt", DateTime.Now), new Event("Jude", "Alles kaputt", DateTime.Now), new Event("Jude", "Alles kaputt", DateTime.Now) };
+	List<Device> plugs = new List<Device>() { new Device("Placeholder", "Plug", System.Net.IPAddress.Broadcast, 60, "Oldin", "4AHINF"), new Device("Placeholder", "Plug", System.Net.IPAddress.Broadcast, 60, "Oldin", "4AHINF"), new Device("Placeholder", "Plug", System.Net.IPAddress.Broadcast, 60, "Oldin", "4AHINF") };
 }
 

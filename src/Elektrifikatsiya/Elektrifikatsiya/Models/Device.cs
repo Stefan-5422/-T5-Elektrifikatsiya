@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Net;
 
-namespace Elektrifikatsiya.Model;
+namespace Elektrifikatsiya.Models;
 
 public class Device
 {
@@ -11,10 +11,17 @@ public class Device
     public string Name { get; private set; } = string.Empty;
     [Required]
     public IPAddress Address { get; private set; }
+    public int PowerUsage { get; set; }
+    public string User { get; set; }
+    public string Room { get; set; }
 
-    public Device(string key, IPAddress address)
+    public Device(string key, string name, IPAddress address, int powerUsage, string user, string room)
     {
         Key = key;
+        Name = name;
         Address = address;
+        PowerUsage = powerUsage;
+        User = user;
+        Room = room;
     }
 }
