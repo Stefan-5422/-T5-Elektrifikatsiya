@@ -18,6 +18,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Model\**" />
+	  <Content Remove="Model\**" />
+	  <EmbeddedResource Remove="Model\**" />
+	  <None Remove="Model\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Blazorise" Version="1.2.0" />
 		<PackageReference Include="Blazorise.Charts" Version="1.2.0" />
 		<PackageReference Include="Blazorise.Components" Version="1.2.0" />
@@ -32,7 +39,6 @@
 
 	<ItemGroup>
 	  <Folder Include="Middleware\" />
-	  <Folder Include="Model\" />
 	</ItemGroup>
 
 </Project>

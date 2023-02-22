@@ -7,10 +7,13 @@ public class Device
 {
     [Key]
     public string Key { get; private set; }
+
     [Required]
-    public string Name { get; private set; } = string.Empty;
+    public string Name { get; private set; }
+
     [Required]
     public IPAddress Address { get; private set; }
+
     public int PowerUsage { get; set; }
     public string User { get; set; }
     public string Room { get; set; }
