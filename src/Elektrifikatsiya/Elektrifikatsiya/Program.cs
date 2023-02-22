@@ -2,10 +2,10 @@ using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.Material;
 using Blazorise.Material;
-using Elektrifikatsiya.Database;
-using Microsoft.EntityFrameworkCore;
 
 using Elektrifikatsiya.Database;
+using Elektrifikatsiya.Services;
+using Elektrifikatsiya.Services.Implementations;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -14,8 +14,16 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddHostedService<UpdateService>();
+builder.Services.AddSingleton<IDeviceStatusService, DeviceStatusService>();
+builder.Services.AddTransient<IDeviceManagmentService, DeviceManagmentService>();
 builder.Services.AddDbContext<UserDatabaseContext>(options => options.UseSqlite("Data Source=./UserDatabase.sqlite"));
-builder.Services.AddDbContext<DeviceManagmentDatabaseContext>((options)=>options.UseSqlite("Data Source=./DeviceManagement.sqlite"));
+builder.Services.AddDbContext<DeviceManagmentDatabaseContext>((options) => options.UseSqlite("Data Source=./DeviceManagement.sqlite"));
+builder.Services.AddBootstrapProviders();
+builder.Services.AddBlazorise(options =>
+{
+    options.Immediate = true;
+});
 
 AddBlazorise(builder.Services);
 
@@ -49,15 +57,7 @@ app.Run();
 
 void AddBlazorise(IServiceCollection services)
 {
-    _ = services
-        .AddBlazorise();
-    _ = services
-        .AddMaterialProviders()
-        .AddMaterialIcons();
+    _ = services.AddBlazorise();
+    _ = services.AddMaterialProviders();
+    _ = services.AddMaterialIcons();
 }
-builder.Services
-    .AddBlazorise(options =>
-    {
-        options.Immediate = true;
-    })
-    .AddBootstrapProviders();
