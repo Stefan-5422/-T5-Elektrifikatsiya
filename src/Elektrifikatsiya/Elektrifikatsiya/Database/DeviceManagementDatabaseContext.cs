@@ -1,4 +1,4 @@
-﻿using Elektrifikatsiya.Model;
+﻿using Elektrifikatsiya.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Elektrifikatsiya.Database
