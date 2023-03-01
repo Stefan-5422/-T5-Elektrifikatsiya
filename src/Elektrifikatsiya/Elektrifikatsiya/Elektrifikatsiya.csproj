@@ -18,10 +18,19 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Middleware\**" />
 	  <Compile Remove="Model\**" />
+	  <Content Remove="Middleware\**" />
 	  <Content Remove="Model\**" />
+	  <EmbeddedResource Remove="Middleware\**" />
 	  <EmbeddedResource Remove="Model\**" />
+	  <None Remove="Middleware\**" />
 	  <None Remove="Model\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Models\NewFile.txt" />
+	  <None Remove="Models\ShellyResponse" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -35,10 +44,7 @@
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.2" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.2" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Middleware\" />
+		<PackageReference Include="Tmds.MDns" Version="0.7.1" />
 	</ItemGroup>
 
 </Project>
