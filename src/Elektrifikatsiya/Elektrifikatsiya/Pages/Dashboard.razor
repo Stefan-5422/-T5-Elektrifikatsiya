@@ -3,9 +3,9 @@
 @using Elektrifikatsiya.Models;
 @inject IVersionProvider VersionProvider
 
-<Row Padding="Padding.Is3">
-	<Div Flex="Flex.AlignItems.Start" Margin="Margin.Is3.FromBottom" Width="Width.Is100">
-		<Column ColumnSize="ColumnSize.Is6">
+<Row Padding="Padding.Is3.OnDesktop.Is0">
+	<Div Display="Display.Flex.Row.OnDesktop" Margin="Margin.Is3.FromBottom" Width="Width.Is100">
+		<Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12">
 			<ListView TItem="Device"
 					  Data="@plugs"
 					  TextField="@((_)=>(""))"
@@ -41,7 +41,7 @@
 				</ItemTemplate>
 			</ListView>
 		</Column>
-		<Column ColumnSize="ColumnSize.Is6">
+		<Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12">
 			<ListView TItem="Event"
 					  Data="@events"
 					  TextField="@((_)=>(""))"
