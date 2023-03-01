@@ -10,19 +10,22 @@ public class UpdateService : IHostedService, IDisposable
 {
     private readonly ILogger<UpdateService> logger;
     private readonly IDeviceStatusService deviceStatusService;
-    private readonly DeviceManagmentDatabaseContext deviceManagmentDatabaseContext;
+    private readonly IServiceScopeFactory serviceScopeFactory;
     private Timer? timer = null;
 
-    public UpdateService(ILogger<UpdateService> logger, IDeviceStatusService deviceStatusService, DeviceManagmentDatabaseContext deviceManagmentDatabaseContext)
+    public UpdateService(ILogger<UpdateService> logger, IDeviceStatusService deviceStatusService, IServiceScopeFactory serviceScopeFactory)
     {
         this.logger = logger;
         this.deviceStatusService = deviceStatusService;
-        this.deviceManagmentDatabaseContext = deviceManagmentDatabaseContext;
+        this.serviceScopeFactory = serviceScopeFactory;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        logger.LogInformation("Starting update service...");
+		IServiceScope serviceScope =	    serviceScopeFactory.CreateScope();
+		DeviceManagmentDatabaseContext deviceManagmentDatabaseContext = serviceScope.ServiceProvider.GetRequiredService<DeviceManagmentDatabaseContext>();
+
+		logger.LogInformation("Starting update service...");
 
         foreach (Device device in await deviceManagmentDatabaseContext.Devices.AsNoTracking().ToListAsync(cancellationToken))
         {

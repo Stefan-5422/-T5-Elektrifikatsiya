@@ -4,6 +4,7 @@ using Blazorise.Icons.Material;
 using Blazorise.Material;
 
 using Elektrifikatsiya.Database;
+using Elektrifikatsiya.Models;
 using Elektrifikatsiya.Services;
 using Elektrifikatsiya.Services.Implementations;
 
@@ -20,6 +21,7 @@ builder.Services.AddTransient<IDeviceManagmentService, DeviceManagmentService>()
 builder.Services.AddDbContext<UserDatabaseContext>(options => options.UseSqlite("Data Source=./UserDatabase.sqlite"));
 builder.Services.AddDbContext<DeviceManagmentDatabaseContext>((options) => options.UseSqlite("Data Source=./DeviceManagement.sqlite"));
 builder.Services.AddBootstrapProviders();
+builder.Services.AddHttpClient<IDeviceManagmentService, DeviceManagmentService>();
 builder.Services.AddBlazorise(options =>
 {
     options.Immediate = true;

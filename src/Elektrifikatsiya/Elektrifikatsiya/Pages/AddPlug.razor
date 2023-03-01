@@ -1,6 +1,7 @@
 ﻿@page "/addplug"
 @using Blazorise.Components;
 @using Elektrifikatsiya.Models;
+@using System.Net
 @inject IVersionProvider VersionProvider
 
 <Row Height=Height.Is50 Padding="Padding.Is3.OnDesktop.Is0">
@@ -22,7 +23,7 @@
 							</Row>
 							<Row Width="Width.Is100">
 								<Column>
-									<Small>IP: @context.Item.Address</Small>
+									<Small>IP: @context.Item.IpAddress</Small>
 								</Column>
 							</Row>
 						</Column>
@@ -39,5 +40,5 @@
 </Row>
 
 @code {
-	List<Device> plugs = new List<Device>() { new Device("Placeholder", "Plug", System.Net.IPAddress.Broadcast, 60, "Oldin", "4AHINF"), new Device("Placeholder", "Plug", System.Net.IPAddress.Broadcast, 60, "Oldin", "4AHINF"), new Device("Placeholder", "Plug", System.Net.IPAddress.Broadcast, 60, "Oldin", "4AHINF") };
+	List<Device> plugs = new List<Device>() { new Device("ffff:ffff:ffff:ffff", "Huso", IPAddress.Broadcast, new User("Joe", "qiowruioewjfopa", Role.Admin), "Raum"), new Device("ffff:ffff:ffff:ffff", "Huso", IPAddress.Broadcast, new User("Joe", "qiowruioewjfopa", Role.Admin), "Raum"), new Device("ffff:ffff:ffff:ffff", "Huso", IPAddress.Broadcast, new User("Joe", "qiowruioewjfopa", Role.Admin), "Raum"), };
 }
