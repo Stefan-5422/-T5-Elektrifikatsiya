@@ -1,0 +1,43 @@
+﻿@page "/addplug"
+@using Blazorise.Components;
+@using Elektrifikatsiya.Models;
+@inject IVersionProvider VersionProvider
+
+<Row Height=Height.Is50 Padding="Padding.Is3.OnDesktop.Is0">
+	<Column ColumnSize="ColumnSize.Is12" style="border-bottom-style:solid; border-bottom-color:#1a237e">
+		<ListView  Class="w-100"
+				  TItem="Device"
+				  Data="@plugs"
+				  TextField="@((_)=>(""))"
+				  ValueField="@((_)=>(""))"
+				  Mode="ListGroupMode.Static">
+			<ItemTemplate>
+				<ListGroupItem>
+					<Row>
+						<Column ColumnSize="ColumnSize.Is6">
+							<Row>
+								<Column >
+									<Heading Size="HeadingSize.Is6" Margin="Margin.Is1.FromBottom">@context.Item.Name</Heading>
+								</Column>
+							</Row>
+							<Row Width="Width.Is100">
+								<Column>
+									<Small>IP: @context.Item.Address</Small>
+								</Column>
+							</Row>
+						</Column>
+						<Column ColumnSize="ColumnSize.Is4.Is2.WithOffset">
+							<Button Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
+								<BarIcon IconName="IconName.Add" />
+							</Button>
+						</Column>
+					</Row>
+				</ListGroupItem>
+			</ItemTemplate>
+		</ListView>
+	</Column>
+</Row>
+
+@code {
+	List<Device> plugs = new List<Device>() { new Device("Placeholder", "Plug", System.Net.IPAddress.Broadcast, 60, "Oldin", "4AHINF"), new Device("Placeholder", "Plug", System.Net.IPAddress.Broadcast, 60, "Oldin", "4AHINF"), new Device("Placeholder", "Plug", System.Net.IPAddress.Broadcast, 60, "Oldin", "4AHINF") };
+}
