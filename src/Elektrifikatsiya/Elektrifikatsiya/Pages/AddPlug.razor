@@ -3,39 +3,51 @@
 @using Elektrifikatsiya.Models;
 @inject IVersionProvider VersionProvider
 
-<Row Height=Height.Is50 Padding="Padding.Is3.OnDesktop.Is0">
-	<Column ColumnSize="ColumnSize.Is12" style="border-bottom-style:solid; border-bottom-color:#1a237e">
-		<ListView  Class="w-100"
-				  TItem="Device"
-				  Data="@plugs"
-				  TextField="@((_)=>(""))"
-				  ValueField="@((_)=>(""))"
-				  Mode="ListGroupMode.Static">
-			<ItemTemplate>
-				<ListGroupItem>
-					<Row>
-						<Column ColumnSize="ColumnSize.Is6">
-							<Row>
-								<Column >
-									<Heading Size="HeadingSize.Is6" Margin="Margin.Is1.FromBottom">@context.Item.Name</Heading>
-								</Column>
-							</Row>
-							<Row Width="Width.Is100">
-								<Column>
-									<Small>IP: @context.Item.Address</Small>
-								</Column>
-							</Row>
-						</Column>
-						<Column ColumnSize="ColumnSize.Is4.Is2.WithOffset">
-							<Button Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
-								<BarIcon IconName="IconName.Add" />
-							</Button>
-						</Column>
-					</Row>
-				</ListGroupItem>
-			</ItemTemplate>
-		</ListView>
-	</Column>
+<Row Height=Height.Is50 Padding="Padding.Is3.OnDesktop.Is0" style="border-bottom-style:solid; border-bottom-color:#1a237e">
+	<Row Style="height:90%; width:100%">
+		<Column style="align-content:center" ColumnSize="ColumnSize.Is6.Is3.WithOffset">
+			<Bar Breakpoint="Breakpoint.Desktop"
+				 Background="Background.White"
+				 ThemeContrast="ThemeContrast.None"
+				 Shadow="Shadow.Remove"
+				 Border="Border.Is1.RoundedTop">
+				<BarBrand>
+					Add plug via wifi
+				</BarBrand>
+			</Bar>
+			<ListView Class="w-100"
+					  TItem="Device"
+					  Data="@plugs"
+					  TextField="@((_)=>(""))"
+					  ValueField="@((_)=>(""))"
+					  Mode="ListGroupMode.Static"
+					  Style="border-radius: 0px 0px">
+				<ItemTemplate>
+					<ListGroupItem>
+						<Row>
+							<Column ColumnSize="ColumnSize.Is6">
+								<Row>
+									<Column>
+										<Heading Size="HeadingSize.Is6" Margin="Margin.Is1.FromBottom">@context.Item.Name</Heading>
+									</Column>
+								</Row>
+								<Row Width="Width.Is100">
+									<Column>
+										<Small>IP: @context.Item.Address</Small>
+									</Column>
+								</Row>
+							</Column>
+							<Column ColumnSize="ColumnSize.Is4.Is2.WithOffset">
+								<Button Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
+									<BarIcon IconName="IconName.Add" />
+								</Button>
+							</Column>
+						</Row>
+					</ListGroupItem>
+				</ItemTemplate>
+			</ListView>
+		</Column>
+	</Row>
 </Row>
 
 @code {
