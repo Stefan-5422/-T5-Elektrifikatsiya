@@ -13,4 +13,6 @@ public interface IDeviceStatusService
     public Result UpdateDeviceStatus(Device device);
 
     public Result TrackDevice(Device device);
+
+    public Result UntrackDevice(string macAddress);
 }

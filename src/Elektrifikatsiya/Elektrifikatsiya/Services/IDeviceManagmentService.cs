@@ -10,7 +10,7 @@ public interface IDeviceManagmentService
 {
     public Task<Result<Device>> Register(IPAddress ip, User user, string? name = null, string room = "default");
 
-    public Task<Result> UnRegister(string macAdress);
+    public Task<Result> Unregister(string macAdress);
 
     public Result<Device> GetDevice(string macAdress);
 

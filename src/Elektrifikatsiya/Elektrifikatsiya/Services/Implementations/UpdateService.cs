@@ -1,7 +1,8 @@
 ﻿using Elektrifikatsiya.Database;
 using Elektrifikatsiya.Models;
-
+using FluentResults;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace Elektrifikatsiya.Services.Implementations;
 
@@ -28,14 +29,24 @@ public class UpdateService : IHostedService, IDisposable
             _ = deviceStatusService.TrackDevice(device);
         }
 
-        timer = new Timer(Update, null, TimeSpan.Zero, TimeSpan.FromSeconds(15));
+        timer = new Timer(async (_) => await Update(), null, TimeSpan.Zero, TimeSpan.FromSeconds(15));
 
         logger.LogInformation("Update service started.");
     }
 
-    private void Update(object? state)
+    private async Task Update()
     {
-        //TODO: Update all devices.
+        Result<List<Device>> getDeviceStatusResult = deviceStatusService.GetDevices();
+
+        if (getDeviceStatusResult.IsFailed)
+        {
+            logger.LogError("Updating devices failed!");
+        }
+
+        foreach(Device device in getDeviceStatusResult.Value)
+        {
+            //TODO: Some update magic
+        }
     }
 
     public Task StopAsync(CancellationToken cancellationToken)

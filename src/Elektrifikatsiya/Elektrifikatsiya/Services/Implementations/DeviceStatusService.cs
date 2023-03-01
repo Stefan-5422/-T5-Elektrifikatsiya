@@ -45,4 +45,9 @@ public class DeviceStatusService : IDeviceStatusService
 
         return Result.Ok();
     }
+
+    public Result UntrackDevice(string macAddress)
+    {
+        return devices.Remove(macAddress) ? Result.Ok() : Result.Fail("Device is not tracked!");
+    }
 }
