@@ -5,7 +5,7 @@
 
 <Row Height=Height.Is50 Padding="Padding.Is3.OnDesktop.Is0" style="border-bottom-style:solid; border-bottom-color:#1a237e">
 	<Row Style="height:90%; width:100%">
-		<Column style="align-content:center" ColumnSize="ColumnSize.Is6.Is3.WithOffset">
+		<Column style="align-content:center" ColumnSize="ColumnSize.Is4.Is4.WithOffset">
 			<Bar Breakpoint="Breakpoint.Desktop"
 				 Background="Background.White"
 				 ThemeContrast="ThemeContrast.None"
@@ -25,7 +25,7 @@
 				<ItemTemplate>
 					<ListGroupItem>
 						<Row>
-							<Column ColumnSize="ColumnSize.Is6">
+							<Column ColumnSize="ColumnSize.Is7">
 								<Row>
 									<Column>
 										<Heading Size="HeadingSize.Is6" Margin="Margin.Is1.FromBottom">@context.Item.Name</Heading>
@@ -37,7 +37,7 @@
 									</Column>
 								</Row>
 							</Column>
-							<Column ColumnSize="ColumnSize.Is4.Is2.WithOffset">
+							<Column ColumnSize="ColumnSize.Is4.Is1.WithOffset">
 								<Button Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
 									<BarIcon IconName="IconName.Add" />
 								</Button>
@@ -48,6 +48,16 @@
 			</ListView>
 		</Column>
 	</Row>
+</Row>
+<Row Height="Height.Is50">
+	<Form>
+		<Field Horizontal>
+			<FieldBody ColumnSize="ColumnSize.Is12">
+				<TextEdit Placeholder="Enter the Device IP here" />
+				<Button style="background-color:#1a237e; color:white" Type="ButtonType.Submit" PreventDefaultOnSubmit>Submit</Button>
+			</FieldBody>
+		</Field>
+	</Form>
 </Row>
 
 @code {
