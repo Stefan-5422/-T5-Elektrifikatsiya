@@ -12,7 +12,7 @@
 					  ValueField="@((_)=>(""))"
 					  Mode="ListGroupMode.Static">
 				<ItemTemplate>
-					<ListGroupItem>
+					<ListGroupItem Border="Border.OnBottom">
 						<Row>
 							<Column ColumnSize="ColumnSize.Is8">
 								<Row>
@@ -52,7 +52,7 @@
 						<Heading Size="HeadingSize.Is6" Margin="Margin.Is2.FromBottom">@context.Item.EventName</Heading>
 						<Small>@context.Item.Date</Small>
 					</Div>
-					<Paragraph Margin="Margin.Is2.FromBottom">@context.Item.Description</Paragraph>
+					<Paragraph Border="Border.OnBottom" Margin="Margin.Is2.FromBottom">@context.Item.Description</Paragraph>
 				</ItemTemplate>
 			</ListView>
 		</Column>
