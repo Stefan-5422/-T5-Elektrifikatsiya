@@ -2,13 +2,18 @@
 @using Blazorise.Components;
 @using Elektrifikatsiya.Models;
 @using System.Net
+@using Elektrifikatsiya.Services
+@using Elektrifikatsiya.Services.Implementations
+@using Elektrifikatsiya.Utilities
 @inject IVersionProvider VersionProvider
+@inject IDeviceManagmentService DeviceManagmentService
+@inject IAuthenticationService AuthenticationService 
 
 <Row Height=Height.Is50 Padding="Padding.Is3.OnDesktop.Is0">
 	<Column ColumnSize="ColumnSize.Is12" style="border-bottom-style:solid; border-bottom-color:#1a237e">
 		<ListView  Class="w-100"
-				  TItem="Device"
-				  Data="@plugs"
+				  TItem="IPAddress"
+				  Data="@ipAddresses"
 				  TextField="@((_)=>(""))"
 				  ValueField="@((_)=>(""))"
 				  Mode="ListGroupMode.Static">
@@ -18,17 +23,17 @@
 						<Column ColumnSize="ColumnSize.Is6">
 							<Row>
 								<Column >
-									<Heading Size="HeadingSize.Is6" Margin="Margin.Is1.FromBottom">@context.Item.Name</Heading>
+									<Heading Size="HeadingSize.Is6" Margin="Margin.Is1.FromBottom">@context.Item</Heading>
 								</Column>
 							</Row>
 							<Row Width="Width.Is100">
 								<Column>
-									<Small>IP: @context.Item.IpAddress</Small>
+									<Small>IP: @context.Item</Small>
 								</Column>
 							</Row>
 						</Column>
 						<Column ColumnSize="ColumnSize.Is4.Is2.WithOffset">
-							<Button Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
+							<Button Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Clicked="@(async () => await DeviceManagmentService.RegisterDevice(context.Item,(await AuthenticationService.GetUserAsync()).ValueOrDefault))" Outline>
 								<BarIcon IconName="IconName.Add" />
 							</Button>
 						</Column>
@@ -40,5 +45,14 @@
 </Row>
 
 @code {
-	List<Device> plugs = new List<Device>() { new Device("ffff:ffff:ffff:ffff", "Huso", IPAddress.Broadcast, new User("Joe", "qiowruioewjfopa", Role.Admin), "Raum"), new Device("ffff:ffff:ffff:ffff", "Huso", IPAddress.Broadcast, new User("Joe", "qiowruioewjfopa", Role.Admin), "Raum"), new Device("ffff:ffff:ffff:ffff", "Huso", IPAddress.Broadcast, new User("Joe", "qiowruioewjfopa", Role.Admin), "Raum"), };
+	List<IPAddress> ipAddresses = new List<IPAddress>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		MdnsDiscovery.OnDeviceFound += address =>
+		{
+			ipAddresses.Add(address);
+			InvokeAsync(StateHasChanged);
+		};
+	}
 }

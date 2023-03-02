@@ -8,9 +8,9 @@ namespace Elektrifikatsiya.Services;
 
 public interface IDeviceManagmentService
 {
-    public Task<Result<Device>> Register(IPAddress ip, User user, string? name = null, string room = "default");
+    public Task<Result<Device>> RegisterDevice(IPAddress ip, User user, string? name = null, string room = "default");
 
-    public Task<Result> Unregister(string macAdress);
+    public Task<Result> UnregisterDevice(string macAdress);
 
     public Result<Device> GetDevice(string macAdress);
 
@@ -19,4 +19,6 @@ public interface IDeviceManagmentService
     public Result<List<Device>> GetDevicesInRoom(string room);
 
     public Result<List<Device>> GetDevicesOfUser(int userId);
+
+    public Task<Result> UpdateDevice(Device device);
 }
