@@ -10,7 +10,6 @@ namespace Elektrifikatsiya.Services.Implementations;
 
 public class DeviceManagmentService : IDeviceManagmentService
 {
-	private readonly DeviceManagmentDatabaseContext deviceManagmentDatabaseContext;
 	private readonly IServiceScopeFactory serviceScopeFactory;
 	private readonly IDeviceStatusService deviceStatusService;
 	private readonly ILogger<DeviceManagmentService> logger;
@@ -22,7 +21,6 @@ public class DeviceManagmentService : IDeviceManagmentService
 		this.deviceStatusService = deviceStatusService;
 		this.logger = logger;
 		this.httpClient = httpClient;
-
 	}
 
 	public Result<Device> GetDevice(string macAdress)
@@ -113,9 +111,12 @@ public class DeviceManagmentService : IDeviceManagmentService
 		_ = deviceManagmentDatabaseContext.Add(device);
 		Result saveDatabaseChangesResult = await Result.Try(Task () => deviceManagmentDatabaseContext.SaveChangesAsync());
 
-		Result trackDeviceResult = deviceStatusService.TrackDevice(device);
+		if (saveDatabaseChangesResult.IsFailed)
+		{
+			return saveDatabaseChangesResult;
+		}
 
-		return Result.Merge(saveDatabaseChangesResult, trackDeviceResult).ToResult(device);
+		return deviceStatusService.TrackDevice(device);
 	}
 
 	public async Task<Result> UnregisterDevice(string macAdress)
@@ -144,6 +145,9 @@ public class DeviceManagmentService : IDeviceManagmentService
 
 	public async Task<Result> UpdateDevice(Device device)
 	{
+		using IServiceScope scope = serviceScopeFactory.CreateScope();
+		DeviceManagmentDatabaseContext deviceManagmentDatabaseContext = scope.ServiceProvider.GetRequiredService<DeviceManagmentDatabaseContext>();
+
 		Result result = deviceStatusService.UpdateDeviceStatus(device);
 
 		if (result.IsFailed)
