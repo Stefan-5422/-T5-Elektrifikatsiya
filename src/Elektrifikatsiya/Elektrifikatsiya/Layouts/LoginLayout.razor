@@ -1,0 +1,18 @@
+﻿@using System.Diagnostics;
+@inherits LayoutComponentBase
+<Image Source="/Pictures/logo.png"> </Image>
+<Card Width="Width.Is50" Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Padding="Padding.Is5">
+    <Field Width="Width.Is25" Position="Position.Relative.Top.Is50.Start.Is50.Translate.Middle">
+        <TextEdit Placeholder="Username" />
+    </Field>
+    <Field  Width="Width.Is25" Position="Position.Relative.Top.Is50.Start.Is50.Translate.Middle">
+        <TextEdit Role="TextRole.Password" Placeholder="Password" />
+    </Field>
+    <Button Width="Width.Is25"  Color="Color.Primary" Clicked="Clicked" Position="Position.Relative.Bottom.Is50.Start.Is50.Translate.MiddleX" >Login</Button>
+</Card>
+@code {
+    private void Clicked()
+    {
+        Debug.WriteLine("Button was clicked!");
+    }
+}

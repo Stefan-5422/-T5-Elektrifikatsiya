@@ -3,38 +3,78 @@
 @using Elektrifikatsiya.Models;
 @inject IVersionProvider VersionProvider
 
-<Row Height=Height.Is50 Padding="Padding.Is3.OnDesktop.Is0">
-	<Column ColumnSize="ColumnSize.Is12" style="border-bottom-style:solid; border-bottom-color:#1a237e">
-		<ListView  Class="w-100"
-				  TItem="Device"
-				  Data="@plugs"
-				  TextField="@((_)=>(""))"
-				  ValueField="@((_)=>(""))"
-				  Mode="ListGroupMode.Static">
-			<ItemTemplate>
-				<ListGroupItem>
-					<Row>
-						<Column ColumnSize="ColumnSize.Is6">
-							<Row>
-								<Column >
-									<Heading Size="HeadingSize.Is6" Margin="Margin.Is1.FromBottom">@context.Item.Name</Heading>
-								</Column>
-							</Row>
-							<Row Width="Width.Is100">
-								<Column>
-									<Small>IP: @context.Item.Address</Small>
-								</Column>
-							</Row>
-						</Column>
-						<Column ColumnSize="ColumnSize.Is4.Is2.WithOffset">
-							<Button Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
-								<BarIcon IconName="IconName.Add" />
-							</Button>
-						</Column>
-					</Row>
+<Row Style="height:50%; width:100%" Padding="Padding.Is3.OnDesktop.Is0">
+	<Row Style="height:90%; width:100%">
+		<Column ColumnSize="ColumnSize.Is4.OnDesktop.Is1"></Column>
+		<Column ColumnSize="ColumnSize.Is4.OnDesktop.Is12">
+			<Bar Breakpoint="Breakpoint.Desktop"
+				 Background="Background.White"
+				 ThemeContrast="ThemeContrast.None"
+				 Shadow="Shadow.Remove"
+				 Border="Border.Is1.RoundedTop">
+				<BarBrand>
+					Add a plug via wifi
+				</BarBrand>
+			</Bar>
+			<ListView Class="w-100"
+					  TItem="Device"
+					  Data="@plugs"
+					  TextField="@((_)=>(""))"
+					  ValueField="@((_)=>(""))"
+					  Mode="ListGroupMode.Static"
+					  Style="border-radius: 0px 0px">
+				<ItemTemplate>
+					<ListGroupItem>
+						<Row>
+							<Column ColumnSize="ColumnSize.Is7">
+								<Row Width="Width.Is100">
+									<Column>
+										<Small>IP: @context.Item.Address</Small>
+									</Column>
+								</Row>
+							</Column>
+							<Column ColumnSize="ColumnSize.Is4.Is1.WithOffset">
+								<Button Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
+									<BarIcon IconName="IconName.Add" />
+								</Button>
+							</Column>
+						</Row>
+					</ListGroupItem>
+				</ItemTemplate>
+			</ListView>
+		</Column>
+	</Row>
+</Row>
+<Row Style="height:50%; width:100%; border-top-style:solid; border-top-color:#1a237e; ">
+	<Column ColumnSize="ColumnSize.Is4.OnDesktop.Is1"></Column>
+	<Column ColumnSize="ColumnSize.Is4.OnDesktop.Is12">
+		<Row Style="height:15%; width:100%"></Row>
+		<Row Style="height:10%; width:100%">
+			<Bar Breakpoint="Breakpoint.Desktop"
+				 Background="Background.White"
+				 ThemeContrast="ThemeContrast.None"
+				 Shadow="Shadow.Remove"
+				 Border="Border.Is1.RoundedTop"
+				 Style="width:100%">
+				<BarBrand>
+					Add a plug via IP
+				</BarBrand>
+			</Bar>
+			<ListGroup Style="width:100%; border-radius: 0px 0px">
+				<ListGroupItem Color="Color.Default">
+					<Form>
+						<Field Horizontal>
+							<FieldBody ColumnSize="ColumnSize.Is12">
+								<TextEdit Placeholder="Enter the Device IP here" />
+								<br>
+								<Button style="background-color:#1a237e; color:white" Type="ButtonType.Submit" PreventDefaultOnSubmit>CONNECT</Button>
+							</FieldBody>
+						</Field>
+					</Form>
 				</ListGroupItem>
-			</ItemTemplate>
-		</ListView>
+			</ListGroup>
+		</Row>
+		<Row Style="height:75%; width:100%"></Row>
 	</Column>
 </Row>
 
