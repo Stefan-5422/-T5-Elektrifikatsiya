@@ -23,7 +23,7 @@
 			<ItemTemplate>
 				<ListGroupItem Border="Border.OnBottom">
 					<Row>
-						<Column ColumnSize="ColumnSize.Is8">
+						<Column ColumnSize="ColumnSize.Is5">
 							<Row>
 								<Column ColumnSize="ColumnSize.Is7">
 									<Heading Size="HeadingSize.Is6" Margin="Margin.Is1.FromBottom">@context.Item.Name</Heading>
@@ -35,14 +35,16 @@
 									<br />
 									<Small>Room: @context.Item.Room</Small>
 								</Column>
-								<Column ColumnSize="ColumnSize.Is5">
-									<Paragraph Margin="Margin.Is1.OnY">@context.Item.PowerUsage W</Paragraph>
-								</Column>
 							</Row>
 						</Column>
-						<Column ColumnSize="ColumnSize.Is4">
+						<Column ColumnSize="ColumnSize.Is2">
 							<Button Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
 								<BarIcon IconName="IconName.Bolt" />
+							</Button>
+						</Column>
+						<Column ColumnSize="ColumnSize.Is5">
+							<Button Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
+								<BarIcon IconName="IconName.Pen" />
 							</Button>
 						</Column>
 					</Row>
@@ -50,6 +52,72 @@
 			</ItemTemplate>
 		</ListView>
 	</Column>
+	<Column ColumnSize="ColumnSize.Is6">
+		<Field>
+			<FieldLabel>
+				<h5>
+					Plug Name
+				</h5>
+				<Paragraph>
+					Here you can change the Name of your Plug
+				</Paragraph>
+			</FieldLabel>
+			<TextEdit Placeholder="Enter Name" />
+		</Field>
+		<br />
+		<br />
+		<Field>
+			<FieldLabel>
+				<h5>
+					Change Max Output
+				</h5>
+				<Paragraph>
+					Here you can limit how much Power your Plug uses
+				</Paragraph>
+			</FieldLabel>
+			<TextEdit Placeholder="Enter Max Output" />
+		</Field>
+		<br />
+		<br />
+		<Field>
+			<FieldLabel>
+				<h5>
+					Electricity Price
+				</h5>
+				<Paragraph>
+					Here you enter your electricity price. This is gonna calculate the overall Price of your System
+				</Paragraph>
+			</FieldLabel>
+			<TextEdit Placeholder="Enter Electricity Price" />
+		</Field>
+		<br />
+		<br />	
+		<Field>
+			<FieldLabel>
+				<h5>
+					Select Room
+				</h5>
+				<Paragraph>
+					Here you select or change the Room where you use your Plug.
+				</Paragraph>
+			</FieldLabel>
+			<br />
+			<Dropdown Display="Display.InlineBlock">
+				<DropdownToggle Color="Color.Primary" Width="Width.Is100">Rooms</DropdownToggle>
+				<DropdownMenu>
+					<DropdownItem>Room 1</DropdownItem>
+					<DropdownDivider />
+					<DropdownItem>Room 2</DropdownItem>
+					<DropdownDivider />
+					<DropdownItem>Room 3</DropdownItem>
+				</DropdownMenu>
+			</Dropdown>
+		</Field>
+			<Column ColumnSize="ColumnSize.IsFull" TextAlignment="TextAlignment.End">
+				<Button Color="Color.Primary">Save</Button>
+			</Column>
+		</Column>
+
 </Row>
 
 
