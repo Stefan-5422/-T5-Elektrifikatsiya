@@ -1,7 +1,14 @@
 ﻿@page "/addplug"
 @using Blazorise.Components;
 @using Elektrifikatsiya.Models;
+@using System.Net
+@using Elektrifikatsiya.Services
+@using Elektrifikatsiya.Services.Implementations
+@using Elektrifikatsiya.Utilities
 @inject IVersionProvider VersionProvider
+@inject IDeviceManagmentService DeviceManagmentService
+@inject IAuthenticationService AuthenticationService 
+
 <Div >
 	<Row Style="height:50%; width:100%" Padding="Padding.Is3.OnDesktop.Is0">
 		<Row Style="height:90%; width:100%">
@@ -16,32 +23,36 @@
 						Add a plug via wifi
 					</BarBrand>
 				</Bar>
-				<ListView Class="w-100"
-						  TItem="Device"
-						  Data="@plugs"
-						  TextField="@((_)=>(""))"
-						  ValueField="@((_)=>(""))"
-						  Mode="ListGroupMode.Static"
-						  Style="border-radius: 0px 0px">
-					<ItemTemplate>
-						<ListGroupItem>
+<ListView  Class="w-100"
+				  TItem="IPAddress"
+				  Data="@ipAddresses"
+				  TextField="@((_)=>(""))"
+				  ValueField="@((_)=>(""))"
+				  Mode="ListGroupMode.Static">
+			<ItemTemplate>
+				<ListGroupItem>
+					<Row>
+						<Column ColumnSize="ColumnSize.Is6">
 							<Row>
-								<Column ColumnSize="ColumnSize.Is7">
-									<Row Width="Width.Is100">
-										<Column>
-											<Small>IP: @context.Item.Address</Small>
-										</Column>
-									</Row>
-								</Column>
-								<Column ColumnSize="ColumnSize.Is4.Is1.WithOffset">
-									<Button Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
-										<BarIcon IconName="IconName.Add" />
-									</Button>
+								<Column >
+									<Heading Size="HeadingSize.Is6" Margin="Margin.Is1.FromBottom">@context.Item</Heading>
 								</Column>
 							</Row>
-						</ListGroupItem>
-					</ItemTemplate>
-				</ListView>
+							<Row Width="Width.Is100">
+								<Column>
+									<Small>IP: @context.Item</Small>
+								</Column>
+							</Row>
+						</Column>
+						<Column ColumnSize="ColumnSize.Is4.Is2.WithOffset">
+							<Button Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Clicked="@(async () => await DeviceManagmentService.RegisterDevice(context.Item,(await AuthenticationService.GetUserAsync()).ValueOrDefault))" Outline>
+								<BarIcon IconName="IconName.Add" />
+							</Button>
+						</Column>
+					</Row>
+				</ListGroupItem>
+			</ItemTemplate>
+		</ListView>
 			</Column>
 		</Row>
 	</Row>
@@ -80,5 +91,15 @@
 </Div>
 
 @code {
-	List<Device> plugs = new List<Device>() { new Device("Placeholder", "Plug", System.Net.IPAddress.Broadcast, 60, "Oldin", "4AHINF"), new Device("Placeholder", "Plug", System.Net.IPAddress.Broadcast, 60, "Oldin", "4AHINF"), new Device("Placeholder", "Plug", System.Net.IPAddress.Broadcast, 60, "Oldin", "4AHINF") };
+	List<IPAddress> ipAddresses = new List<IPAddress>();
+
+	protected override void OnInitialized()
+	{
+		ipAddresses.AddRange(MdnsDiscovery.GetChachedDevices());
+		MdnsDiscovery.OnDeviceFound += address =>
+		{
+			ipAddresses.Add(address);
+			InvokeAsync(StateHasChanged);
+		};
+	}
 }

@@ -6,10 +6,15 @@ namespace Elektrifikatsiya.Services.Implementations;
 
 public class DeviceStatusService : IDeviceStatusService
 {
-    public event EventHandler<DeviceStatusChagedEventArgs>? OnDeviceStatusChanged;
+	private readonly ILogger<DeviceStatusService> logger;
+	public event EventHandler<DeviceStatusChagedEventArgs>? OnDeviceStatusChanged;
 
     private readonly Dictionary<string, Device> devices = new();
-
+    
+    public DeviceStatusService(ILogger<DeviceStatusService> logger)
+    {
+	    this.logger = logger;
+    }
     public Result<List<Device>> GetDevices()
     {
         return devices.Values.ToList();
@@ -40,6 +45,8 @@ public class DeviceStatusService : IDeviceStatusService
         {
             return Result.Fail("Device already tracked!");
         }
+
+        logger.LogInformation("Tracking new Device {device}", device.IpAddress);
 
         devices[device.MacAddress] = device;
 

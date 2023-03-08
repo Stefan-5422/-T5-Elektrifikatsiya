@@ -34,4 +34,6 @@ public class Device
         User = user;
         Room = room;
     }
+
+    private  Device(){}
 }
