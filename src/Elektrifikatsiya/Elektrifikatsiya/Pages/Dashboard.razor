@@ -33,7 +33,7 @@
 								</Row>
 								<Row>
 									<Column>
-										<Small>User: @context.Item.User</Small>
+										<Small>User: @context.Item.User.Name</Small>
 										<br />
 										<Small>Room: @context.Item.Room</Small>
 									</Column>
@@ -52,14 +52,14 @@
 				</ItemTemplate>
 			</ListView>
 		</Column>
-		<Column ColumnSize="ColumnSize.Is6">
+		<Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12">
 			<Bar Breakpoint="Breakpoint.Desktop"
 				 Background="Background.White"
 				 ThemeContrast="ThemeContrast.None"
 				 Shadow="Shadow.Remove"
 				 Border="Border.Is1.Rounded.RoundedTop">
 				<BarBrand>
-					Plugs
+					Logs
 				</BarBrand>
 			</Bar>
 			<ListView TItem="Event"
@@ -91,7 +91,7 @@
 	//TODO: insert new event here if plug produces one
 	List<Event> events = new List<Event>() { new Event("Placeholder", "Placeholder", DateTime.Now), new Event("Placeholder", "Placeholder", DateTime.Now), new Event("Placeholder", "Placeholder", DateTime.Now) };
 	//TODO: insert new Device here if user adds one
-	List<Device> plugs = new List<Device>() { new Device("ffff:ffff:ffff:ffff", "Huso", IPAddress.Broadcast, new User("Joe", "qiowruioewjfopa", Role.Admin), "Raum"), new Device("ffff:ffff:ffff:ffff", "Huso", IPAddress.Broadcast, new User("Joe", "qiowruioewjfopa", Role.Admin), "Raum"), new Device("ffff:ffff:ffff:ffff", "Huso", IPAddress.Broadcast, new User("Joe", "qiowruioewjfopa", Role.Admin), "Raum"), };
+	List<Device> plugs = new List<Device>() { new Device("ffff:ffff:ffff:ffff", "Josne", IPAddress.Broadcast, new User("Joe", "qiowruioewjfopa", Role.Admin), "Raum"), new Device("ffff:ffff:ffff:ffff", "Josne", IPAddress.Broadcast, new User("Joe", "Josne", Role.Admin), "Raum"), new Device("ffff:ffff:ffff:ffff", "Josne", IPAddress.Broadcast, new User("Joe", "qiowruioewjfopa", Role.Admin), "Raum"), };
 	//code for graph
 	LineChart<double> lineChart;
 
