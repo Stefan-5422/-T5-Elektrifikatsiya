@@ -1,0 +1,73 @@
+mqtt:
+ # The MQTT broker to connect to
+ server: mqtt://mosquitto:1883
+ # Optional: Username and Password for authenticating with the MQTT Server
+ # Optional: for TLS client certificates
+ # Optional: Used to specify ClientID. The default is <hostname>-<pid>
+ # The Topic path to subscribe to. Be aware that you have to specify the wildcard, if you want to follow topics for multiple sensors.
+ topic_path: shellies/+/#
+ device_id_regex: "shellies/(?P<deviceid>.*)/.*"
+ metric_per_topic_config:
+   metric_name_regex: "shellies/(?P<deviceid>.*)/(?P<metricname>.*)"
+ # Optional: Regular expression to extract the device ID from the topic path. The default regular expression, assumes
+ # that the last "element" of the topic_path is the device id.
+ # The regular expression must contain a named capture group with the name deviceid
+ # For example the expression for tasamota based sensors is "tele/(?P<deviceid>.*)/.*"
+ # device_id_regex: "(.*/)?(shelly-(?P<deviceid>.*?)/)"
+ # The MQTT QoS level
+ qos: 0
+ # NOTE: Only one of metric_per_topic_config or object_per_topic_config should be specified in the configuration
+ # Optional: Configures mqtt2prometheus to expect a single metric to be published as the value on an mqtt topic.
+ #metric_per_topic_config:
+  # A regex used for extracting the metric name from the topic. Must contain a named group for `metricname`.
+  #metric_name_regex: "(.*/)?(?P<metricname>.*)"
+ # Optional: Configures mqtt2prometheus to expect an object containing multiple metrics to be published as the value on an mqtt topic.
+ # This is the default. 
+ #object_per_topic_config:
+  # The encoding of the object, currently only json is supported
+  # encoding: json
+cache:
+ # Timeout. Each received metric will be presented for this time if no update is send via MQTT.
+ # Set the timeout to -1 to disable the deletion of metrics from the cache. The exporter presents the ingest timestamp
+ # to prometheus.
+ timeout: 24h
+json_parsing:
+ # Separator. Used to split path to elements when accessing json fields.
+ # You can access json fields with dots in it. F.E. {"key.name": {"nested": "value"}}
+ # Just set separator to -> and use key.name->nested as mqtt_name
+ separator: .
+# This is a list of valid metrics. Only metrics listed here will be exported
+metrics:
+ # The name of the metric in prometheus
+ - prom_name: temperature
+  # The name of the metric in a MQTT JSON message
+   mqtt_name: temperature
+  # The prometheus help text for this metric
+   help: The temperature of the Shelly sensor
+  # The prometheus type for this metric. Valid values are: "gauge" and "counter"
+   type: gauge
+  # A map of string to string for constant labels. This labels will be attached to every prometheus metric
+   const_labels:
+     sensor_type: shelly
+ - prom_name: power 
+  # The name of the metric in a MQTT JSON message
+   mqtt_name: power 
+  # The scale of the metric in a MQTT JSON message (prom_value = mqtt_value * scale)
+  # The prometheus help text for this metric
+   help: The current power draw of the attached device
+  # The prometheus type for this metric. Valid values are: "gauge" and "counter"
+   type: gauge
+   const_labels:
+     sensor_type: shelly 
+     #A map of string to string for constant labels. This labels will be attached to every prometheus metric
+ - prom_name: state
+   mqtt_name: 0
+   help: The current state the relay is in
+   type: gauge
+   const_labels:
+     sensor_type: shelly
+   string_value_mapping:
+     map:
+       off: 0
+       on: 1
+     error_value: 0

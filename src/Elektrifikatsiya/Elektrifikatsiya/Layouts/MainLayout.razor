@@ -1,48 +1,15 @@
 ﻿@using Elektrifikatsiya.Components.Layout
 @inherits LayoutComponentBase
 
-
-@if (layoutType == "fixed-header")
-{
-    <Layout Sider>
-        <LayoutSider>
-            <LayoutSiderContent>
-                <SideMenu />
-            </LayoutSiderContent>
-        </LayoutSider>
-        <Layout>
-            <LayoutContent Padding="Padding.Is4.OnX.Is4.FromTop">
-                @Body
-            </LayoutContent>
-        </Layout>
-    </Layout>
-}
-else if (layoutType == "fixed-header-footer-only")
-{
-    <Layout>
-        <LayoutContent Padding="Padding.Is4.OnX.Is4.FromTop">
-            @Body
-        </LayoutContent>
-        <LayoutFooter Fixed>
-            <FooterMenu></FooterMenu>
-        </LayoutFooter>
-    </Layout>
-}
-else if (layoutType == "sider-with-header-on-top")
-{
-    <Layout>
-       
-        <Layout Sider>
-            <LayoutSider>
-                <LayoutSiderContent>
-                    <SideMenu />
-                </LayoutSiderContent>
-            </LayoutSider>
-            <Layout>
-                <LayoutContent Padding="Padding.Is4.OnX.Is4.FromTop">
-                    @Body
-                </LayoutContent>
-            </Layout>
-        </Layout>
-    </Layout>
-}
+<Layout Sider>
+	<LayoutSider>
+		<LayoutSiderContent>
+			<SideMenu />
+		</LayoutSiderContent>
+	</LayoutSider>
+	<Layout>
+		<LayoutContent Padding="Padding.Is4.OnDesktop.Is0">
+			@Body
+		</LayoutContent>
+	</Layout>
+</Layout>

@@ -1,4 +1,5 @@
-﻿<Blazorise.ThemeProvider Theme="@theme">
+﻿@using Blazorise.Components
+<Blazorise.ThemeProvider Theme="@theme">
     <Router AppAssembly="typeof(App).Assembly">
         <Found Context="routeData">
             <RouteView RouteData="routeData" DefaultLayout="typeof(Elektrifikatsiya.Layouts.MainLayout)" />
@@ -16,11 +17,21 @@
         {
             BarOptions = new()
             {
-                HorizontalHeight = "72px"
+                HorizontalHeight = "72px",
+                DarkColors = new()
+                {
+                    ItemColorOptions = new()
+                    {
+                        ActiveBackgroundColor = "#1a237e",
+                        ActiveColor = "#1a237e",
+                        HoverColor = "#1a237e",
+                    }
+
+                }
             },
             ColorOptions = new()
             {
-                Primary = "#0288D1",
+                Primary = "#1a237e",
                 Secondary = "#A65529",
                 Success = "#23C02E",
                 Info = "#9BD8FE",
@@ -31,7 +42,7 @@
             },
             BackgroundOptions = new()
             {
-                Primary = "#0288D1",
+                Primary = "#1a237e",
                 Secondary = "#A65529",
                 Success = "#23C02E",
                 Info = "#9BD8FE",
@@ -42,7 +53,12 @@
             },
             InputOptions = new()
             {
-                CheckColor = "#0288D1",
+                CheckColor = "#1a237e",
+            },
+            TextColorOptions = new()
+            {
+                Dark = "#000000",
+                Primary = "#1a237e"
             }
         };
 }
