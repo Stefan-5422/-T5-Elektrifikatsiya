@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Net;
 
 namespace Elektrifikatsiya.Models;
@@ -6,21 +7,30 @@ namespace Elektrifikatsiya.Models;
 public class Device
 {
     [Key]
-    public string Key { get; private set; }
+    public string MacAddress { get; private set; }
+
     [Required]
-    public string Name { get; private set; } = string.Empty;
+    public string Name { get; set; }
+
     [Required]
-    public IPAddress Address { get; private set; }
+    public IPAddress IpAddress { get; set; }
+
+    [Required]
+    public User User { get; set; }
+
+    [NotMapped]
     public int PowerUsage { get; set; }
-    public string User { get; set; }
+
     public string Room { get; set; }
 
-    public Device(string key, string name, IPAddress address, int powerUsage, string user, string room)
+    [NotMapped]
+    public bool Available { get; set; }
+
+    public Device(string macAddress, string name, IPAddress address, User user, string room)
     {
-        Key = key;
+        MacAddress = macAddress;
         Name = name;
-        Address = address;
-        PowerUsage = powerUsage;
+        IpAddress = address;
         User = user;
         Room = room;
     }
