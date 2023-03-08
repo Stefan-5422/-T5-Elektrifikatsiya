@@ -3,16 +3,26 @@
 @using Elektrifikatsiya.Models;
 @inject IVersionProvider VersionProvider
 
-<Row Padding="Padding.Is3.OnDesktop.Is0">
+<Row Padding="Padding.Is3">
 	<Div Display="Display.Flex.Row.OnDesktop" Margin="Margin.Is3.FromBottom" Width="Width.Is100">
 		<Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12">
+			<Bar Breakpoint="Breakpoint.Desktop"
+				 Background="Background.White"
+				 ThemeContrast="ThemeContrast.None"
+				 Shadow="Shadow.Remove"
+				 Border="Border.Is1.RoundedTop">
+				<BarBrand>
+					Plugs
+				</BarBrand>
+			</Bar>
 			<ListView TItem="Device"
 					  Data="@plugs"
 					  TextField="@((_)=>(""))"
 					  ValueField="@((_)=>(""))"
-					  Mode="ListGroupMode.Static">
+					  Mode="ListGroupMode.Static"
+					  Style="border-radius: 0px 0px">
 				<ItemTemplate>
-					<ListGroupItem>
+					<ListGroupItem Border="Border.OnBottom">
 						<Row>
 							<Column ColumnSize="ColumnSize.Is8">
 								<Row>
@@ -41,18 +51,29 @@
 				</ItemTemplate>
 			</ListView>
 		</Column>
-		<Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12">
+		<Column ColumnSize="ColumnSize.Is6">
+			<Bar Breakpoint="Breakpoint.Desktop"
+				 Background="Background.White"
+				 ThemeContrast="ThemeContrast.None"
+				 Shadow="Shadow.Remove"
+				 Border="Border.Is1.Rounded.RoundedTop">
+				<BarBrand>
+					Plugs
+				</BarBrand>
+			</Bar>
 			<ListView TItem="Event"
 					  Data="@events"
 					  TextField="@((_)=>(""))"
 					  ValueField="@((_)=>(""))"
-					  Mode="ListGroupMode.Static">
+					  Mode="ListGroupMode.Static"
+					  Style="border-radius: 0px 0px">
+
 				<ItemTemplate>
 					<Div Flex="Flex.InlineFlex.JustifyContent.Between" Width="Width.Is100">
 						<Heading Size="HeadingSize.Is6" Margin="Margin.Is2.FromBottom">@context.Item.EventName</Heading>
 						<Small>@context.Item.Date</Small>
 					</Div>
-					<Paragraph Margin="Margin.Is2.FromBottom">@context.Item.Description</Paragraph>
+					<Paragraph Border="Border.OnBottom" Margin="Margin.Is2.FromBottom">@context.Item.Description</Paragraph>
 				</ItemTemplate>
 			</ListView>
 		</Column>
