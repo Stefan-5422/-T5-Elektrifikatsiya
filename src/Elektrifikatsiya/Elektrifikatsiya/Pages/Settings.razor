@@ -1,6 +1,7 @@
 ﻿@page "/Settings"
 @using Blazorise.Components;
 @using Elektrifikatsiya.Models;
+@using System.Net
 <Row Style="width: 100%; height: 100%">
 	<Column ColumnSize="ColumnSize.Is4">
 		<Bar Breakpoint="Breakpoint.Desktop"
@@ -124,6 +125,6 @@
 @code {
 
 
-	List<Device> plugs = new List<Device>() { new Device("Placeholder", "Plug", System.Net.IPAddress.Broadcast, 60, "Oldin", "4AHINF"), new Device("Placeholder", "Plug", System.Net.IPAddress.Broadcast, 60, "Oldin", "4AHINF"), new Device("Placeholder", "Plug", System.Net.IPAddress.Broadcast, 60, "Oldin", "4AHINF") };
+	List<Device> plugs = new List<Device>() { new Device("ffff:ffff:ffff:ffff", "Josne", IPAddress.Broadcast, new User("Joe", "qiowruioewjfopa", Role.Admin), "Raum"), new Device("ffff:ffff:ffff:ffff", "Josne", IPAddress.Broadcast, new User("Joe", "Josne", Role.Admin), "Raum"), new Device("ffff:ffff:ffff:ffff", "Josne", IPAddress.Broadcast, new User("Joe", "qiowruioewjfopa", Role.Admin), "Raum"), };
 
 }
