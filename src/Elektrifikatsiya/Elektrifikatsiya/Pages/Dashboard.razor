@@ -4,8 +4,8 @@
 @inject IVersionProvider VersionProvider
 
 <Row Padding="Padding.Is3">
-	<Div Flex="Flex.AlignItems.Start" Margin="Margin.Is3.FromBottom" Width="Width.Is100">
-		<Column ColumnSize="ColumnSize.Is6">
+	<Div Display="Display.Flex.Row.OnDesktop" Margin="Margin.Is3.FromBottom" Width="Width.Is100">
+		<Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12">
 			<Bar Breakpoint="Breakpoint.Desktop"
 				 Background="Background.White"
 				 ThemeContrast="ThemeContrast.None"
@@ -22,7 +22,7 @@
 					  Mode="ListGroupMode.Static"
 					  Style="border-radius: 0px 0px">
 				<ItemTemplate>
-					<ListGroupItem>
+					<ListGroupItem Border="Border.OnBottom">
 						<Row>
 							<Column ColumnSize="ColumnSize.Is8">
 								<Row>
@@ -73,7 +73,7 @@
 						<Heading Size="HeadingSize.Is6" Margin="Margin.Is2.FromBottom">@context.Item.EventName</Heading>
 						<Small>@context.Item.Date</Small>
 					</Div>
-					<Paragraph Margin="Margin.Is2.FromBottom">@context.Item.Description</Paragraph>
+					<Paragraph Border="Border.OnBottom" Margin="Margin.Is2.FromBottom">@context.Item.Description</Paragraph>
 				</ItemTemplate>
 			</ListView>
 		</Column>
