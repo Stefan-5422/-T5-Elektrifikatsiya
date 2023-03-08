@@ -15,7 +15,9 @@ public interface IAuthenticationService
     /// <summary>
     /// Registers a new user.
     /// </summary>
-    /// <param name="email">The E-mail address of the user.</param>
+    /// <param name="name">The name address of the user.</param>
+    /// <param name="password">The password of the user.</param>
+    /// <param name="role">The default role of the user.</param>
     /// <returns>A <see cref="Task"/> to <see langword="await"/>.</returns>
 
     Task<Result> RegisterUserAsync(string name, string password, Role role);
@@ -23,7 +25,8 @@ public interface IAuthenticationService
     /// <summary>
     /// Logs a user in.
     /// </summary>
-    /// <param name="name">The E-mail address of the user.</param>
+    /// <param name="name">The name of the user.</param>
+    /// <param name="password">The password of the user.</param>
     /// <returns>A <see cref="Task"/> to <see langword="await"/>.</returns>
     Task<Result> LoginUserAsync(string name, string password);
 
@@ -36,14 +39,13 @@ public interface IAuthenticationService
     /// <summary>
     /// Deletes the current user.
     /// </summary>
-    /// <param name="deletionToken">The deletion token.</param>
-    /// <returns>A <see cref="Task"/> to <see langword="await"/> and a <see cref="bool"/> that indicates if the operation was successful.</returns>
+    /// <returns>A <see cref="Task"/> to <see langword="await"/>.</returns>
     Task<Result> DeleteUserAsync();
 
     /// <summary>
     /// Checks if a user exists.
     /// </summary>
-    /// <param name="name">The E-mail address of the user.</param>
+    /// <param name="name">The name address of the user.</param>
     /// <returns>A <see cref="Task"/> to <see langword="await"/> and a <see cref="bool"/> that indicates if the user exists.</returns>
     Task<Result<bool>> UserExistsAsync(string name);
 
