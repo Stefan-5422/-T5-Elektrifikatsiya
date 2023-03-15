@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using Blazorise.Components;
 @using Elektrifikatsiya.Models;
+@using System.Net
 @inject IVersionProvider VersionProvider
 
 <Div>
@@ -92,8 +93,7 @@
 	//TODO: insert new event here if plug produces one
 	List<Event> events = new List<Event>() { new Event("Placeholder", "Event", DateTime.Now), new Event("Placeholder", "Event", DateTime.Now), new Event("Placeholder", "Event", DateTime.Now) };
 	//TODO: insert new Device here if user adds one
-	List<Device> plugs = new List<Device>() { new Device("Placeholder", "Plug", System.Net.IPAddress.Broadcast, 60, "Oldin", "4AHINF"), new Device("Placeholder", "Plug", System.Net.IPAddress.Broadcast, 60, "Oldin", "4AHINF"), new Device("Placeholder", "Plug", System.Net.IPAddress.Broadcast, 60, "Oldin", "4AHINF") };
-
+	List<Device> plugs = new List<Device>() { new Device("ffff:ffff:ffff:ffff", "Huso", IPAddress.Broadcast, new User("Joe", "qiowruioewjfopa", Role.Admin), "Raum"), new Device("ffff:ffff:ffff:ffff", "Huso", IPAddress.Broadcast, new User("Joe", "qiowruioewjfopa", Role.Admin), "Raum"), new Device("ffff:ffff:ffff:ffff", "Huso", IPAddress.Broadcast, new User("Joe", "qiowruioewjfopa", Role.Admin), "Raum"), };
 	//code for graph
 	LineChart<double> lineChart;
 
