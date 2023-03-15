@@ -12,13 +12,13 @@ namespace Elektrifikatsiya.Services.Implementations;
 
 public class AuthenticationService : IAuthenticationService
 {
-    private readonly UserDatabaseContext userDatabaseContext;
+    private readonly MainDatabaseContext mainDatabaseContext;
     private readonly IHttpContextAccessor httpContextAccessor;
     private readonly ICookieService cookieService;
 
-    public AuthenticationService(UserDatabaseContext userDatabaseContext, IHttpContextAccessor httpContextAccessor, ICookieService cookieService)
+    public AuthenticationService(MainDatabaseContext mainDatabaseContext, IHttpContextAccessor httpContextAccessor, ICookieService cookieService)
     {
-        this.userDatabaseContext = userDatabaseContext;
+        this.mainDatabaseContext = mainDatabaseContext;
         this.httpContextAccessor = httpContextAccessor;
         this.cookieService = cookieService;
     }
@@ -32,8 +32,8 @@ public class AuthenticationService : IAuthenticationService
             return getUserResult.ToResult();
         }
 
-        _ = userDatabaseContext.Users.Remove(getUserResult.Value);
-        return (await Result.Try(() => userDatabaseContext.SaveChangesAsync())).ToResult();
+        _ = mainDatabaseContext.Users.Remove(getUserResult.Value);
+        return (await Result.Try(() => mainDatabaseContext.SaveChangesAsync())).ToResult();
     }
 
     public async Task<Result<User>> GetUserAsync()
@@ -45,7 +45,7 @@ public class AuthenticationService : IAuthenticationService
             return Result.Fail("Token is not valid!");
         }
 
-        User? user = await userDatabaseContext.Users.FirstOrDefaultAsync(u => u.SessionToken == token);
+        User? user = await mainDatabaseContext.Users.FirstOrDefaultAsync(u => u.SessionToken == token);
 
         if (user is null || DateTime.UtcNow - user.LastLoginDate > TimeSpan.FromDays(7))
         {
@@ -62,7 +62,7 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<Result> LoginUserAsync(string name, string password)
     {
-        User? user = await userDatabaseContext.Users.FirstOrDefaultAsync(u => u.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+        User? user = await mainDatabaseContext.Users.FirstOrDefaultAsync(u => u.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
 
         if (user is null)
         {
@@ -79,7 +79,7 @@ public class AuthenticationService : IAuthenticationService
         user.LastLoginDate = DateTime.UtcNow;
         user.SessionToken = newToken;
 
-        _ = await userDatabaseContext.SaveChangesAsync();
+        _ = await mainDatabaseContext.SaveChangesAsync();
 
         await cookieService.WriteCookieAsync("token", newToken, 7);
 
@@ -97,7 +97,7 @@ public class AuthenticationService : IAuthenticationService
             return Result.Ok();
         }
 
-        User? user = await userDatabaseContext.Users.FirstOrDefaultAsync(u => u.SessionToken == token);
+        User? user = await mainDatabaseContext.Users.FirstOrDefaultAsync(u => u.SessionToken == token);
 
         if (user is null)
         {
@@ -106,7 +106,7 @@ public class AuthenticationService : IAuthenticationService
 
         user.SessionToken = null;
 
-        _ = await userDatabaseContext.SaveChangesAsync();
+        _ = await mainDatabaseContext.SaveChangesAsync();
 
         return Result.Ok();
     }
@@ -121,14 +121,14 @@ public class AuthenticationService : IAuthenticationService
         }
 
         User user = new User(name, BC.HashPassword(password), role);
-        _ = userDatabaseContext.Users.Add(user);
+        _ = mainDatabaseContext.Users.Add(user);
 
-        return (await Result.Try(() => userDatabaseContext.SaveChangesAsync())).ToResult();
+        return (await Result.Try(() => mainDatabaseContext.SaveChangesAsync())).ToResult();
     }
 
     public Task<Result<bool>> UserExistsAsync(string name)
     {
         return Result.Try(() =>
-            userDatabaseContext.Users.AnyAsync(u => u.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)));
+            mainDatabaseContext.Users.AnyAsync(u => u.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)));
     }
 }
