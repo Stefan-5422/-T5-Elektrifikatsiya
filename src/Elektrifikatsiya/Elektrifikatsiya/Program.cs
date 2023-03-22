@@ -4,6 +4,7 @@ using Blazorise.Icons.Material;
 using Blazorise.Material;
 
 using Elektrifikatsiya.Database;
+using Elektrifikatsiya.Models;
 using Elektrifikatsiya.Services;
 using Elektrifikatsiya.Services.Implementations;
 
@@ -51,7 +52,16 @@ app.MapFallbackToPage("/_Host");
 app.MapControllers();
 
 IServiceScope serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
-serviceScope.ServiceProvider.GetRequiredService<MainDatabaseContext>().Database.EnsureCreated();
+
+MainDatabaseContext mainDatabase = serviceScope.ServiceProvider.GetRequiredService<MainDatabaseContext>();
+mainDatabase.Database.EnsureCreated();
+
+IAuthenticationService authenticationService = serviceScope.ServiceProvider.GetRequiredService<IAuthenticationService>();
+
+if (!mainDatabase.Users.Any())
+{
+	authenticationService.RegisterUserAsync("admin", "admin", Role.Admin);
+}
 
 app.Run();
 

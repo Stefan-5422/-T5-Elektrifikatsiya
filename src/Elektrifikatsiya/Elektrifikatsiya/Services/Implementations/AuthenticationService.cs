@@ -62,7 +62,7 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<Result> LoginUserAsync(string name, string password)
     {
-        User? user = await mainDatabaseContext.Users.FirstOrDefaultAsync(u => u.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+        User? user = await mainDatabaseContext.Users.FirstOrDefaultAsync(u => u.Name == name);
 
         if (user is null)
         {
@@ -129,6 +129,6 @@ public class AuthenticationService : IAuthenticationService
     public Task<Result<bool>> UserExistsAsync(string name)
     {
         return Result.Try(() =>
-            mainDatabaseContext.Users.AnyAsync(u => u.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)));
+            mainDatabaseContext.Users.AnyAsync(u => u.Name == name));
     }
 }

@@ -31,7 +31,7 @@ public static class MdnsDiscovery
 
     private static async Task AddDevice(ServiceAnnouncement announcement)
     {
-        IPAddress ipAddress = announcement.Addresses.First();
+	    IPAddress ipAddress = announcement.Addresses.First();
 
         if (!memoryCache.TryGetValue(ipAddress.ToString(), out bool isShellyDevice))
         {

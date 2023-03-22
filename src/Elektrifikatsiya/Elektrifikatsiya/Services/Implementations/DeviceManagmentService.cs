@@ -5,6 +5,7 @@ using FluentResults;
 
 using System.Net;
 using System.Net.NetworkInformation;
+using Microsoft.EntityFrameworkCore;
 
 namespace Elektrifikatsiya.Services.Implementations;
 
@@ -107,6 +108,8 @@ public class DeviceManagmentService : IDeviceManagmentService
         }
 
         Device device = new Device(mac, name ?? mac, ip, user, room);
+
+        mainDatabaseContext.Entry(user).State = EntityState.Unchanged;
 
         _ = mainDatabaseContext.Add(device);
         Result saveDatabaseChangesResult = await Result.Try(Task () => mainDatabaseContext.SaveChangesAsync());

@@ -1,15 +1,26 @@
-﻿@using Elektrifikatsiya.Components.Layout
+﻿@using Elektrifikatsiya.Components
+@using Elektrifikatsiya.Components.Layout
+@using Elektrifikatsiya.Models
 @inherits LayoutComponentBase
-
-<Layout Sider>
-	<LayoutSider>
-		<LayoutSiderContent>
-			<SideMenu />
-		</LayoutSiderContent>
-	</LayoutSider>
-	<Layout>
-		<LayoutContent Padding="Padding.Is4.OnDesktop.Is0">
-			@Body
-		</LayoutContent>
-	</Layout>
-</Layout>
+@inject NavigationManager NavigationManager
+<Protected RequiredRole="Role.User">
+	<Authorized>
+		<Layout Sider>
+			<LayoutSider>
+				<LayoutSiderContent>
+					<SideMenu />
+				</LayoutSiderContent>
+			</LayoutSider>
+			<Layout>
+				<LayoutContent Padding="Padding.Is4.OnDesktop.Is0">
+					@Body
+				</LayoutContent>
+			</Layout>
+		</Layout>
+	</Authorized>
+	<NotAuthorized>
+		@{
+			NavigationManager.NavigateTo("/login");
+		}
+	</NotAuthorized>
+</Protected>
