@@ -33,7 +33,8 @@
 							  Data="@ipAddresses"
 							  TextField="@((_)=>(""))"
 							  ValueField="@((_)=>(""))"
-							  Mode="ListGroupMode.Static">
+							  Mode="ListGroupMode.Static"
+							  Style="border-radius: 0px 0px">
 						<ItemTemplate>
 							<ListGroupItem>
 									<Row>
@@ -94,16 +95,33 @@
 @code {
 	List<IPAddress> ipAddresses = new List<IPAddress>();
 
-	bool visible = true;
+	bool visible = false;
+
+	DateTime time = DateTime.UtcNow;
 
 	protected override void OnInitialized()
 	{
 		ipAddresses.AddRange(MdnsDiscovery.GetChachedDevices());
+
+		System.Timers.Timer aTimer = new System.Timers.Timer(1000);
+		aTimer.Elapsed += (_, _) => { 
+			DateTime dateTime = DateTime.UtcNow;
+			if(dateTime >= time.AddSeconds(5))
+			{
+				visible = false;
+				InvokeAsync(StateHasChanged);
+			} 
+		};
+		aTimer.Start();
+
 		MdnsDiscovery.OnDeviceFound += address =>
 		{
+			visible = true;
+			
 			ipAddresses.Add(address);
 			InvokeAsync(StateHasChanged);
-			visible = false;
+
+			time = DateTime.UtcNow;
 		};
 	}
 }
