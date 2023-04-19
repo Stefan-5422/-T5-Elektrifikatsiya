@@ -35,5 +35,5 @@ public class Device
         Room = room;
     }
 
-    private  Device(){}
+    private Device(){}
 }
