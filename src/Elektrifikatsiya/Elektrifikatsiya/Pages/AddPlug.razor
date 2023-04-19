@@ -9,88 +9,88 @@
 @inject IDeviceManagmentService DeviceManagmentService
 @inject IAuthenticationService AuthenticationService 
 
-	<Row Style="height:50%; width:100%" Padding="Padding.Is3.OnDesktop.Is5.FromStart.OnMobile">
-		<Row Style="height:90%; width:100%">
-			<Column ColumnSize="ColumnSize.Is4.OnDesktop.Is1"></Column>
-			<Column ColumnSize="ColumnSize.Is4.OnDesktop.Is12">
-				<Bar Breakpoint="Breakpoint.Desktop"
-					 Background="Background.White"
-					 ThemeContrast="ThemeContrast.None"
-					 Shadow="Shadow.Remove"
-					 Border="Border.Is1.RoundedTop">
-					<BarBrand>
-						<Column ColumnSize="ColumnSize.Is9">
-							Add a plug via wifi
-						</Column>
-						<Column ColumnSize="ColumnSize.Is3.Is1.WithOffset">
-							<LoadingIndicator @bind-Visible="@visible">
-							</LoadingIndicator>
-						</Column>
-					</BarBrand>
-				</Bar>
-					<ListView Class="w-100"
-							  TItem="IPAddress"
-							  Data="@ipAddresses"
-							  TextField="@((_)=>(""))"
-							  ValueField="@((_)=>(""))"
-							  Mode="ListGroupMode.Static"
-							  Style="border-radius: 0px 0px">
-						<ItemTemplate>
-							<ListGroupItem>
-									<Row>
-										<Column ColumnSize="ColumnSize.Is6">
-											<Row>
-											</Row>
-											<Row Width="Width.Is100">
-												<Column>
-													<Small>IP: @context.Item</Small>
-												</Column>
-											</Row>
-										</Column>
-										<Column ColumnSize="ColumnSize.Is4.Is2.WithOffset">
-											<Button Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Clicked="@(async () => await DeviceManagmentService.RegisterDevice(context.Item,(await AuthenticationService.GetUserAsync()).ValueOrDefault))" Outline>
-												<BarIcon IconName="IconName.Add" />
-											</Button>
-										</Column>
-									</Row>
-							</ListGroupItem>
-						</ItemTemplate>
-					</ListView>
-			</Column>
-		</Row>
-	</Row>
-<Row Style="height:50%; width:100%; border-top-style:solid; border-top-color:#1a237e" Padding="Padding.Is3.OnDesktop.Is5.FromStart.OnMobile">
+<Row Style="height:50%; width:100%" Padding="Padding.Is3.OnDesktop.Is5.FromStart.OnMobile">
+	<Row Style="height:90%; width:100%">
 		<Column ColumnSize="ColumnSize.Is4.OnDesktop.Is1"></Column>
 		<Column ColumnSize="ColumnSize.Is4.OnDesktop.Is12">
-			<Row Style="height:15%; width:100%"></Row>
-			<Row Style="height:10%; width:100%">
-				<Bar Breakpoint="Breakpoint.Desktop"
-					 Background="Background.White"
-					 ThemeContrast="ThemeContrast.None"
-					 Shadow="Shadow.Remove"
-					 Border="Border.Is1.RoundedTop"
-					 Style="width:100%">
-					<BarBrand>
-						Add a plug via IP
-					</BarBrand>
-				</Bar>
-				<ListGroup Style="width:100%; border-radius: 0px 0px">
-					<ListGroupItem Color="Color.Default">
-						<Form>
-							<Field Horizontal>
-								<FieldBody ColumnSize="ColumnSize.Is12">
-									<TextEdit Placeholder="Enter the Device IP here" />
-									<br>
-									<Button style="background-color:#1a237e; color:white" Type="ButtonType.Submit" PreventDefaultOnSubmit>CONNECT</Button>
-								</FieldBody>
-							</Field>
-						</Form>
-					</ListGroupItem>
-				</ListGroup>
-			</Row>
-			<Row Style="height:75%; width:100%"></Row>
+			<Bar Breakpoint="Breakpoint.Desktop"
+				 Background="Background.White"
+				 ThemeContrast="ThemeContrast.None"
+				 Shadow="Shadow.Remove"
+				 Border="Border.Is1.RoundedTop">
+				<BarBrand>
+					<Column ColumnSize="ColumnSize.Is9">
+						Add a plug via wifi
+					</Column>
+					<Column ColumnSize="ColumnSize.Is3.Is6.WithOffset">
+						<LoadingIndicator @bind-Visible="@visible">
+						</LoadingIndicator>
+					</Column>
+				</BarBrand>
+			</Bar>
+				<ListView Class="w-100"
+						  TItem="IPAddress"
+						  Data="@ipAddresses"
+						  TextField="@((_)=>(""))"
+						  ValueField="@((_)=>(""))"
+						  Mode="ListGroupMode.Static"
+						  Style="border-radius: 0px 0px">
+					<ItemTemplate>
+						<ListGroupItem>
+								<Row>
+									<Column ColumnSize="ColumnSize.Is8">
+										<Row>
+										</Row>
+										<Row Width="Width.Is100">
+											<Column>
+												<Small>IP: @context.Item</Small>
+											</Column>
+										</Row>
+									</Column>
+									<Column ColumnSize="ColumnSize.Is4">
+										<Button Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Clicked="@(async () => await DeviceManagmentService.RegisterDevice(context.Item,(await AuthenticationService.GetUserAsync()).ValueOrDefault))" Outline>
+											<BarIcon IconName="IconName.Add" />
+										</Button>
+									</Column>
+								</Row>
+						</ListGroupItem>
+					</ItemTemplate>
+				</ListView>
 		</Column>
 	</Row>
+</Row>
+<Row Style="height:50%; width:100%; border-top-style:solid; border-top-color:#1a237e" Padding="Padding.Is3.OnDesktop.Is5.FromStart.OnMobile">
+	<Column ColumnSize="ColumnSize.Is4.OnDesktop.Is1"></Column>
+	<Column ColumnSize="ColumnSize.Is4.OnDesktop.Is12">
+		<Row Style="height:15%; width:100%"></Row>
+		<Row Style="height:10%; width:100%">
+			<Bar Breakpoint="Breakpoint.Desktop"
+				 Background="Background.White"
+				 ThemeContrast="ThemeContrast.None"
+				 Shadow="Shadow.Remove"
+				 Border="Border.Is1.RoundedTop"
+				 Style="width:100%">
+				<BarBrand>
+					Add a plug via IP
+				</BarBrand>
+			</Bar>
+			<ListGroup Style="width:100%; border-radius: 0px 0px">
+				<ListGroupItem Color="Color.Default">
+					<Form>
+						<Field Horizontal>
+							<FieldBody ColumnSize="ColumnSize.Is12">
+								<TextEdit Placeholder="Enter the Device IP here" />
+								<br>
+								<Button style="background-color:#1a237e; color:white" Type="ButtonType.Submit" PreventDefaultOnSubmit>CONNECT</Button>
+							</FieldBody>
+						</Field>
+					</Form>
+				</ListGroupItem>
+			</ListGroup>
+		</Row>
+		<Row Style="height:75%; width:100%"></Row>
+	</Column>
+</Row>
 
 @code {
 	List<IPAddress> ipAddresses = new List<IPAddress>();
@@ -106,7 +106,7 @@
 		System.Timers.Timer aTimer = new System.Timers.Timer(1000);
 		aTimer.Elapsed += (_, _) => { 
 			DateTime dateTime = DateTime.UtcNow;
-			if(dateTime >= time.AddSeconds(5))
+			if(dateTime >= time.AddSeconds(3))
 			{
 				visible = false;
 				InvokeAsync(StateHasChanged);
