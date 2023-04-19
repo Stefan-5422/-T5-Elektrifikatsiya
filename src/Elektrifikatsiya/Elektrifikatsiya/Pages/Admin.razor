@@ -1,0 +1,28 @@
+﻿@page "/admin"
+@using Blazorise.Components
+@using Elektrifikatsiya.Models;
+@using System.Net
+<Div>
+	<Row Padding="Padding.Is3">
+		<Div Display="Display.Flex.Row.OnDesktop" Margin=" Margin.Is3.FromBottom" Width="Width.Is100">
+			<Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12">
+				<Bar Breakpoint="Breakpoint.Desktop"
+					 Background="Background.White"
+					 ThemeContrast="ThemeContrast.None"
+					 Shadow="Shadow.Remove"
+					 Border="Border.Is1.RoundedTop">
+					<BarBrand>
+						Users
+					</BarBrand>
+					<Button Position="Position.Absolute.End" Padding="Padding.Is3" Outline>
+						<BarIcon IconName="IconName.Add" ></BarIcon>
+					</Button>
+				</Bar>
+				
+				
+			</Column>
+		</Div>
+	</Row>
+</Div>
+@code {
+}
