@@ -1,4 +1,7 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Diagnostics;
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
+
 namespace Elektrifikatsiya.Models;
 
 public enum Status
@@ -44,7 +47,7 @@ public class PrometheusDataWrapper
         ResultType = resultType;
         Result = result;
     }
-
+    
     public FluentResults.Result<List<(double, double)>> MatrixTypeToTimestampFloatTuple()
     {
 	    if (ResultType != ResultType.Matrix)
@@ -54,19 +57,19 @@ public class PrometheusDataWrapper
 
         List<(double, double)> result = new List<(double, double)>();
 
-        if (Result[0]?.Value is null)
+        if (Result[0]?.Values is null || Result[0]?.Values?[0] is null)
         {
 	        return FluentResults.Result.Fail("There was no result in the Response Body");
         }
 
-        foreach (PrometheusData prometheusData in Result)
+        foreach (object value in Result[0].Values)
 	    {
 
-		    string[] segment = prometheusData.Value.ToString()!.Split(",");
+		    string[] segment = value.ToString()!.Split(",");
 
             result.Add((Convert.ToDouble(segment[0][2..^1]), Convert.ToDouble(segment[1][1..^2])));
 	    }
-
+        Debug.WriteLine(result);
         return result;
     }
 
@@ -106,12 +109,7 @@ public class PrometheusDataMetric
 
 public class PrometheusData
 {
-    public PrometheusDataMetric Metric { get; set; }
-    public object Value { get; set; }
-
-    public PrometheusData(PrometheusDataMetric metric, object value)
-    {
-        Metric = metric;
-        Value = value;
-    }
+    public PrometheusDataMetric? Metric { get; set; } = null;
+    public object? Value { get; set; } = null;
+    public List<object>? Values { get; set; } = null;
 }
