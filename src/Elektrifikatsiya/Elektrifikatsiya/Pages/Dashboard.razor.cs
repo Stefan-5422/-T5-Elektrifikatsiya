@@ -18,11 +18,6 @@ namespace Elektrifikatsiya.Pages
 {
     public partial class Dashboard
     {
-        string bgcolor { get; set; } = "00f"; // (starting value)
-        void SetColor()
-        {
-            bgcolor = "#fd7";
-            StateHasChanged(); // may not be required, but I'm at work right now, so can't check
-        }
+
     }
 }

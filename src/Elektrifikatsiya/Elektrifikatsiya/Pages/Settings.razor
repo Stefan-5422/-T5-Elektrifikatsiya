@@ -42,8 +42,13 @@
 							</Column>
 
 							<Column ColumnSize="ColumnSize.Is4.OnDesktop.Is7.OnMobile">
-								<Button Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
-									<BarIcon IconName="IconName.Bolt" />
+								<Button class="btn1" Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
+									<style>
+											.btn1:hover {
+												background: #E50000;
+											}
+									</style>
+									<BarIcon IconName="IconName.Delete" />
 								</Button>
 							</Column>
 								<br />
@@ -136,5 +141,4 @@
 
 
 	List<Device> plugs = new List<Device>() { new Device("ffff:ffff:ffff:ffff", "Josne", IPAddress.Broadcast, new User("Joe", "qiowruioewjfopa", Role.Admin), "Raum"), new Device("ffff:ffff:ffff:ffff", "Josne", IPAddress.Broadcast, new User("Joe", "Josne", Role.Admin), "Raum"), new Device("ffff:ffff:ffff:ffff", "Josne", IPAddress.Broadcast, new User("Joe", "qiowruioewjfopa", Role.Admin), "Raum"), };
-
 }
