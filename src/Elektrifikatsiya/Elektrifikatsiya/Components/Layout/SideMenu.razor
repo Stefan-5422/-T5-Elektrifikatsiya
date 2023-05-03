@@ -24,6 +24,12 @@
                 </BarLink>
             </BarItem>
             <BarItem>
+                <BarLink To="/settings" TextColor="TextColor.White">
+                    <BarIcon Style="color:white" IconName="IconName.Wrench" />
+                    Settings
+                </BarLink>
+            </BarItem>
+            <BarItem>
                 <BarLink To="/addplug" TextColor="TextColor.White">
                     <BarIcon Style="color:white" IconName="IconName.Plug" />
                     Add Plug
@@ -32,9 +38,9 @@
         </BarStart>
         <BarEnd>
             <BarItem>
-                <BarLink To="/settings" TextColor="TextColor.White">
-                    <BarIcon Style="color:white" IconName="IconName.Wrench" />
-                    Settings
+                <BarLink To="/login" TextColor="TextColor.White">
+                    <BarIcon Style="color:white" IconName="IconName.Running" />
+                    Logout
                 </BarLink>
             </BarItem>
         </BarEnd>
@@ -42,7 +48,5 @@
 </Bar>
 @code {
     private bool pagesBarVisible = true;
-
-    //TODO: replace logo png with transparent background one
     RenderFragment customIcon =@<img src="/logo.png" style="width:32px; height: 32px" />;
 }
