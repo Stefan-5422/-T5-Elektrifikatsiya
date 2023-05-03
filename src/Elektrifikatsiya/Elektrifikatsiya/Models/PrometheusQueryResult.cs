@@ -57,12 +57,12 @@ public class PrometheusDataWrapper
 
         List<(double, double)> result = new List<(double, double)>();
 
-        if (Result[0]?.Values is null || Result[0]?.Values?[0] is null)
+        if (Result.Count == 0 || Result[0]?.Values is null || Result[0]?.Values?[0] is null)
         {
 	        return FluentResults.Result.Fail("There was no result in the Response Body");
         }
 
-        foreach (object value in Result[0].Values)
+        foreach (object value in Result[0]!.Values!)
 	    {
 
 		    string[] segment = value.ToString()!.Split(",");
