@@ -2,7 +2,12 @@
 @using Blazorise.Components;
 @using Elektrifikatsiya.Models;
 @using System.Net
+@using Elektrifikatsiya.Services
+@using Elektrifikatsiya.Utilities
+@using System.Diagnostics
 @inject IVersionProvider VersionProvider
+
+@inject IDeviceStatusService DeviceStatusService;
 
 <Div>
 	<Row Padding="Padding.Is3">
@@ -34,7 +39,7 @@
 									</Row>
 									<Row>
 										<Column>
-											<Small>User: @context.Item.User</Small>
+											<Small>User: @context.Item.User.Name</Small>
 											<br />
 											<Small>Room: @context.Item.Room</Small>
 										</Column>
@@ -44,7 +49,7 @@
 									</Row>
 								</Column>
 								<Column ColumnSize="ColumnSize.Is4">
-									<Button Clicked="@ChangeButtonColor" Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Primary"Primary Outline>
+									<Button Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Primary"Primary Outline>
 										<!--TODO: This button should change color-->
 										<BarIcon IconName="IconName.Bolt" />
 									</Button>
@@ -92,11 +97,21 @@
 
 @code {
 	//TODO: insert new event here if plug produces one
-	List<Event> events = new List<Event>() { new Event("Placeholder", "Event", DateTime.Now), new Event("Placeholder", "Event", DateTime.Now), new Event("Placeholder", "Event", DateTime.Now) };
+	List<Event> events = new List<Event>() { new Event("Placeholder", "Placeholder", DateTime.Now), new Event("Placeholder", "Placeholder", DateTime.Now), new Event("Placeholder", "Placeholder", DateTime.Now) };
 	//TODO: insert new Device here if user adds one
-	List<Device> plugs = new List<Device>() { new Device("ffff:ffff:ffff:ffff", "Josne", IPAddress.Broadcast, new User("Joe", "qiowruioewjfopa", Role.Admin), "Raum"), new Device("ffff:ffff:ffff:ffff", "Josne", IPAddress.Broadcast, new User("Joe", "Josne", Role.Admin), "Raum"), new Device("ffff:ffff:ffff:ffff", "Josne", IPAddress.Broadcast, new User("Joe", "qiowruioewjfopa", Role.Admin), "Raum"), };
+	List<Device> plugs = new List<Device>();
 	//code for graph
 	LineChart<double> lineChart;
+
+	protected override void OnInitialized()
+	{
+		plugs = DeviceStatusService.GetDevices().ValueOrDefault ?? new List<Device>();
+
+		DeviceStatusService.OnDeviceStatusChanged += (_, e) =>
+		{
+			InvokeAsync(StateHasChanged);
+		};
+	}
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
@@ -108,50 +123,47 @@
 
 	async Task HandleRedraw()
 	{
+		labels.Clear();
 		await lineChart.Clear();
-
-		await lineChart.AddLabelsDatasetsAndUpdate(Labels, GetLineChartDataset());
+		await lineChart.AddLabelsDatasetsAndUpdate(labels, await GetLineChartDataset());
 	}
 
 	//TODO: insert dataset of current and last voltage usages
-	LineChartDataset<double> GetLineChartDataset()
+	async Task<LineChartDataset<double>> GetLineChartDataset()
 	{
 		return new LineChartDataset<double>
 			{
-				Label = "# of random number in thousands",
-				Data = RandomizeData(),
-				BackgroundColor = backgroundColors,
-				BorderColor = borderColors,
+				Label = "Wattage",
+				Data = await RandomizeData(),
 				Fill = true,
 				PointRadius = 3,
 				CubicInterpolationMode = "monotone",
 			};
 	}
 
-	string[] Labels = { "Red", "Blue", "Yellow", "Green", "Purple", "Orange" };
-	List<string> backgroundColors = new List<string> { ChartColor.FromRgba(255, 99, 132, 0.2f), ChartColor.FromRgba(54, 162, 235, 0.2f), ChartColor.FromRgba(255, 206, 86, 0.2f), ChartColor.FromRgba(75, 192, 192, 0.2f), ChartColor.FromRgba(153, 102, 255, 0.2f), ChartColor.FromRgba(255, 159, 64, 0.2f) };
-	List<string> borderColors = new List<string> { ChartColor.FromRgba(255, 99, 132, 1f), ChartColor.FromRgba(54, 162, 235, 1f), ChartColor.FromRgba(255, 206, 86, 1f), ChartColor.FromRgba(75, 192, 192, 1f), ChartColor.FromRgba(153, 102, 255, 1f), ChartColor.FromRgba(255, 159, 64, 1f) };
+	List<string> labels = new List<string>();
 
-	List<double> RandomizeData()
+	async Task<List<double>> RandomizeData()
 	{
+		PrometheusQuery promQueryer = new PrometheusQuery("http://localhost:9090");
+
+		string plugnames = "";
+		foreach (Device device in plugs)
+		{
+			plugnames += $"shellyplug-s-{device.MacAddress}/relay/0|";
+		}
+		plugnames = plugnames[0..^1];
+
+		Debug.WriteLine($$"""sum(power{sensor=~"{{plugnames}}"})[1h:1m]""");
+
+		PrometheusDataWrapper? deviceData = (await promQueryer.Query($$"""sum(power{sensor=~"{{plugnames}}"})[1h:1m]"""))?.Data;
+
 		var r = new Random(DateTime.Now.Millisecond);
 
-		return new List<double> {
-		r.Next( 3, 50 ) * r.NextDouble(),
-		r.Next( 3, 50 ) * r.NextDouble(),
-		r.Next( 3, 50 ) * r.NextDouble(),
-		r.Next( 3, 50 ) * r.NextDouble(),
-		r.Next( 3, 50 ) * r.NextDouble(),
-		r.Next( 3, 50 ) * r.NextDouble() };
+		return deviceData?.MatrixTypeToTimestampFloatTuple().ValueOrDefault?.Select(x =>
+		{
+			labels.Add(DateTimeOffset.FromUnixTimeSeconds(long.Parse($"1{x.Item1}0")).UtcDateTime.ToLocalTime().ToShortTimeString());
+			return x.Item2;
+		}).ToList() ?? new List<double>();
 	}
-
-	//private Background buttonColor = Background.Primary;
-
-	private void ChangeButtonColor()
-	{
-		//device.on = !device.on; 
-	}
-
-
 }
-
