@@ -19,7 +19,7 @@ public class Device
     public User User { get; set; }
 
     [NotMapped]
-    public int PowerUsage { get; set; }
+    public double PowerUsage { get; set; }
 
     public string Room { get; set; }
 
@@ -35,5 +35,5 @@ public class Device
         Room = room;
     }
 
-    private  Device(){}
+    private Device(){}
 }

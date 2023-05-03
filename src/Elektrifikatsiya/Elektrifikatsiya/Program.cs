@@ -22,13 +22,12 @@ builder.Services.AddTransient<IDeviceManagmentService, DeviceManagmentService>()
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
 builder.Services.AddScoped<ICookieService, CookieService>();
-builder.Services.AddDbContext<UserDatabaseContext>(options => options.UseSqlite("Data Source=./UserDatabase.sqlite"));
-builder.Services.AddDbContext<DeviceManagmentDatabaseContext>((options) => options.UseSqlite("Data Source=./DeviceManagement.sqlite"));
+builder.Services.AddDbContext<MainDatabaseContext>(options => options.UseSqlite("Data Source=./MainDatabase.sqlite"));
 builder.Services.AddBootstrapProviders();
 builder.Services.AddHttpClient<IDeviceManagmentService, DeviceManagmentService>();
 builder.Services.AddBlazorise(options =>
 {
-	options.Immediate = true;
+    options.Immediate = true;
 });
 
 AddBlazorise(builder.Services);
@@ -38,9 +37,9 @@ WebApplication app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-	_ = app.UseExceptionHandler("/Error");
-	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-	_ = app.UseHsts();
+    _ = app.UseExceptionHandler("/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    _ = app.UseHsts();
 }
 
 app.UseHttpsRedirection();
@@ -53,16 +52,22 @@ app.MapFallbackToPage("/_Host");
 app.MapControllers();
 
 IServiceScope serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
-serviceScope.ServiceProvider.GetRequiredService<UserDatabaseContext>().Database.EnsureCreated();
 
-AsyncServiceScope scope = app.Services.CreateAsyncScope();
-scope.ServiceProvider.GetRequiredService<DeviceManagmentDatabaseContext>().Database.EnsureCreated();
+MainDatabaseContext mainDatabase = serviceScope.ServiceProvider.GetRequiredService<MainDatabaseContext>();
+mainDatabase.Database.EnsureCreated();
+
+IAuthenticationService authenticationService = serviceScope.ServiceProvider.GetRequiredService<IAuthenticationService>();
+
+if (!mainDatabase.Users.Any())
+{
+	authenticationService.RegisterUserAsync("admin", "admin", Role.Admin);
+}
 
 app.Run();
 
 void AddBlazorise(IServiceCollection services)
 {
-	_ = services.AddBlazorise();
-	_ = services.AddMaterialProviders();
-	_ = services.AddMaterialIcons();
+    _ = services.AddBlazorise();
+    _ = services.AddMaterialProviders();
+    _ = services.AddMaterialIcons();
 }

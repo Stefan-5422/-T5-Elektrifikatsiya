@@ -1,0 +1,42 @@
+﻿@using Elektrifikatsiya.Models
+@inject Services.IAuthorizationService AuthorizationService
+
+@if (IsAuthorized)
+{
+	@Authorized
+}
+else if (!loaded && UseLoadingScreen)
+{
+	@Loading
+}
+else if (loaded)
+{
+	@NotAuthorized
+}
+
+@code {
+	[Parameter]
+	public RenderFragment? Authorized { get; set; }
+
+	[Parameter]
+	public RenderFragment? NotAuthorized { get; set; }
+
+	[Parameter]
+	public RenderFragment? Loading { get; set; }
+
+	[Parameter]
+	public Role RequiredRole { get; set; }
+
+	[Parameter]
+	public bool UseLoadingScreen { get; set; }
+
+	public bool IsAuthorized { get; set; }
+	private bool loaded;
+
+	protected override async Task OnParametersSetAsync()
+	{
+		IsAuthorized = (await AuthorizationService.IsAuthorized(RequiredRole)).ValueOrDefault;
+		StateHasChanged();
+		loaded = true;
+	}
+}

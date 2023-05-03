@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Elektrifikatsiya.Models;
 using FluentResults;
 
@@ -20,6 +21,14 @@ public class PrometheusQuery
 
     public  Task<PrometheusQueryResult?> Query(string query)
     {
-        return client.GetFromJsonAsync<PrometheusQueryResult>($"/v1/query?{UrlEncoder.Create().Encode(query)}");
+	    var res = client.GetStringAsync($"/api/v1/query?query={UrlEncoder.Create().Encode(query)}").Result;
+        return client.GetFromJsonAsync<PrometheusQueryResult>($"/api/v1/query?query={UrlEncoder.Create().Encode(query)}", new JsonSerializerOptions() 
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters =
+            {
+                new JsonStringEnumConverter()
+            }
+        });
     }
 }
