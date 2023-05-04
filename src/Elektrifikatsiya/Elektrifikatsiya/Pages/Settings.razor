@@ -2,6 +2,13 @@
 @using Blazorise.Components;
 @using Elektrifikatsiya.Models;
 @using System.Net
+@using System.Text.Json
+@using Elektrifikatsiya.Services.Implementations
+@using Elektrifikatsiya.Services;
+@using FluentResults
+
+@inject IDeviceManagmentService DeviceManagmentService
+
 <Div>
 	<Row Style="width: 100%; height: 100%" Margin="Margin.Is3.FromTop.OnMobile" Padding="Padding.Is4.FromStart.OnMobile">
 		<Div Display="Display.Flex.Row.OnDesktop" Margin=" Margin.Is3.FromBottom" Width="Width.Is100">
@@ -34,7 +41,7 @@
 									</Row>
 									<Row>
 										<Column>
-											<Small>User: @context.Item.User</Small>
+											<Small>User: @context.Item.User.Name</Small>
 											<br />
 											<Small>Room: @context.Item.Room</Small>
 										</Column>
@@ -43,14 +50,14 @@
 
 								<Column ColumnSize="ColumnSize.Is4.OnDesktop.Is7.OnMobile">
 									<Button Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
-										<BarIcon IconName="IconName.Delete" />
+										<BarIcon @onclick="() => Delete(context.Item)" IconName="IconName.Delete" />
 									</Button>
 								</Column>
 									<br />
 									<br />
 								<Row>
 									<Column ColumnSize="ColumnSize.Is1.OnDesktop">
-									<Button @onclick="Toggle" Position="Position.Absolute.Top.Is50.Start.Is100.Translate.Middle" Color="Color.Dark" Outline>
+									<Button @onclick="() => Toggle(context.Item)" Position="Position.Absolute.Top.Is50.Start.Is100.Translate.Middle" Color="Color.Dark" Outline>
 											<BarIcon IconName="IconName.Pen" />
 										</Button>
 									</Column>
@@ -62,6 +69,9 @@
 				</ListView>
 			</Column>
 			<Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile" Margin="Margin.Is3.FromTop.OnMobile" Padding="Padding.Is4.FromStart.OnMobile">
+				
+				@if (DeviceCopy is not null)
+				{
 				<Div hidden="@hideButtonSettings">
 					<Field>
 						<FieldLabel>
@@ -79,7 +89,7 @@
 								Here you can change the name of your plug
 							</Paragraph>
 						</FieldLabel>
-						<TextEdit Placeholder="Enter Name" />
+						<TextEdit @bind-Text="@DeviceCopy.Name" Placeholder="Enter Name" />
 					</Field>
 					<br />
 					<br />
@@ -93,6 +103,7 @@
 							</Paragraph>
 						</FieldLabel>
 						<TextEdit Placeholder="Enter Max Output" />
+						<!--TODO: What is this?-->
 					</Field>
 					<br />
 					<br />
@@ -105,19 +116,10 @@
 								Here you select or change the room the plug belongs to.
 							</Paragraph>
 						</FieldLabel>
-						<br />
-						<Dropdown Display="Display.InlineBlock">
-							<DropdownToggle Color="Color.Primary" Width="Width.Is100">Rooms</DropdownToggle>
-							<DropdownMenu>
-								<DropdownItem>Room 1</DropdownItem>
-								<DropdownDivider />
-								<DropdownItem>Room 2</DropdownItem>
-								<DropdownDivider />
-								<DropdownItem>Room 3</DropdownItem>
-							</DropdownMenu>
-						</Dropdown>
+						<TextEdit @bind-text="@DeviceCopy.Room" Placeholder="Enter the name of the room here"/>
 					</Field>
 				</Div>
+				}
 				<Div hidden="@(!hideButtonSettings)">
 					<Field>
 						<FieldLabel>
@@ -139,20 +141,55 @@
 					</Field>
 				</Div>
 				<Column ColumnSize="ColumnSize.IsFull" TextAlignment="TextAlignment.End">
-					<Button Color="Color.Primary">Save</Button>
+					<Button @onclick="OnSave" Color="Color.Primary">Save</Button>
 				</Column>
 			</Column>
 		</Div>
 	</Row>
 </Div>
 
+
 @code {
-    List<Device> plugs = new List<Device>() { new Device("ffff:ffff:ffff:ffff", "Josne", IPAddress.Broadcast, new User("Joe", "qiowruioewjfopa", Role.Admin), "Raum"), new Device("ffff:ffff:ffff:ffff", "Josne", IPAddress.Broadcast, new User("Joe", "Josne", Role.Admin), "Raum"), new Device("ffff:ffff:ffff:ffff", "Josne", IPAddress.Broadcast, new User("Joe", "qiowruioewjfopa", Role.Admin), "Raum"), };
+	List<Device> plugs = new List<Device>();
 
 	private bool hideButtonSettings = true;
 
-	private void Toggle()
+	Device? SelectedDevice = null;
+	Device? DeviceCopy = null;
+
+	protected override void OnInitialized()
+	{
+		Result<List<Device>> getDevicesResult = DeviceManagmentService.GetDevices();
+
+		if (getDevicesResult.IsSuccess)
+		{
+			plugs = getDevicesResult.Value;
+		}
+	}
+
+	private void Toggle(Device device)
 	{
 		hideButtonSettings = !hideButtonSettings;
+		SelectedDevice = device;
+		DeviceCopy = Device.CopyDevice(device);
 	}
+
+	private void OnSave()
+	{
+		if (hideButtonSettings || DeviceCopy is null)
+		{
+
+		}
+		else
+		{
+			SelectedDevice.OverwiteDevice(DeviceCopy);
+			DeviceManagmentService.UpdateDevice(SelectedDevice);
+		}
+	}
+
+	private void Delete(Device contextItem)
+	{
+		DeviceManagmentService.UnregisterDevice(contextItem.MacAddress);
+	}
+
 }
