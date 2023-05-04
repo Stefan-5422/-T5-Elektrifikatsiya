@@ -9,168 +9,88 @@
 @inject IVersionProvider VersionProvider
 
 @inject IDeviceStatusService DeviceStatusService;
+@inject IDeviceManagmentService DeviceManagmentService;
 
 <Div>
-	<Row Padding="Padding.Is3">
-		<Div Display="Display.Flex.Row.OnDesktop" Margin=" Margin.Is3.FromBottom" Width="Width.Is100">
-			<Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12">
-				<Bar Breakpoint="Breakpoint.Desktop"
-					 Background="Background.White"
-					 ThemeContrast="ThemeContrast.None"
-					 Shadow="Shadow.Remove"
-					 Border="Border.Is1.RoundedTop">
-					<BarBrand>
-						Plugs
-					</BarBrand>
-				</Bar>
-				<ListView TItem="Device"
-						  Data="@plugs"
-						  TextField="@((_)=>(""))"
-						  ValueField="@((_)=>(""))"
-						  Mode="ListGroupMode.Static"
-						  Style="border-radius: 0px 0px">
-					<ItemTemplate >
-						<ListGroupItem>
-							<Row>
-								<Column ColumnSize="ColumnSize.Is8">
-									<Row>
-										<Column ColumnSize="ColumnSize.Is7">
-											<Heading Size="HeadingSize.Is6" Margin="Margin.Is1.FromBottom">@context.Item.Name</Heading>
-										</Column>
-									</Row>
-									<Row>
-										<Column>
-											<Small>User: @context.Item.User.Name</Small>
-											<br />
-											<Small>Room: @context.Item.Room</Small>
-										</Column>
-										<Column ColumnSize="ColumnSize.Is5">
-											<Paragraph Margin="Margin.Is1.OnY">@context.Item.PowerUsage W</Paragraph>
-										</Column>
-									</Row>
-								</Column>
-								<Column ColumnSize="ColumnSize.Is4">
-									<Button Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Primary"Primary Outline>
-										<!--TODO: This button should change color-->
-										<BarIcon IconName="IconName.Bolt" />
-									</Button>
-								</Column>
-							</Row>
-						</ListGroupItem>
-					</ItemTemplate>
-				</ListView>
-			</Column>
-			<Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12">
-				<Bar Breakpoint="Breakpoint.Desktop"
-					 Background="Background.White"
-					 ThemeContrast="ThemeContrast.None"
-					 Shadow="Shadow.Remove"
-					 Border="Border.Is1.Rounded.RoundedTop">
-					<BarBrand>
-						Logs
-					</BarBrand>
-				</Bar>
-				<ListView TItem="Event"
-						  Data="@events"
-						  TextField="@((_)=>(""))"
-						  ValueField="@((_)=>(""))"
-						  Mode="ListGroupMode.Static"
-						  Style="border-radius: 0px 0px">
-					<ItemTemplate>
-						<Div Flex="Flex.InlineFlex.JustifyContent.Between" Width="Width.Is100">
-							<Heading Size="HeadingSize.Is6" Margin="Margin.Is2.FromBottom">@context.Item.EventName</Heading>
-							<Small>@context.Item.Date</Small>
-						</Div>
-						<Paragraph Margin="Margin.Is2.FromBottom">@context.Item.Description</Paragraph>
-					</ItemTemplate>
-				</ListView>
-			</Column>
-		</Div>
-	</Row>
-	<Row Padding="Padding.Is3">
-		<Column>
-			<Button Color="Color.Primary" Style="border-radius: 0px" Clicked="@(async () => await HandleRedraw())">Aktualisieren</Button>
-			<LineChart Height="Height.Is100" Width="Width.Is100" @ref="lineChart" TItem="double" />
-		</Column>
-	</Row>
+    <Row Padding="Padding.Is3">
+        <Div Display="Display.Flex.Row.OnDesktop" Margin=" Margin.Is3.FromBottom" Width="Width.Is100">
+            <Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12">
+                <Bar Breakpoint="Breakpoint.Desktop"
+                     Background="Background.White"
+                     ThemeContrast="ThemeContrast.None"
+                     Shadow="Shadow.Remove"
+                     Border="Border.Is1.RoundedTop">
+                    <BarBrand>
+                        Plugs
+                    </BarBrand>
+                </Bar>
+                <ListView TItem="Device"
+                          Data="@plugs"
+                          TextField="@((_)=>(""))"
+                          ValueField="@((_)=>(""))"
+                          Mode="ListGroupMode.Static"
+                          Style="border-radius: 0px 0px">
+                    <ItemTemplate>
+                        <ListGroupItem>
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is8">
+                                    <Row>
+                                        <Column ColumnSize="ColumnSize.Is7">
+                                            <Heading Size="HeadingSize.Is6" Margin="Margin.Is1.FromBottom">@context.Item.Name</Heading>
+                                        </Column>
+                                    </Row>
+                                    <Row>
+                                        <Column>
+                                            <Small>User: @context.Item.User.Name</Small>
+                                            <br />
+                                            <Small>Room: @context.Item.Room</Small>
+                                        </Column>
+                                        <Column ColumnSize="ColumnSize.Is5">
+                                            <Paragraph Margin="Margin.Is1.OnY">@context.Item.PowerUsage W</Paragraph>
+                                        </Column>
+                                    </Row>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is4">
+                                    <Button Clicked="() => Switch(context.Item)" Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Primary" Primary Outline>
+                                        <BarIcon TextColor="(context.Item.Enabled?TextColor.Success:TextColor.Danger)" IconName="IconName.Bolt" />
+                                    </Button>
+                                </Column>
+                            </Row>
+                        </ListGroupItem>
+                    </ItemTemplate>
+                </ListView>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12">
+                <Bar Breakpoint="Breakpoint.Desktop"
+                     Background="Background.White"
+                     ThemeContrast="ThemeContrast.None"
+                     Shadow="Shadow.Remove"
+                     Border="Border.Is1.Rounded.RoundedTop">
+                    <BarBrand>
+                        Logs
+                    </BarBrand>
+                </Bar>
+                <ListView TItem="Event"
+                          Data="@events"
+                          TextField="@((_)=>(""))"
+                          ValueField="@((_)=>(""))"
+                          Mode="ListGroupMode.Static"
+                          Style="border-radius: 0px 0px">
+                    <ItemTemplate>
+                        <Div Flex="Flex.InlineFlex.JustifyContent.Between" Width="Width.Is100">
+                            <Heading Size="HeadingSize.Is6" Margin="Margin.Is2.FromBottom">@context.Item.EventName</Heading>
+                            <Small>@context.Item.Date</Small>
+                        </Div>
+                        <Paragraph Margin="Margin.Is2.FromBottom">@context.Item.Description</Paragraph>
+                    </ItemTemplate>
+                </ListView>
+            </Column>
+        </Div>
+    </Row>
+    <Row Padding="Padding.Is3">
+        <Column>
+            <Button Color="Color.Primary" Style="border-radius: 0px" Clicked="@(async () => await HandleRedraw())">Aktualisieren</Button>
+            <LineChart Height="Height.Is100" Width="Width.Is100" @ref="lineChart" TItem="double" />
+        </Column>
+    </Row>
 </Div>
-
-
-@code {
-	//TODO: insert new event here if plug produces one
-	List<Event> events = new List<Event>() { new Event("Placeholder", "Placeholder", DateTime.Now), new Event("Placeholder", "Placeholder", DateTime.Now), new Event("Placeholder", "Placeholder", DateTime.Now) };
-	//TODO: insert new Device here if user adds one
-	List<Device> plugs = new List<Device>();
-	//code for graph
-	LineChart<double> lineChart;
-
-	protected override void OnInitialized()
-	{
-		plugs = DeviceStatusService.GetDevices().ValueOrDefault ?? new List<Device>();
-
-		DeviceStatusService.OnDeviceStatusChanged += (_, e) =>
-		{
-			InvokeAsync(StateHasChanged);
-		};
-	}
-
-	protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-		if (firstRender)
-		{
-			await HandleRedraw();
-		}
-	}
-
-	async Task HandleRedraw()
-	{
-		labels.Clear();
-		await lineChart.Clear();
-		await lineChart.AddLabelsDatasetsAndUpdate(labels, await GetLineChartDataset());
-	}
-
-	//TODO: insert dataset of current and last voltage usages
-	async Task<LineChartDataset<double>> GetLineChartDataset()
-	{
-		return new LineChartDataset<double>
-			{
-				Label = "Wattage",
-				Data = await RandomizeData(),
-				Fill = true,
-				PointRadius = 3,
-				CubicInterpolationMode = "monotone",
-			};
-	}
-
-	List<string> labels = new List<string>();
-
-	async Task<List<double>> RandomizeData()
-	{
-		PrometheusQuery promQueryer = new PrometheusQuery("http://localhost:9090");
-
-		string plugnames = "";
-		foreach (Device device in plugs)
-		{
-			plugnames += $"shellyplug-s-{device.MacAddress}/relay/0|";
-		}
-
-		if(string.IsNullOrEmpty(plugnames))
-		{
-			return new();
-		}
-
-		plugnames = plugnames[0..^1];
-
-		Debug.WriteLine($$"""sum(power{sensor=~"{{plugnames}}"})[1h:1m]""");
-
-		PrometheusDataWrapper? deviceData = (await promQueryer.Query($$"""sum(power{sensor=~"{{plugnames}}"})[1h:1m]"""))?.Data;
-
-		var r = new Random(DateTime.Now.Millisecond);
-
-		return deviceData?.MatrixTypeToTimestampFloatTuple().ValueOrDefault?.Select(x =>
-		{
-			labels.Add(DateTimeOffset.FromUnixTimeSeconds(long.Parse($"1{x.Item1}0")).UtcDateTime.ToLocalTime().ToShortTimeString());
-			return x.Item2;
-		}).ToList() ?? new List<double>();
-	}
-}

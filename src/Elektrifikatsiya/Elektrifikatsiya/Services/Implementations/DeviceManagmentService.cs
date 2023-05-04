@@ -3,9 +3,13 @@ using Elektrifikatsiya.Models;
 
 using FluentResults;
 
+using HiveMQtt.Client;
+using HiveMQtt.Client.Results;
+
+using Microsoft.EntityFrameworkCore;
+
 using System.Net;
 using System.Net.NetworkInformation;
-using Microsoft.EntityFrameworkCore;
 
 namespace Elektrifikatsiya.Services.Implementations;
 
@@ -14,13 +18,15 @@ public class DeviceManagmentService : IDeviceManagmentService
     private readonly IServiceScopeFactory serviceScopeFactory;
     private readonly IDeviceStatusService deviceStatusService;
     private readonly ILogger<DeviceManagmentService> logger;
+    private readonly IHiveMQClient hiveMQClient;
     private readonly HttpClient httpClient;
 
-    public DeviceManagmentService(IServiceScopeFactory serviceScopeFactory, IDeviceStatusService deviceStatusService, ILogger<DeviceManagmentService> logger, HttpClient httpClient)
+    public DeviceManagmentService(IServiceScopeFactory serviceScopeFactory, IDeviceStatusService deviceStatusService, ILogger<DeviceManagmentService> logger, IHiveMQClient hiveMQClient, HttpClient httpClient)
     {
         this.serviceScopeFactory = serviceScopeFactory;
         this.deviceStatusService = deviceStatusService;
         this.logger = logger;
+        this.hiveMQClient = hiveMQClient;
         this.httpClient = httpClient;
     }
 
@@ -151,12 +157,21 @@ public class DeviceManagmentService : IDeviceManagmentService
         using IServiceScope scope = serviceScopeFactory.CreateScope();
         MainDatabaseContext mainDatabaseContext = scope.ServiceProvider.GetRequiredService<MainDatabaseContext>();
 
-        Result result = deviceStatusService.UpdateDeviceStatus(device);
+        Result<Device> getDeviceResult = GetDevice(device.MacAddress);
 
-        if (result.IsFailed)
+        if (getDeviceResult.IsFailed)
         {
-            return result;
+            return getDeviceResult.ToResult();
         }
+
+        Result updateDeviceResult = deviceStatusService.UpdateDeviceStatus(device);
+
+        if (updateDeviceResult.IsFailed)
+        {
+            return updateDeviceResult;
+        }
+
+        PublishResult res = await hiveMQClient.PublishAsync($"shellies/shellyplug-s-{device.MacAddress}/relay/0/command", device.Enabled ? "on" : "off");
 
         _ = mainDatabaseContext.Update(device);
 
