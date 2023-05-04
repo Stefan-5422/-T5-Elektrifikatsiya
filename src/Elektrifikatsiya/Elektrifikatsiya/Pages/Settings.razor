@@ -8,6 +8,7 @@
 @using FluentResults
 
 @inject IDeviceManagmentService DeviceManagmentService
+@inject IMessageService MessageService
 
 <Div>
 	<Row Style="width: 100%; height: 100%" Margin="Margin.Is3.FromTop.OnMobile" Padding="Padding.Is4.FromStart.OnMobile">
@@ -176,7 +177,7 @@
 
 	private void OnSave()
 	{
-		if (hideButtonSettings || DeviceCopy is null)
+		if (hideButtonSettings || DeviceCopy is null || SelectedDevice is null)
 		{
 
 		}
@@ -187,9 +188,22 @@
 		}
 	}
 
-	private void Delete(Device contextItem)
+	private async Task Delete(Device contextItem)
 	{
-		DeviceManagmentService.UnregisterDevice(contextItem.MacAddress);
-	}
+	    bool succ = await	MessageService.Confirm($"Do you really want to delete the device \"{contextItem.Name}\"?");
 
+		if(!succ)
+		{
+            return;
+        }
+
+		await DeviceManagmentService.UnregisterDevice(contextItem.MacAddress);
+
+		int index = plugs.FindIndex(x => x.MacAddress == contextItem.MacAddress);
+
+		if(index != -1)
+		{
+			plugs.RemoveAt(index);
+		}
+	}
 }
