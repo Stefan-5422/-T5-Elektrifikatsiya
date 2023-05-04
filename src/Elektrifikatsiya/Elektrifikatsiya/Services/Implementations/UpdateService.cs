@@ -33,12 +33,12 @@ public class UpdateService : IHostedService, IDisposable
 			_ = deviceStatusService.TrackDevice(device);
 		}
 
-		timer = new Timer((_) => Update(), null, TimeSpan.Zero, TimeSpan.FromSeconds(15));
+		timer = new Timer(async (_) => await Update(), null, TimeSpan.Zero, TimeSpan.FromSeconds(15));
 
 		logger.LogInformation("Update service started.");
 	}
 
-	private async void Update()
+	private async Task Update()
 	{
 		Result<List<Device>> getDeviceStatusResult = deviceStatusService.GetDevices();
 

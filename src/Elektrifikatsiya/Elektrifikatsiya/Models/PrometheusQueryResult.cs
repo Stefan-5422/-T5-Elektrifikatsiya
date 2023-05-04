@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Mvc.Diagnostics;
 
 namespace Elektrifikatsiya.Models;
 
@@ -47,50 +47,49 @@ public class PrometheusDataWrapper
         ResultType = resultType;
         Result = result;
     }
-    
+
     public FluentResults.Result<List<(double, double)>> MatrixTypeToTimestampFloatTuple()
     {
-	    if (ResultType != ResultType.Matrix)
-	    {
-		    return FluentResults.Result.Fail("The response did not have the Matrix Type");
-	    }
+        if (ResultType != ResultType.Matrix)
+        {
+            return FluentResults.Result.Fail("The response did not have the Matrix Type");
+        }
 
         List<(double, double)> result = new List<(double, double)>();
 
         if (Result.Count == 0 || Result[0]?.Values is null || Result[0]?.Values?[0] is null)
         {
-	        return FluentResults.Result.Fail("There was no result in the Response Body");
+            return FluentResults.Result.Fail("There was no result in the Response Body");
         }
 
         foreach (object value in Result[0]!.Values!)
-	    {
+        {
 
-		    string[] segment = value.ToString()!.Split(",");
+            string[] segment = value.ToString()!.Split(",");
 
-            result.Add((Convert.ToDouble(segment[0][2..^1]), Convert.ToDouble(segment[1][1..^2])));
-	    }
+            result.Add((Convert.ToDouble(segment[0][2..^1], CultureInfo.InvariantCulture), Convert.ToDouble(segment[1][1..^2], CultureInfo.InvariantCulture)));
+        }
         Debug.WriteLine(result);
         return result;
     }
 
     public FluentResults.Result<(double, double)> VectorTypeToTimestampFloatTuple()
     {
-	    if (ResultType != ResultType.Vector)
-	    {
-		    return FluentResults.Result.Fail("The response did not have the Vector Type");
-	    }
+        if (ResultType != ResultType.Vector)
+        {
+            return FluentResults.Result.Fail("The response did not have the Vector Type");
+        }
 
-	    string[]? segment = Result.FirstOrDefault()?.Value.ToString()?.Split(",") ?? null;
+        string[]? segment = Result.FirstOrDefault()?.Value?.ToString()?.Split(",");
 
-	    if (segment is null)
-	    {
-		    return FluentResults.Result.Fail("There was no result in the Response Body");
-	    }
+        if (segment is null)
+        {
+            return FluentResults.Result.Fail("There was no result in the Response Body");
+        }
 
-	    return((Convert.ToDouble(segment[0][2..^1]), Convert.ToDouble(segment[1][1..^2])));
+        return (Convert.ToDouble(segment[0][2..^1]), Convert.ToDouble(segment[1][1..^2], CultureInfo.InvariantCulture));
     }
 }
-
 
 public class PrometheusDataMetric
 {

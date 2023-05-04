@@ -60,7 +60,7 @@ IAuthenticationService authenticationService = serviceScope.ServiceProvider.GetR
 
 if (!mainDatabase.Users.Any())
 {
-	authenticationService.RegisterUserAsync("admin", "admin", Role.Admin);
+    _ = authenticationService.RegisterUserAsync("admin", "admin", Role.Admin);
 }
 
 app.Run();
