@@ -3,6 +3,11 @@ using Elektrifikatsiya.Models;
 
 using FluentResults;
 
+using HiveMQtt.Client;
+using HiveMQtt.Client.Results;
+
+using Microsoft.EntityFrameworkCore;
+
 using System.Net;
 using System.Net.NetworkInformation;
 
@@ -10,153 +15,166 @@ namespace Elektrifikatsiya.Services.Implementations;
 
 public class DeviceManagmentService : IDeviceManagmentService
 {
-	private readonly IServiceScopeFactory serviceScopeFactory;
-	private readonly IDeviceStatusService deviceStatusService;
-	private readonly ILogger<DeviceManagmentService> logger;
-	private readonly HttpClient httpClient;
+    private readonly IServiceScopeFactory serviceScopeFactory;
+    private readonly IDeviceStatusService deviceStatusService;
+    private readonly ILogger<DeviceManagmentService> logger;
+    private readonly IHiveMQClient hiveMQClient;
+    private readonly HttpClient httpClient;
 
-	public DeviceManagmentService(IServiceScopeFactory serviceScopeFactory, IDeviceStatusService deviceStatusService, ILogger<DeviceManagmentService> logger, HttpClient httpClient)
-	{
-		this.serviceScopeFactory = serviceScopeFactory;
-		this.deviceStatusService = deviceStatusService;
-		this.logger = logger;
-		this.httpClient = httpClient;
-	}
+    public DeviceManagmentService(IServiceScopeFactory serviceScopeFactory, IDeviceStatusService deviceStatusService, ILogger<DeviceManagmentService> logger, IHiveMQClient hiveMQClient, HttpClient httpClient)
+    {
+        this.serviceScopeFactory = serviceScopeFactory;
+        this.deviceStatusService = deviceStatusService;
+        this.logger = logger;
+        this.hiveMQClient = hiveMQClient;
+        this.httpClient = httpClient;
+    }
 
-	public Result<Device> GetDevice(string macAdress)
-	{
-		Result<List<Device>> getDevicesResult = deviceStatusService.GetDevices();
+    public Result<Device> GetDevice(string macAdress)
+    {
+        Result<List<Device>> getDevicesResult = deviceStatusService.GetDevices();
 
-		if (getDevicesResult.IsFailed)
-		{
-			return getDevicesResult.ToResult();
-		}
+        if (getDevicesResult.IsFailed)
+        {
+            return getDevicesResult.ToResult();
+        }
 
-		Device? device = getDevicesResult.Value.FirstOrDefault(d => d.MacAddress == macAdress);
+        Device? device = getDevicesResult.Value.FirstOrDefault(d => d.MacAddress == macAdress);
 
-		if (device is null)
-		{
-			return Result.Fail("Device does not exist!");
-		}
+        if (device is null)
+        {
+            return Result.Fail("Device does not exist!");
+        }
 
-		return device;
-	}
+        return device;
+    }
 
-	public Result<List<Device>> GetDevices()
-	{
-		Result<List<Device>> getDevicesResult = deviceStatusService.GetDevices();
+    public Result<List<Device>> GetDevices()
+    {
+        Result<List<Device>> getDevicesResult = deviceStatusService.GetDevices();
 
-		if (getDevicesResult.IsFailed)
-		{
-			return getDevicesResult.ToResult();
-		}
+        if (getDevicesResult.IsFailed)
+        {
+            return getDevicesResult.ToResult();
+        }
 
-		return getDevicesResult.Value.ToList();
-	}
+        return getDevicesResult.Value.ToList();
+    }
 
-	public Result<List<Device>> GetDevicesInRoom(string room)
-	{
-		Result<List<Device>> getDevicesResult = deviceStatusService.GetDevices();
+    public Result<List<Device>> GetDevicesInRoom(string room)
+    {
+        Result<List<Device>> getDevicesResult = deviceStatusService.GetDevices();
 
-		if (getDevicesResult.IsFailed)
-		{
-			return getDevicesResult.ToResult();
-		}
+        if (getDevicesResult.IsFailed)
+        {
+            return getDevicesResult.ToResult();
+        }
 
-		return getDevicesResult.Value.Where(d => d.Room == room).ToList();
-	}
+        return getDevicesResult.Value.Where(d => d.Room == room).ToList();
+    }
 
-	public Result<List<Device>> GetDevicesOfUser(int userId)
-	{
-		Result<List<Device>> getDevicesResult = deviceStatusService.GetDevices();
+    public Result<List<Device>> GetDevicesOfUser(int userId)
+    {
+        Result<List<Device>> getDevicesResult = deviceStatusService.GetDevices();
 
-		if (getDevicesResult.IsFailed)
-		{
-			return getDevicesResult.ToResult();
-		}
+        if (getDevicesResult.IsFailed)
+        {
+            return getDevicesResult.ToResult();
+        }
 
-		return getDevicesResult.Value.Where(d => d.User.Id == userId).ToList();
-	}
+        return getDevicesResult.Value.Where(d => d.User.Id == userId).ToList();
+    }
 
-	public async Task<Result<Device>> RegisterDevice(IPAddress ip, User user, string? name = null, string room = "default")
-	{
-		using IServiceScope scope = serviceScopeFactory.CreateScope();
-		DeviceManagmentDatabaseContext deviceManagmentDatabaseContext = scope.ServiceProvider.GetRequiredService<DeviceManagmentDatabaseContext>();
+    public async Task<Result<Device>> RegisterDevice(IPAddress ip, User user, string? name = null, string room = "default")
+    {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        MainDatabaseContext mainDatabaseContext = scope.ServiceProvider.GetRequiredService<MainDatabaseContext>();
 
-		ShellyResponse? shellyResponse = null;
+        ShellyResponse? shellyResponse = null;
 
-		try
-		{
-			shellyResponse = await httpClient.GetFromJsonAsync<ShellyResponse>($"http://{ip}/shelly");
-		}
-		catch (Exception ex)
-		{
-			logger.LogError("HTTP request failed! {message}", ex.Message);
-		}
+        try
+        {
+            shellyResponse = await httpClient.GetFromJsonAsync<ShellyResponse>($"http://{ip}/shelly");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("HTTP request failed! {message}", ex.Message);
+        }
 
-		if (shellyResponse is null || shellyResponse.Type != "SHPLG-S")
-		{
-			return Result.Fail("Device is not reachable or not a \"SHPLG-S\"!");
-		}
+        if (shellyResponse is null || shellyResponse.Type != "SHPLG-S")
+        {
+            return Result.Fail("Device is not reachable or not a \"SHPLG-S\"!");
+        }
 
-		string mac = shellyResponse.Mac;
+        string mac = shellyResponse.Mac;
 
-		if (!PhysicalAddress.TryParse(mac, out _))
-		{
-			return Result.Fail("Invalid mac address!");
-		}
+        if (!PhysicalAddress.TryParse(mac, out _))
+        {
+            return Result.Fail("Invalid mac address!");
+        }
 
-		Device device = new Device(mac, name ?? mac, ip, user, room);
+        Device device = new Device(mac, name ?? mac, ip, user, room);
 
-		_ = deviceManagmentDatabaseContext.Add(device);
-		Result saveDatabaseChangesResult = await Result.Try(Task () => deviceManagmentDatabaseContext.SaveChangesAsync());
+        mainDatabaseContext.Entry(user).State = EntityState.Unchanged;
 
-		if (saveDatabaseChangesResult.IsFailed)
-		{
-			return saveDatabaseChangesResult;
-		}
+        _ = mainDatabaseContext.Add(device);
+        Result saveDatabaseChangesResult = await Result.Try(Task () => mainDatabaseContext.SaveChangesAsync());
 
-		return deviceStatusService.TrackDevice(device);
-	}
+        if (saveDatabaseChangesResult.IsFailed)
+        {
+            return saveDatabaseChangesResult;
+        }
 
-	public async Task<Result> UnregisterDevice(string macAdress)
-	{
-		using IServiceScope scope = serviceScopeFactory.CreateScope();
-		DeviceManagmentDatabaseContext deviceManagmentDatabaseContext = scope.ServiceProvider.GetRequiredService<DeviceManagmentDatabaseContext>();
+        return deviceStatusService.TrackDevice(device);
+    }
 
-		Result<Device> getDeviceResult = GetDevice(macAdress);
+    public async Task<Result> UnregisterDevice(string macAdress)
+    {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        MainDatabaseContext mainDatabaseContext = scope.ServiceProvider.GetRequiredService<MainDatabaseContext>();
 
-		if (getDeviceResult.IsFailed)
-		{
-			return getDeviceResult.ToResult();
-		}
+        Result<Device> getDeviceResult = GetDevice(macAdress);
 
-		Result untrackDeviceResult = deviceStatusService.UntrackDevice(macAdress);
+        if (getDeviceResult.IsFailed)
+        {
+            return getDeviceResult.ToResult();
+        }
 
-		if (untrackDeviceResult.IsFailed)
-		{
-			return untrackDeviceResult;
-		}
+        Result untrackDeviceResult = deviceStatusService.UntrackDevice(macAdress);
 
-		_ = deviceManagmentDatabaseContext.Remove(getDeviceResult.Value);
+        if (untrackDeviceResult.IsFailed)
+        {
+            return untrackDeviceResult;
+        }
 
-		return await Result.Try(Task () => deviceManagmentDatabaseContext.SaveChangesAsync());
-	}
+        _ = mainDatabaseContext.Remove(getDeviceResult.Value);
 
-	public async Task<Result> UpdateDevice(Device device)
-	{
-		using IServiceScope scope = serviceScopeFactory.CreateScope();
-		DeviceManagmentDatabaseContext deviceManagmentDatabaseContext = scope.ServiceProvider.GetRequiredService<DeviceManagmentDatabaseContext>();
+        return await Result.Try(Task () => mainDatabaseContext.SaveChangesAsync());
+    }
 
-		Result result = deviceStatusService.UpdateDeviceStatus(device);
+    public async Task<Result> UpdateDevice(Device device)
+    {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        MainDatabaseContext mainDatabaseContext = scope.ServiceProvider.GetRequiredService<MainDatabaseContext>();
 
-		if (result.IsFailed)
-		{
-			return result;
-		}
+        Result<Device> getDeviceResult = GetDevice(device.MacAddress);
 
-		_ = deviceManagmentDatabaseContext.Update(device);
+        if (getDeviceResult.IsFailed)
+        {
+            return getDeviceResult.ToResult();
+        }
 
-		return await Result.Try(Task () => deviceManagmentDatabaseContext.SaveChangesAsync());
-	}
+        Result updateDeviceResult = deviceStatusService.UpdateDeviceStatus(device);
+
+        if (updateDeviceResult.IsFailed)
+        {
+            return updateDeviceResult;
+        }
+
+        PublishResult res = await hiveMQClient.PublishAsync($"shellies/shellyplug-s-{device.MacAddress}/relay/0/command", device.Enabled ? "on" : "off");
+
+        _ = mainDatabaseContext.Update(device);
+
+        return await Result.Try(Task () => mainDatabaseContext.SaveChangesAsync());
+    }
 }
