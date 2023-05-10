@@ -7,17 +7,22 @@ using Elektrifikatsiya.Database;
 using Elektrifikatsiya.Models;
 using Elektrifikatsiya.Services;
 using Elektrifikatsiya.Services.Implementations;
-
+using Elektrifikatsiya.Utilities;
 using HiveMQtt.Client;
 using HiveMQtt.Client.Options;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+// Read configuration
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetRequiredSection("EmailSettings"));
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddOptions();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHostedService<UpdateService>();
 builder.Services.AddSingleton<IDeviceStatusService, DeviceStatusService>();
@@ -38,6 +43,7 @@ builder.Services.AddTransient<IDeviceManagmentService, DeviceManagmentService>()
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
 builder.Services.AddScoped<ICookieService, CookieService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddDbContext<MainDatabaseContext>(options => options.UseSqlite("Data Source=./MainDatabase.sqlite"));
 builder.Services.AddBootstrapProviders();
 builder.Services.AddHttpClient<IDeviceManagmentService, DeviceManagmentService>();
@@ -45,6 +51,7 @@ builder.Services.AddBlazorise(options =>
 {
 	options.Immediate = true;
 });
+
 
 AddBlazorise(builder.Services);
 
@@ -66,6 +73,8 @@ app.UseRouting();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 app.MapControllers();
+
+app.Services.GetRequiredService<IOptions<EmailSettings>>().Value.CompileTemplates();
 
 IServiceScope serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
 
