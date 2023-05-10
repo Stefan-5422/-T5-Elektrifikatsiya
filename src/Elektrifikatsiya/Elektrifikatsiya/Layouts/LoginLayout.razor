@@ -1,17 +1,42 @@
 ﻿@using System.Diagnostics;
+@using FluentResults;
+
+@inject Elektrifikatsiya.Services.IAuthenticationService AuthenticationService
+@inject NavigationManager NavigationManager
+
 @inherits LayoutComponentBase
 <Image Source="logo.png" Width="Width.Is50" Height="Height.Is50"> </Image>
 <Card Width="Width.Is50" Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Padding="Padding.Is5">
     <Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12.Is3.WithOffset">
         <Field Position="Position.Relative.Top.Is50.Start.Is50.Translate.Middle">
-            <TextEdit Placeholder="Username" />
+            <TextEdit @bind-Text="username" Placeholder="Username" />
         </Field>
         <Field Position="Position.Relative.Top.Is50.Start.Is50.Translate.Middle">
-            <TextEdit Role="TextRole.Password" Placeholder="Password" />
+            <TextEdit @bind-Text="password" Role="TextRole.Password" Placeholder="Password" />
         </Field>
-        <Button Color="Color.Primary" Position="Position.Relative.Bottom.Is50.Start.Is50.Translate.MiddleX">Login</Button>
-    </Column>
+		<Button Width="Width.Is25" Disabled="disabled" Color="color" Clicked="Clicked" Position="Position.Relative.Bottom.Is50.Start.Is50.Translate.MiddleX">Login</Button>
+	</Column>
 </Card>
 @code {
-   
+   private string username = string.Empty;
+	private string password = string.Empty;
+	private Color color = Color.Primary;
+	private bool disabled;
+    private async Task Clicked()
+    {
+	    color = Color.Primary;
+	    disabled = true;
+		
+	    Result loginResult = await AuthenticationService.LoginUserAsync(username, password);
+
+	    if (loginResult.IsSuccess)
+	    {
+            NavigationManager.NavigateTo("/", true);
+	    }
+	    else
+	    {
+		    color = Color.Danger;
+		    disabled = false;
+	    }
+    }
 }

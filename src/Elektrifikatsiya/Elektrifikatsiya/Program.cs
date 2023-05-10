@@ -8,6 +8,9 @@ using Elektrifikatsiya.Models;
 using Elektrifikatsiya.Services;
 using Elektrifikatsiya.Services.Implementations;
 
+using HiveMQtt.Client;
+using HiveMQtt.Client.Options;
+
 using Microsoft.EntityFrameworkCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -18,12 +21,24 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHostedService<UpdateService>();
 builder.Services.AddSingleton<IDeviceStatusService, DeviceStatusService>();
+builder.Services.AddSingleton<IHiveMQClient, HiveMQClient>((provider)=>
+{
+	HiveMQClientOptions options = new()
+	{
+		Host = "localhost",
+		Port = 1883,
+		UseTLS = false,
+	};
+
+	HiveMQClient client =  new(options);
+	client.ConnectAsync().ConfigureAwait(false);
+	return client;
+});
 builder.Services.AddTransient<IDeviceManagmentService, DeviceManagmentService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
 builder.Services.AddScoped<ICookieService, CookieService>();
-builder.Services.AddDbContext<UserDatabaseContext>(options => options.UseSqlite("Data Source=./UserDatabase.sqlite"));
-builder.Services.AddDbContext<DeviceManagmentDatabaseContext>((options) => options.UseSqlite("Data Source=./DeviceManagement.sqlite"));
+builder.Services.AddDbContext<MainDatabaseContext>(options => options.UseSqlite("Data Source=./MainDatabase.sqlite"));
 builder.Services.AddBootstrapProviders();
 builder.Services.AddHttpClient<IDeviceManagmentService, DeviceManagmentService>();
 builder.Services.AddBlazorise(options =>
@@ -53,10 +68,16 @@ app.MapFallbackToPage("/_Host");
 app.MapControllers();
 
 IServiceScope serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
-serviceScope.ServiceProvider.GetRequiredService<UserDatabaseContext>().Database.EnsureCreated();
 
-AsyncServiceScope scope = app.Services.CreateAsyncScope();
-scope.ServiceProvider.GetRequiredService<DeviceManagmentDatabaseContext>().Database.EnsureCreated();
+MainDatabaseContext mainDatabase = serviceScope.ServiceProvider.GetRequiredService<MainDatabaseContext>();
+mainDatabase.Database.EnsureCreated();
+
+IAuthenticationService authenticationService = serviceScope.ServiceProvider.GetRequiredService<IAuthenticationService>();
+
+if (!mainDatabase.Users.Any())
+{
+	_ = authenticationService.RegisterUserAsync("admin", "admin", Role.Admin);
+}
 
 app.Run();
 

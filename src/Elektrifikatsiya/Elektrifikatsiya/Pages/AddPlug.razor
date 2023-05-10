@@ -5,123 +5,164 @@
 @using Elektrifikatsiya.Services
 @using Elektrifikatsiya.Services.Implementations
 @using Elektrifikatsiya.Utilities
+@using FluentResults;
+@using Blazorise.LoadingIndicator;
 @inject IVersionProvider VersionProvider
 @inject IDeviceManagmentService DeviceManagmentService
-@inject IAuthenticationService AuthenticationService 
+@inject IAuthenticationService AuthenticationService
+@inject IMessageService MessageService
+
 
 <Row Style="height:50%; width:100%" Padding="Padding.Is3.OnDesktop.Is5.FromStart.OnMobile">
-	<Row Style="height:90%; width:100%">
-		<Column ColumnSize="ColumnSize.Is4.OnDesktop.Is1"></Column>
-		<Column ColumnSize="ColumnSize.Is4.OnDesktop.Is12">
-			<Bar Breakpoint="Breakpoint.Desktop"
-				 Background="Background.White"
-				 ThemeContrast="ThemeContrast.None"
-				 Shadow="Shadow.Remove"
-				 Border="Border.Is1.RoundedTop">
-				<BarBrand>
-					<Column ColumnSize="ColumnSize.Is9">
-						Add a plug via wifi
-					</Column>
-					<Column ColumnSize="ColumnSize.Is3.Is6.WithOffset">
-						<LoadingIndicator @bind-Visible="@visible">
-						</LoadingIndicator>
-					</Column>
-				</BarBrand>
-			</Bar>
-				<ListView Class="w-100"
-						  TItem="IPAddress"
-						  Data="@ipAddresses"
-						  TextField="@((_)=>(""))"
-						  ValueField="@((_)=>(""))"
-						  Mode="ListGroupMode.Static"
-						  Style="border-radius: 0px 0px">
-					<ItemTemplate>
-						<ListGroupItem>
-								<Row>
-									<Column ColumnSize="ColumnSize.Is8">
-										<Row>
-										</Row>
-										<Row Width="Width.Is100">
-											<Column>
-												<Small>IP: @context.Item</Small>
-											</Column>
-										</Row>
-									</Column>
-									<Column ColumnSize="ColumnSize.Is4">
-										<Button Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Clicked="@(async () => await DeviceManagmentService.RegisterDevice(context.Item,(await AuthenticationService.GetUserAsync()).ValueOrDefault))" Outline>
-											<BarIcon IconName="IconName.Add" />
-										</Button>
-									</Column>
-								</Row>
-						</ListGroupItem>
-					</ItemTemplate>
-				</ListView>
-		</Column>
-	</Row>
+    <Row Style="height:90%; width:100%">
+        <Column ColumnSize="ColumnSize.Is4.OnDesktop.Is1"></Column>
+        <Column ColumnSize="ColumnSize.Is4.OnDesktop.Is12">
+            <Bar Breakpoint="Breakpoint.Desktop"
+                 Background="Background.White"
+                 ThemeContrast="ThemeContrast.None"
+                 Shadow="Shadow.Remove"
+                 Border="Border.Is1.RoundedTop">
+                <BarBrand>
+                    <Column ColumnSize="ColumnSize.Is9">
+                        Add a plug via wifi
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is3.Is6.WithOffset">
+                        <LoadingIndicator @bind-Visible="@visible" />
+
+                    </Column>
+                </BarBrand>
+            </Bar>
+            <ListView Class="w-100"
+                      TItem="IPAddress"
+                      Data="@ipAddresses"
+                      TextField="@((_)=>(""))"
+                      ValueField="@((_)=>(""))"
+                      Mode="ListGroupMode.Static"
+                      Style="border-radius: 0px 0px">
+                <ItemTemplate>
+                    <ListGroupItem>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is8">
+                                <Row>
+                                </Row>
+                                <Row Width="Width.Is100">
+                                    <Column>
+                                        <Small>IP: @context.Item</Small>
+                                    </Column>
+                                </Row>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is4">
+                                <Button Disabled="disabled" Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Clicked="@(async () => await RegisterDevice(context.Item))" Outline>
+                                    <BarIcon IconName="IconName.Add" />
+                                </Button>
+                            </Column>
+                        </Row>
+                    </ListGroupItem>
+                </ItemTemplate>
+            </ListView>
+        </Column>
+    </Row>
 </Row>
 <Row Style="height:50%; width:100%; border-top-style:solid; border-top-color:#1a237e" Padding="Padding.Is3.OnDesktop.Is5.FromStart.OnMobile">
-	<Column ColumnSize="ColumnSize.Is4.OnDesktop.Is1"></Column>
-	<Column ColumnSize="ColumnSize.Is4.OnDesktop.Is12">
-		<Row Style="height:15%; width:100%"></Row>
-		<Row Style="height:10%; width:100%">
-			<Bar Breakpoint="Breakpoint.Desktop"
-				 Background="Background.White"
-				 ThemeContrast="ThemeContrast.None"
-				 Shadow="Shadow.Remove"
-				 Border="Border.Is1.RoundedTop"
-				 Style="width:100%">
-				<BarBrand>
-					Add a plug via IP
-				</BarBrand>
-			</Bar>
-			<ListGroup Style="width:100%; border-radius: 0px 0px">
-				<ListGroupItem Color="Color.Default">
-					<Form>
-						<Field Horizontal>
-							<FieldBody ColumnSize="ColumnSize.Is12">
-								<TextEdit Placeholder="Enter the Device IP here" />
-								<br>
-								<Button style="background-color:#1a237e; color:white" Type="ButtonType.Submit" PreventDefaultOnSubmit>CONNECT</Button>
-							</FieldBody>
-						</Field>
-					</Form>
-				</ListGroupItem>
-			</ListGroup>
-		</Row>
-		<Row Style="height:75%; width:100%"></Row>
-	</Column>
+    <Column ColumnSize="ColumnSize.Is4.OnDesktop.Is1"></Column>
+    <Column ColumnSize="ColumnSize.Is4.OnDesktop.Is12">
+        <Row Style="height:15%; width:100%"></Row>
+        <Row Style="height:10%; width:100%">
+            <Bar Breakpoint="Breakpoint.Desktop"
+                 Background="Background.White"
+                 ThemeContrast="ThemeContrast.None"
+                 Shadow="Shadow.Remove"
+                 Border="Border.Is1.RoundedTop"
+                 Style="width:100%">
+                <BarBrand>
+                    Add a plug via IP
+                </BarBrand>
+            </Bar>
+            <ListGroup Style="width:100%; border-radius: 0px 0px">
+                <ListGroupItem Color="Color.Default">
+                    <Form>
+                        <Validation @ref="ipValidation" Validator="ValidateIPv4">
+                            <Field Horizontal>
+                                <FieldBody ColumnSize="ColumnSize.Is12">
+                                    <TextEdit @bind-Text="ipText" Placeholder="Enter the Device IP here">
+                                        <Feedback>
+                                            <ValidationNone>Please enter a ip address.</ValidationNone>
+                                            <ValidationSuccess>Ip address is valid.</ValidationSuccess>
+                                            <ValidationError>Ip address is not valid!</ValidationError>
+                                        </Feedback>
+                                    </TextEdit>
+                                    <br>
+                                    <Button style="background-color:#1a237e; color:white" Type="ButtonType.Submit" Disabled="ipValidation?.Status != ValidationStatus.Success || disabled" Clicked="@(async (_)=> await RegisterDevice(IPAddress.Parse(ipText!)))" PreventDefaultOnSubmit>CONNECT</Button>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                    </Form>
+                </ListGroupItem>
+            </ListGroup>
+        </Row>
+        <Row Style="height:75%; width:100%"></Row>
+    </Column>
 </Row>
 
 @code {
-	List<IPAddress> ipAddresses = new List<IPAddress>();
+    List<IPAddress> ipAddresses = new List<IPAddress>();
 
-	bool visible = false;
+    Validation? ipValidation;
 
-	DateTime time = DateTime.UtcNow;
+    bool visible = true;
+    bool disabled = false;
 
-	protected override void OnInitialized()
-	{
-		ipAddresses.AddRange(MdnsDiscovery.GetChachedDevices());
+    string ipText = null!;
 
-		System.Timers.Timer aTimer = new System.Timers.Timer(1000);
-		aTimer.Elapsed += (_, _) => { 
-			DateTime dateTime = DateTime.UtcNow;
-			if(dateTime >= time.AddSeconds(3))
-			{
-				visible = false;
-				InvokeAsync(StateHasChanged);
-			} 
-		};
-		aTimer.Start();
+    protected override void OnInitialized()
+    {
+        MdnsDiscovery.OnDeviceFound += async ipAddress =>
+        {
+            visible = false;
+            if (!ipAddresses.Contains(ipAddress))
+            {
+                ipAddresses.Add(ipAddress);
+                await InvokeAsync(StateHasChanged);
+            }
+        };
 
-		MdnsDiscovery.OnDeviceFound += address =>
-		{
-			visible = true;
-			
-			ipAddresses.Add(address);
-			InvokeAsync(StateHasChanged);
+        MdnsDiscovery.FetchChachedDevices();
+    }
 
-			time = DateTime.UtcNow;
-		};
-	}
+    private async Task RegisterDevice(IPAddress ipAddress)
+    {
+        disabled = true;
+        Result<Device> result = await DeviceManagmentService.RegisterDevice(ipAddress, (await AuthenticationService.GetUserAsync()).ValueOrDefault);
+
+        if (result.IsSuccess)
+        {
+            await MessageService.Success("Device added!");
+        }
+        else
+        {
+            await MessageService.Error(string.Join(',', result.Errors.Select(e => e.Message)), "Adding device failed!");
+        }
+        disabled = false;
+    }
+
+    public void ValidateIPv4(ValidatorEventArgs e)
+    {
+        string? input = Convert.ToString(e.Value);
+
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            e.Status = ValidationStatus.None;
+            return;
+        }
+
+        string[] splitValues = input.Split('.');
+        if (splitValues.Length != 4)
+        {
+            e.Status = ValidationStatus.Error;
+            return;
+        }
+
+        e.Status = splitValues.All(r => byte.TryParse(r, out _)) ? ValidationStatus.Success : ValidationStatus.Error;
+    }
+
 }

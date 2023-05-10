@@ -6,15 +6,17 @@ namespace Elektrifikatsiya.Services.Implementations;
 
 public class DeviceStatusService : IDeviceStatusService
 {
-	private readonly ILogger<DeviceStatusService> logger;
-	public event EventHandler<DeviceStatusChagedEventArgs>? OnDeviceStatusChanged;
+    private readonly ILogger<DeviceStatusService> logger;
+
+    public event EventHandler<DeviceStatusChagedEventArgs>? OnDeviceStatusChanged;
 
     private readonly Dictionary<string, Device> devices = new();
-    
+
     public DeviceStatusService(ILogger<DeviceStatusService> logger)
     {
-	    this.logger = logger;
+        this.logger = logger;
     }
+
     public Result<List<Device>> GetDevices()
     {
         return devices.Values.ToList();
@@ -30,7 +32,7 @@ public class DeviceStatusService : IDeviceStatusService
         }
 
         modDevice.PowerUsage = device.PowerUsage;
-        modDevice.Available = device.Available;
+        modDevice.Enabled = device.Enabled;
         modDevice.IpAddress = device.IpAddress;
         modDevice.Name = device.Name;
 
