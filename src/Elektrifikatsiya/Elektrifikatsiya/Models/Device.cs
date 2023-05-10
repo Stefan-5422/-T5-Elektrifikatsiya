@@ -24,7 +24,7 @@ public class Device
     public string Room { get; set; }
 
     [NotMapped]
-    public bool Available { get; set; }
+    public bool Enabled { get; set; }
 
     public Device(string macAddress, string name, IPAddress address, User user, string room)
     {
@@ -35,5 +35,22 @@ public class Device
         Room = room;
     }
 
-    private Device(){}
+    public Device CopyDevice()
+    {
+        return new Device(MacAddress, Name, IpAddress, User, Room);
+    }
+
+    public void OverwiteDevice(Device overwriter)
+    {
+        Room = overwriter.Room;
+        Enabled = overwriter.Enabled;
+        PowerUsage = overwriter.PowerUsage;
+        Name = overwriter.Name;
+        User = overwriter.User;
+        MacAddress = overwriter.MacAddress;
+        IpAddress = overwriter.IpAddress;
+    }
+
+    private Device()
+    { }
 }

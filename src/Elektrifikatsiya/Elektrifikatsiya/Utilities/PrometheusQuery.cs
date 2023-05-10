@@ -10,18 +10,15 @@ namespace Elektrifikatsiya.Utilities;
 
 public class PrometheusQuery
 {
-    private string connectionString;
     private readonly HttpClient client = new();
 
     public PrometheusQuery(string connectionString)
     {
-        this.connectionString = connectionString;
         client.BaseAddress = new Uri(connectionString);
     }
 
     public  Task<PrometheusQueryResult?> Query(string query)
     {
-	    var res = client.GetStringAsync($"/api/v1/query?query={UrlEncoder.Create().Encode(query)}").Result;
         return client.GetFromJsonAsync<PrometheusQueryResult>($"/api/v1/query?query={UrlEncoder.Create().Encode(query)}", new JsonSerializerOptions() 
         {
             PropertyNameCaseInsensitive = true,

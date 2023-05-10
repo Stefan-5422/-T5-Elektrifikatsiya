@@ -8,6 +8,9 @@ using Elektrifikatsiya.Models;
 using Elektrifikatsiya.Services;
 using Elektrifikatsiya.Services.Implementations;
 
+using HiveMQtt.Client;
+using HiveMQtt.Client.Options;
+
 using Microsoft.EntityFrameworkCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -18,6 +21,19 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHostedService<UpdateService>();
 builder.Services.AddSingleton<IDeviceStatusService, DeviceStatusService>();
+builder.Services.AddSingleton<IHiveMQClient, HiveMQClient>((provider)=>
+{
+	HiveMQClientOptions options = new()
+	{
+		Host = "localhost",
+		Port = 1883,
+		UseTLS = false,
+	};
+
+	HiveMQClient client =  new(options);
+	client.ConnectAsync().ConfigureAwait(false);
+	return client;
+});
 builder.Services.AddTransient<IDeviceManagmentService, DeviceManagmentService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
@@ -27,7 +43,7 @@ builder.Services.AddBootstrapProviders();
 builder.Services.AddHttpClient<IDeviceManagmentService, DeviceManagmentService>();
 builder.Services.AddBlazorise(options =>
 {
-    options.Immediate = true;
+	options.Immediate = true;
 });
 
 AddBlazorise(builder.Services);
@@ -37,9 +53,9 @@ WebApplication app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    _ = app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    _ = app.UseHsts();
+	_ = app.UseExceptionHandler("/Error");
+	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+	_ = app.UseHsts();
 }
 
 app.UseHttpsRedirection();
@@ -60,14 +76,14 @@ IAuthenticationService authenticationService = serviceScope.ServiceProvider.GetR
 
 if (!mainDatabase.Users.Any())
 {
-	authenticationService.RegisterUserAsync("admin", "admin", Role.Admin);
+	_ = authenticationService.RegisterUserAsync("admin", "admin", Role.Admin);
 }
 
 app.Run();
 
 void AddBlazorise(IServiceCollection services)
 {
-    _ = services.AddBlazorise();
-    _ = services.AddMaterialProviders();
-    _ = services.AddMaterialIcons();
+	_ = services.AddBlazorise();
+	_ = services.AddMaterialProviders();
+	_ = services.AddMaterialIcons();
 }
