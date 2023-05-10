@@ -1,11 +1,11 @@
-﻿@page "/admin"
-@using Blazorise.Components
+﻿@page "/Admin"
+@using Blazorise.Components;
 @using Elektrifikatsiya.Models;
 @using System.Net
 <Div>
-	<Row Padding="Padding.Is3">
+	<Row Style="width: 100%; height: 100%" Margin="Margin.Is3.FromTop.OnMobile" Padding="Padding.Is4.FromStart.OnMobile">
 		<Div Display="Display.Flex.Row.OnDesktop" Margin=" Margin.Is3.FromBottom" Width="Width.Is100">
-			<Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12">
+			<Column ColumnSize="ColumnSize.Is5.OnDesktop.Is12.OnMobile">
 				<Bar Breakpoint="Breakpoint.Desktop"
 					 Background="Background.White"
 					 ThemeContrast="ThemeContrast.None"
@@ -14,15 +14,156 @@
 					<BarBrand>
 						Users
 					</BarBrand>
-					<Button Position="Position.Absolute.End" Padding="Padding.Is3" Outline>
-						<BarIcon IconName="IconName.Add" ></BarIcon>
-					</Button>
 				</Bar>
-				
-				
+				<ListView TItem="User"
+						  Data="@users"
+						  TextField="@((_)=>(""))"
+						  ValueField="@((_)=>(""))"
+						  Style="border-radius: 0px 0px"
+						  Height="100%"
+						  MaxHeight="90%">
+					<ItemTemplate>
+						<ListGroupItem Border="Border.OnBottom">
+							<Row>
+
+								<Column ColumnSize="ColumnSize.Is6">
+									<Row>
+										<Column ColumnSize="ColumnSize.Is7">
+											<Heading Size="HeadingSize.Is6" Margin="Margin.Is1.FromBottom">@context.Item.Name</Heading>
+										</Column>
+									</Row>
+									<Row>
+										<Column>
+											<Small>Name: @context.Item.Name</Small>
+											<br />
+											<Small>Rolle: @context.Item.Role</Small>
+										</Column>
+									</Row>
+								</Column>
+
+								<Column ColumnSize="ColumnSize.Is4.OnDesktop.Is7.OnMobile">
+									<Button Clicked="@ShowModal" class="btn1" Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
+										<BarIcon IconName="IconName.Delete" />
+									</Button>
+									<style>
+										.btn1:hover 
+										{
+											background: #E50000;
+										}
+									</style>
+
+									<Modal @ref="modalRef">
+										<ModalContent Centered>
+											<ModalHeader>
+												<ModalTitle>Delete User</ModalTitle>
+												<CloseButton />
+											</ModalHeader>
+											<ModalBody>
+												<Field>
+													<FieldLabel>Admin Password</FieldLabel>
+													<TextEdit Placeholder="Enter admin password..." />
+												</Field>
+											</ModalBody>
+											<ModalFooter>
+												<Button Color="Color.Secondary" Clicked="@HideModal">Close</Button>
+												<Button Color="Color.Primary" Clicked="@HideModal">Delete</Button>
+											</ModalFooter>
+										</ModalContent>
+									</Modal>
+								</Column>
+								<br />
+								<br />
+								<Row>
+									<Column ColumnSize="ColumnSize.Is1.OnDesktop">
+										<Button Position="Position.Absolute.Top.Is50.Start.Is100.Translate.Middle" Color="Color.Dark" Outline>
+											<BarIcon IconName="IconName.Pen" />
+										</Button>
+									</Column>
+								</Row>
+
+							</Row>
+						</ListGroupItem>
+					</ItemTemplate>
+				</ListView>
+			</Column>
+			<Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile" Margin="Margin.Is3.FromTop.OnMobile" Padding="Padding.Is4.FromStart.OnMobile">
+				<Div>
+					<Field>
+						<FieldLabel>
+							<h2>
+								User Settings
+							</h2>
+						</FieldLabel>
+					</Field>
+					<Field>
+						<FieldLabel>
+							<h5>
+								User Name
+							</h5>
+							<Paragraph>
+								Here you can change the name of the User
+							</Paragraph>
+						</FieldLabel>
+						<TextEdit Placeholder="Enter User Name" />
+					</Field>
+					<br />
+					<br />
+					<Field>
+						<FieldLabel>
+							<h5>
+								Password
+							</h5>
+							<Paragraph>
+								Here you can change the password of a User
+							</Paragraph>
+						</FieldLabel>
+						<TextEdit Placeholder="Enter old password" />
+						<br />
+						<TextEdit Placeholder="Enter new password" />
+					</Field>
+					<br />
+					<br />
+					<Field>
+						<FieldLabel>
+							<h5>
+								Select Role
+							</h5>
+							<Paragraph>
+								Here you select or change the role of to User or Admin				</Paragraph>
+						</FieldLabel>
+						<br />
+						<Dropdown Display="Display.InlineBlock">
+							<DropdownToggle Color="Color.Primary" Width="Width.Is100">Roles</DropdownToggle>
+							<DropdownMenu>
+								<DropdownItem>Admin</DropdownItem>
+								<DropdownDivider />
+								<DropdownItem>User</DropdownItem>
+							</DropdownMenu>
+						</Dropdown>
+					</Field>
+				</Div>
+				<Column ColumnSize="ColumnSize.IsFull" TextAlignment="TextAlignment.End">
+					<Button Color="Color.Primary">Save</Button>
+				</Column>
 			</Column>
 		</Div>
 	</Row>
 </Div>
+
 @code {
+    List<User> users = new List<User>() { new User("Silas", "aldjlfasd",Role.Admin), new User("Joe", "qiowruioewjfopa", Role.Admin), new User("Stefan", "adfadsdf", Role.Admin), new User("Manu", "öhöfldaösldf", Role.User)};
+
+    private Modal modalRef;
+
+    public Admin()
+    {
+    }
+
+    private Task ShowModal()
+    {
+        return modalRef.Show();
+    }
+
+    private Task HideModal() => modalRef.Hide();
+
 }
