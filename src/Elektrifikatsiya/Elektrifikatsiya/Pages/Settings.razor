@@ -90,21 +90,7 @@
 								Here you can change the name of your plug
 							</Paragraph>
 						</FieldLabel>
-						<TextEdit @bind-Text="@DeviceCopy.Name" Placeholder="Enter Name" />
-					</Field>
-					<br />
-					<br />
-					<Field>
-						<FieldLabel>
-							<h5>
-								Change Max Output
-							</h5>
-							<Paragraph>
-								Here you can limit how much power your plug uses
-							</Paragraph>
-						</FieldLabel>
-						<TextEdit Placeholder="Enter Max Output" />
-						<!--TODO: What is this?-->
+						<TextEdit MaxLength="30" @bind-Text="@DeviceCopy.Name" Placeholder="Enter Name" />
 					</Field>
 					<br />
 					<br />
@@ -117,7 +103,7 @@
 								Here you select or change the room the plug belongs to.
 							</Paragraph>
 						</FieldLabel>
-						<TextEdit @bind-text="@DeviceCopy.Room" Placeholder="Enter the name of the room here"/>
+							<TextEdit MaxLength="30" @bind-text="@DeviceCopy.Room" Placeholder="Enter the name of the room here" />
 					</Field>
 				</Div>
 				}
@@ -138,7 +124,7 @@
 								Here you enter your electricity price. This is gonna calculate the overall Price of your System
 							</Paragraph>
 						</FieldLabel>
-						<TextEdit Placeholder="Enter Electricity Price" />
+						<TextEdit MaxLength="8" Placeholder="Enter Electricity Price" />
 					</Field>
 				</Div>
 				<Column ColumnSize="ColumnSize.IsFull" TextAlignment="TextAlignment.End">
