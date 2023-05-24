@@ -1,10 +1,10 @@
 ﻿namespace Elektrifikatsiya.Models;
 
-public class DeviceStatusChagedEventArgs : EventArgs
+public class DeviceStatusChangedEventArgs : EventArgs
 {
     public string MacAddress { get; set; }
 
-    public DeviceStatusChagedEventArgs(string macAddress)
+    public DeviceStatusChangedEventArgs(string macAddress)
     {
         MacAddress = macAddress;
     }
