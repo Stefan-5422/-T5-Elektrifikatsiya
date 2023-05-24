@@ -23,16 +23,7 @@ public class User
 	[Required]
 	public Role Role { get; set; }
 
-	public string? SessionToken
-	{
-		get => _token;
-		set
-		{
-			_token = value;
-		}
-	}
-
-	private string? _token;
+	public string? SessionToken { get; set; }
 
 	public User(string name, string passwordHash, Role role)
 	{
