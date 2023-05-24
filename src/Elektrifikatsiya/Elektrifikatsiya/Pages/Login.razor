@@ -1,4 +1,19 @@
 ﻿@using System.Diagnostics;
 @using Elektrifikatsiya.Layouts;
+@using Elektrifikatsiya.Services;
+@inject IAuthenticationService AuthenticationService;
+@inject NavigationManager NavigationManager 
 @page "/login"
 @layout LoginLayout;
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        bool isAuthenticated = (await AuthenticationService.IsAuthenticated()).ValueOrDefault;
+
+        if (isAuthenticated)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
+}

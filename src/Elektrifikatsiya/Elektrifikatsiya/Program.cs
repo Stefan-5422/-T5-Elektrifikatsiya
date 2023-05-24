@@ -1,3 +1,5 @@
+global using INotificationService = Elektrifikatsiya.Services.INotifcationService;
+
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.Material;
@@ -14,6 +16,7 @@ using HiveMQtt.Client.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Read configuration
@@ -24,8 +27,13 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddOptions();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddHostedService<UpdateService>();
+builder.Services.AddHostedService<ServiceScheduler>();
+builder.Services.AddSingleton<IUpdateService, UpdateService>();
 builder.Services.AddSingleton<IDeviceStatusService, DeviceStatusService>();
+builder.Services.AddSingleton<INotificationService, NotifcationService>();
+builder.Services.AddSingleton<IScheduledService>(s => s.GetRequiredService<IUpdateService>());
+builder.Services.AddSingleton<IScheduledService>(s=>s.GetRequiredService<INotificationService>());
+builder.Services.AddSingleton<IEmailService, EmailService>();
 builder.Services.AddSingleton<IHiveMQClient, HiveMQClient>((provider)=>
 {
 	HiveMQClientOptions options = new()
@@ -43,7 +51,6 @@ builder.Services.AddTransient<IDeviceManagmentService, DeviceManagmentService>()
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
 builder.Services.AddScoped<ICookieService, CookieService>();
-builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddDbContext<MainDatabaseContext>(options => options.UseSqlite("Data Source=./MainDatabase.sqlite"));
 builder.Services.AddBootstrapProviders();
 builder.Services.AddHttpClient<IDeviceManagmentService, DeviceManagmentService>();
