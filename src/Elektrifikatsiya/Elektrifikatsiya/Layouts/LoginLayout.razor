@@ -7,12 +7,12 @@
 @inherits LayoutComponentBase
 <Image Source="logo.png" Width="Width.Is50" Height="Height.Is50"> </Image>
 <Card Width="Width.Is50" Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Padding="Padding.Is5">
-    <Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12.Is3.WithOffset">
-        <Field Position="Position.Relative.Top.Is50.Start.Is50.Translate.Middle">
-            <TextEdit @bind-Text="username" Placeholder="Username" />
+    <Column ColumnSize="ColumnSize.Is6.OnDesktop.Is3.WithOffset.OnDesktop.Is12.OnMobile">
+        <Field Position="Position.Relative.Top.Is50.Start.Is50.Translate.Middle" Width="Width.Auto">
+            <TextEdit @bind-Text="username" Placeholder="Username" Size="Size.Small"/>
         </Field>
-        <Field Position="Position.Relative.Top.Is50.Start.Is50.Translate.Middle">
-            <TextEdit @bind-Text="password" Role="TextRole.Password" Placeholder="Password" />
+		<Field Position="Position.Relative.Top.Is50.Start.Is50.Translate.Middle" Width="Width.Auto">
+			<TextEdit @bind-Text="password" Role="TextRole.Password" Placeholder="Password" Size="Size.Small" />
         </Field>
 		<Button Width="Width.Is25" Disabled="disabled" Color="color" Clicked="Clicked" Position="Position.Relative.Bottom.Is50.Start.Is50.Translate.MiddleX">Login</Button>
 	</Column>
