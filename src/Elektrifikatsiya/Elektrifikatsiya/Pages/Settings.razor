@@ -1,5 +1,6 @@
 ﻿@page "/Settings"
 @using Blazorise.Components;
+@using Elektrifikatsiya.Database;
 @using Elektrifikatsiya.Models;
 @using System.Net
 @using System.Text.Json
@@ -9,6 +10,7 @@
 
 @inject IDeviceManagmentService DeviceManagmentService
 @inject IMessageService MessageService
+@inject MainDatabaseContext MainDatabaseContext
 
 <Div>
 	<Row Style="width: 100%; height: 100%" Margin="Margin.Is3.FromTop.OnMobile" Padding="Padding.Is4.FromStart.OnMobile">
@@ -124,7 +126,7 @@
 								Here you enter your electricity price. This is gonna calculate the overall Price of your System
 							</Paragraph>
 						</FieldLabel>
-						<TextEdit MaxLength="8" Placeholder="Enter Electricity Price" />
+						<NumericEdit @bind-Value="electricityPrice" MaxLength="8" Placeholder="Enter Electricity Price" />
 					</Field>
 				</Div>
 				<Column ColumnSize="ColumnSize.IsFull" TextAlignment="TextAlignment.End">
@@ -139,7 +141,9 @@
 @code {
 	List<Device> plugs = new List<Device>();
 
-	private bool hideButtonSettings = true;
+	bool hideButtonSettings = true;
+
+	double electricityPrice = 0;
 
 	Device? SelectedDevice = null;
 	Device? DeviceCopy = null;
@@ -152,6 +156,8 @@
 		{
 			plugs = getDevicesResult.Value;
 		}
+
+		electricityPrice = MainDatabaseContext.EnergyPriceChanges.OrderByDescending(e=>e.DateTime).FirstOrDefault()?.EnergyPrice ?? 0;
 	}
 
 	private void Toggle(Device device)
@@ -161,16 +167,19 @@
 		DeviceCopy = device.CopyDevice();
 	}
 
-	private void OnSave()
+	private async void OnSave()
 	{
-		if (hideButtonSettings || DeviceCopy is null || SelectedDevice is null)
+		if (hideButtonSettings)
 		{
 
+			MainDatabaseContext.EnergyPriceChanges.Add(new EnergyPriceChange(electricityPrice));
+			await MainDatabaseContext.SaveChangesAsync();
 		}
-		else
+		else if(DeviceCopy is not null && SelectedDevice is not null)
 		{
+
 			SelectedDevice.OverwiteDevice(DeviceCopy);
-			DeviceManagmentService.UpdateDevice(SelectedDevice);
+			await DeviceManagmentService.UpdateDevice(SelectedDevice);
 		}
 	}
 
