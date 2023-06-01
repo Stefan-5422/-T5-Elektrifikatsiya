@@ -1,5 +1,6 @@
 @page "/"
 @using Blazorise.Components;
+@using Elektrifikatsiya.Database;
 @using Elektrifikatsiya.Models;
 @using System.Net
 @using Elektrifikatsiya.Services
@@ -7,88 +8,92 @@
 @using System.Diagnostics
 @using Elektrifikatsiya.Services.Implementations
 @inject IVersionProvider VersionProvider
-@inject IDeviceStatusService DeviceStatusService
-@inject IEventService EventService
 
-<Row Padding="Padding.Is3">
-	<Div Display="Display.Flex.Row.OnDesktop" Margin="Margin.Is3.FromBottom" Width="Width.Is100">
-		<Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12">
-			<Bar Breakpoint="Breakpoint.Desktop"
-				 Background="Background.White"
-				 ThemeContrast="ThemeContrast.None"
-				 Shadow="Shadow.Remove"
-				 Border="Border.Is1.RoundedTop">
-				<BarBrand>
-					Plugs
-				</BarBrand>
-			</Bar>
-			<ListView TItem="Device"
-					  Data="@plugs"
-					  TextField="@((_)=>(""))"
-					  ValueField="@((_)=>(""))"
-					  Mode="ListGroupMode.Static"
-					  Style="border-radius: 0px 0px">
-				<ItemTemplate>
-					<ListGroupItem Border="Border.OnBottom">
-						<Row>
-							<Column ColumnSize="ColumnSize.Is8">
-								<Row>
-									<Column ColumnSize="ColumnSize.Is7">
-										<Heading Size="HeadingSize.Is6" Margin="Margin.Is1.FromBottom">@context.Item.Name</Heading>
-									</Column>
-								</Row>
-								<Row>
-									<Column>
-										<Small>User: @context.Item.User.Name</Small>
-										<br />
-										<Small>Room: @context.Item.Room</Small>
-									</Column>
-									<Column ColumnSize="ColumnSize.Is5">
-										<Paragraph Margin="Margin.Is1.OnY">@context.Item.PowerUsage W</Paragraph>
-									</Column>
-								</Row>
-							</Column>
-							<Column ColumnSize="ColumnSize.Is4">
-								<Button Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
-									<BarIcon IconName="IconName.Bolt" />
-								</Button>
-							</Column>
-						</Row>
-					</ListGroupItem>
-				</ItemTemplate>
-			</ListView>
-		</Column>
-		<Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12">
-			<Bar Breakpoint="Breakpoint.Desktop"
-				 Background="Background.White"
-				 ThemeContrast="ThemeContrast.None"
-				 Shadow="Shadow.Remove"
-				 Border="Border.Is1.Rounded.RoundedTop">
-				<BarBrand>
-					Logs
-				</BarBrand>
-			</Bar>
-			<ListView TItem="Event"
-					  Data="@events"
-					  TextField="@((_)=>(""))"
-					  ValueField="@((_)=>(""))"
-					  Mode="ListGroupMode.Static"
-					  Style="border-radius: 0px 0px">
+@inject IDeviceStatusService DeviceStatusService;
+@inject IDeviceManagmentService DeviceManagmentService;
+@inject IEventService EventService;
+@inject MainDatabaseContext MainDatabaseContext;
 
-				<ItemTemplate>
-					<Div Flex="Flex.InlineFlex.JustifyContent.Between" Width="Width.Is100">
-						<Heading Size="HeadingSize.Is6" Margin="Margin.Is2.FromBottom">@context.Item.EventName</Heading>
-						<Small>@context.Item.Date</Small>
-					</Div>
-					<Paragraph Border="Border.OnBottom" Margin="Margin.Is2.FromBottom">@context.Item.Description</Paragraph>
-				</ItemTemplate>
-			</ListView>
-		</Column>
-	</Div>
-</Row>
-<Row Padding="Padding.Is3">
-	<Column>
-		<Button Color="Color.Primary" Style="border-radius: 0px" Clicked="@(async () => await HandleRedraw())">Aktualisieren</Button>
-		<LineChart @ref="lineChart" TItem="double" />
-	</Column>
-</Row>
+<Div>
+    <Row Padding="Padding.Is3">
+        <Div Display="Display.Flex.Row.OnDesktop" Margin=" Margin.Is3.FromBottom" Width="Width.Is100">
+            <Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12">
+                <Bar Breakpoint="Breakpoint.Desktop"
+                     Background="Background.White"
+                     ThemeContrast="ThemeContrast.None"
+                     Shadow="Shadow.Remove"
+                     Border="Border.Is1.RoundedTop">
+                    <BarBrand>
+                        Plugs
+                    </BarBrand>
+                </Bar>
+                <ListView TItem="Device"
+                          Data="@plugs"
+                          TextField="@((_)=>(""))"
+                          ValueField="@((_)=>(""))"
+                          Mode="ListGroupMode.Static"
+                          Style="border-radius: 0px 0px">
+                    <ItemTemplate>
+                        <ListGroupItem>
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is8">
+                                    <Row>
+                                        <Column ColumnSize="ColumnSize.Is7">
+                                            <Heading Size="HeadingSize.Is6" Margin="Margin.Is1.FromBottom">@context.Item.Name</Heading>
+                                        </Column>
+                                    </Row>
+                                    <Row>
+                                        <Column>
+                                            <Small>User: @context.Item.User.Name</Small>
+                                            <br />
+                                            <Small>Room: @context.Item.Room</Small>
+                                        </Column>
+                                        <Column ColumnSize="ColumnSize.Is5">
+                                            <Paragraph Margin="Margin.Is1.OnY">@context.Item.PowerUsage W</Paragraph>
+                                        </Column>
+                                    </Row>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is4">
+                                    <Button Clicked="() => Switch(context.Item)" Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Primary" Primary Outline>
+                                        <BarIcon TextColor="(context.Item.Enabled?TextColor.Success:TextColor.Danger)" IconName="IconName.Bolt" />
+                                    </Button>
+                                </Column>
+                            </Row>
+                        </ListGroupItem>
+                    </ItemTemplate>
+                </ListView>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12">
+                <Bar Breakpoint="Breakpoint.Desktop"
+                     Background="Background.White"
+                     ThemeContrast="ThemeContrast.None"
+                     Shadow="Shadow.Remove"
+                     Border="Border.Is1.Rounded.RoundedTop">
+                    <BarBrand>
+                        Logs
+                    </BarBrand>
+                </Bar>
+                <ListView TItem="Event"
+                          Data="@events"
+                          TextField="@((_)=>(""))"
+                          ValueField="@((_)=>(""))"
+                          Mode="ListGroupMode.Static"
+                          Style="border-radius: 0px 0px">
+                    <ItemTemplate>
+                        <Div Flex="Flex.InlineFlex.JustifyContent.Between" Width="Width.Is100">
+                            <Heading Size="HeadingSize.Is6" Margin="Margin.Is2.FromBottom">@context.Item.EventName</Heading>
+                            <Small>@context.Item.Date</Small>
+                        </Div>
+                        <Paragraph Margin="Margin.Is2.FromBottom">@context.Item.Description</Paragraph>
+                    </ItemTemplate>
+                </ListView>
+            </Column>
+        </Div>
+    </Row>
+    <Row Padding="Padding.Is3">
+        <Column>
+            <Button Color="Color.Primary" Style="border-radius: 0px" Clicked="@(async () => await HandleRedraw())">Aktualisieren</Button>
+            <LineChart Height="Height.Is100" Width="Width.Is100" @ref="lineChart" TItem="double" />
+        </Column>
+    </Row>
+</Div>

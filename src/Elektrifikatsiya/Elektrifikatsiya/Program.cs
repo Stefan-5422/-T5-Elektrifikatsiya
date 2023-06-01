@@ -15,7 +15,8 @@ using HiveMQtt.Client.Options;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-
+using Prometheus;
+using Prometheus.HttpMetrics;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -32,9 +33,10 @@ builder.Services.AddSingleton<IUpdateService, UpdateService>();
 builder.Services.AddSingleton<IDeviceStatusService, DeviceStatusService>();
 builder.Services.AddSingleton<INotificationService, NotifcationService>();
 builder.Services.AddSingleton<IScheduledService>(s => s.GetRequiredService<IUpdateService>());
-builder.Services.AddSingleton<IScheduledService>(s=>s.GetRequiredService<INotificationService>());
+builder.Services.AddSingleton<IScheduledService>(s => s.GetRequiredService<INotificationService>());
 builder.Services.AddSingleton<IEmailService, EmailService>();
-builder.Services.AddSingleton<IHiveMQClient, HiveMQClient>((provider)=>
+builder.Services.AddSingleton<IEventService, EventService>();
+builder.Services.AddSingleton<IHiveMQClient, HiveMQClient>((provider) =>
 {
 	HiveMQClientOptions options = new()
 	{
@@ -43,7 +45,7 @@ builder.Services.AddSingleton<IHiveMQClient, HiveMQClient>((provider)=>
 		UseTLS = false,
 	};
 
-	HiveMQClient client =  new(options);
+	HiveMQClient client = new(options);
 	client.ConnectAsync().ConfigureAwait(false);
 	return client;
 });
@@ -58,7 +60,6 @@ builder.Services.AddBlazorise(options =>
 {
 	options.Immediate = true;
 });
-
 
 AddBlazorise(builder.Services);
 
@@ -80,6 +81,9 @@ app.UseRouting();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 app.MapControllers();
+app.MapMetrics();
+
+app.UseHttpMetrics();
 
 app.Services.GetRequiredService<IOptions<EmailSettings>>().Value.CompileTemplates();
 
@@ -97,7 +101,7 @@ if (!mainDatabase.Users.Any())
 
 app.Run();
 
-void AddBlazorise(IServiceCollection services)
+static void AddBlazorise(IServiceCollection services)
 {
 	_ = services.AddBlazorise();
 	_ = services.AddMaterialProviders();

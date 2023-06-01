@@ -4,7 +4,7 @@ namespace Elektrifikatsiya.Services.Implementations;
 
 public class NotifcationService : INotifcationService
 {
-	public TimeSpan ExecutionRepeatDelay => TimeSpan.FromSeconds(30);
+	public TimeSpan ExecutionRepeatDelay => TimeSpan.FromDays(1);
 	public DateTime FirstExecutionTime => DateTime.Now.AddDays(0);
 	private readonly IEmailService emailService;
 	private readonly ILogger<NotifcationService> logger;

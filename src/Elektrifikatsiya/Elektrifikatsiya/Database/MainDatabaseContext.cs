@@ -6,11 +6,13 @@ namespace Elektrifikatsiya.Database;
 
 public class MainDatabaseContext : DbContext
 {
-    public MainDatabaseContext(DbContextOptions<MainDatabaseContext> dbContextOptions) : base(dbContextOptions)
-    {
-    }
+	public DbSet<Device> Devices { get; set; }
 
-    public DbSet<User> Users { get; set; }
-    public DbSet<Device> Devices { get; set; }
-	public DbSet<Event> Events { get; set; }
+	public DbSet<User> Users { get; set; }
+
+	public DbSet<EnergyPriceChange> EnergyPriceChanges { get; set; }
+
+	public MainDatabaseContext(DbContextOptions<MainDatabaseContext> dbContextOptions) : base(dbContextOptions)
+	{
+	}
 }
