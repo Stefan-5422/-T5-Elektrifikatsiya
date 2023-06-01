@@ -12,7 +12,6 @@ namespace Elektrifikatsiya.Models
 		public string Description { get; set; }
 		public DateTime Date { get; set; }
 		public Device Plug { get; set; }
-		//if Plug Class implemented -> Property for which plug this event is from
 
 		public Event() { }
 		public Event(string eventName, string description, DateTime date, Device plug)
