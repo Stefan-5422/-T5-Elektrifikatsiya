@@ -34,6 +34,7 @@ builder.Services.AddSingleton<INotificationService, NotifcationService>();
 builder.Services.AddSingleton<IScheduledService>(s => s.GetRequiredService<IUpdateService>());
 builder.Services.AddSingleton<IScheduledService>(s=>s.GetRequiredService<INotificationService>());
 builder.Services.AddSingleton<IEmailService, EmailService>();
+builder.Services.AddSingleton<IEventService, EventService>();
 builder.Services.AddSingleton<IHiveMQClient, HiveMQClient>((provider)=>
 {
 	HiveMQClientOptions options = new()
