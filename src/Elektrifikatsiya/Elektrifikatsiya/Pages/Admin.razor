@@ -2,8 +2,12 @@
 @using Blazorise.Components;
 @using Elektrifikatsiya.Models;
 @using System.Net
+@using Elektrifikatsiya.Services;
+
+@inject IAuthenticationService AuthenthicationService;
 <Div>
 	<Row Style="width: 100%; height: 100%" Margin="Margin.Is3.FromTop.OnMobile" Padding="Padding.Is4.FromStart.OnMobile">
+
 		<Div Display="Display.Flex.Row.OnDesktop" Margin=" Margin.Is3.FromBottom" Width="Width.Is100">
 			<Column ColumnSize="ColumnSize.Is5.OnDesktop.Is12.OnMobile">
 				<Bar Breakpoint="Breakpoint.Desktop"
@@ -12,8 +16,19 @@
 					 Shadow="Shadow.Remove"
 					 Border="Border.Is1.RoundedTop">
 					<BarBrand>
-						Users
+						<Column ColumnSize="ColumnSize.Is12">
+							Users
+						</Column>
+						<Column ColumnSize="ColumnSize.Is12.Is11.WithOffset.OnDesktop.IsAuto.OnMobile">
+							<Button Clicked="@ShowModalAddUser" TextAlignment="TextAlignment.End" Shadow="Shadow.Remove">
+								<BarIcon IconName="IconName.Add"></BarIcon>
+							</Button>
+						</Column>
 					</BarBrand>
+
+
+
+
 				</Bar>
 				<ListView TItem="User"
 						  Data="@users"
@@ -42,17 +57,39 @@
 								</Column>
 
 								<Column ColumnSize="ColumnSize.Is4.OnDesktop.Is7.OnMobile">
-									<Button Clicked="@ShowModal" class="btn1" Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
+									<Button Clicked="@ShowModalDelete" class="btn1" Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
 										<BarIcon IconName="IconName.Delete" />
 									</Button>
 									<style>
-										.btn1:hover 
-										{
+										.btn1:hover {
 											background: #E50000;
 										}
 									</style>
 
-									<Modal @ref="modalRef">
+									<Modal @ref="modalRefAddUser">
+										<ModalContent Centered>
+											<ModalHeader>
+												<ModalTitle>Add User</ModalTitle>
+												<CloseButton />
+											</ModalHeader>
+											<ModalBody>
+												<Field>
+													<FieldLabel>User Name</FieldLabel>
+													<TextEdit Placeholder="Enter user name..." />
+												</Field>
+												<Field>
+													<FieldLabel>User Password</FieldLabel>
+													<TextEdit Placeholder="Enter user password..." />
+												</Field>
+											</ModalBody>
+											<ModalFooter>
+												<Button Color="Color.Secondary" style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px" Clicked="@HideModalAddUser">Close</Button>
+												<Button Color="Color.Primary" style="border-bottom-left-radius: 0px; border-bottom-right-radius: 0" Clicked="@HideModalAddUser">Add</Button>
+											</ModalFooter>
+										</ModalContent>
+									</Modal>
+
+									<Modal @ref="modalRefDelete">
 										<ModalContent Centered>
 											<ModalHeader>
 												<ModalTitle>Delete User</ModalTitle>
@@ -65,8 +102,8 @@
 												</Field>
 											</ModalBody>
 											<ModalFooter>
-												<Button Color="Color.Secondary" Clicked="@HideModal">Close</Button>
-												<Button Color="Color.Primary" Clicked="@HideModal">Delete</Button>
+												<Button Color="Color.Secondary" style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px" Clicked="@HideModalDelete">Close</Button>
+												<Button Color="Color.Primary" style="border-bottom-left-radius: 0px; border-bottom-right-radius: 0px" Clicked="@HideModalDelete">Delete</Button>
 											</ModalFooter>
 										</ModalContent>
 									</Modal>
@@ -129,7 +166,8 @@
 								Select Role
 							</h5>
 							<Paragraph>
-								Here you select or change the role of to User or Admin				</Paragraph>
+								Here you select or change the role of to User or Admin
+							</Paragraph>
 						</FieldLabel>
 						<br />
 						<Dropdown Display="Display.InlineBlock">
@@ -151,19 +189,36 @@
 </Div>
 
 @code {
-    List<User> users = new List<User>() { new User("Silas", "aldjlfasd",Role.Admin), new User("Joe", "qiowruioewjfopa", Role.Admin), new User("Stefan", "adfadsdf", Role.Admin), new User("Manu", "öhöfldaösldf", Role.User)};
+	List<User> users = new List<User>() { new User("Silas", "aldjlfasd", Role.Admin), new User("Joe", "qiowruioewjfopa", Role.Admin), new User("Stefan", "adfadsdf", Role.Admin), new User("Manu", "öhöfldaösldf", Role.User) };
 
-    private Modal modalRef;
+	private Modal? modalRefDelete;
 
-    public Admin()
-    {
-    }
+	public Admin()
+	{
+	}
 
-    private Task ShowModal()
-    {
-        return modalRef.Show();
-    }
+	private Task ShowModalDelete()
+	{
+		return modalRefDelete!.Show();
+	}
 
-    private Task HideModal() => modalRef.Hide();
+	private Task HideModalDelete() => modalRefDelete!.Hide();
+
+	private Modal? modalRefAddUser;
+
+
+	private Task ShowModalAddUser()
+	{
+		return modalRefAddUser!.Show();
+	}
+
+	private Task HideModalAddUser() => modalRefAddUser!.Hide();
+	private async Task AddModalAddUser(string name, string passwort)
+	{
+		await AuthenthicationService.RegisterUserAsync(name, passwort, Role.User);
+		await HideModalAddUser();
+	}
+
+
 
 }
