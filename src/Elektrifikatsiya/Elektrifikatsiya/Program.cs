@@ -79,9 +79,7 @@ app.UseRouting();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 app.MapControllers();
-app.MapMetrics();
 
-app.UseHttpMetrics();
 
 app.Services.GetRequiredService<IOptions<EmailSettings>>().Value.CompileTemplates();
 
