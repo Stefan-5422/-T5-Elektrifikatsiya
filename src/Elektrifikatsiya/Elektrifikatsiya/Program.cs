@@ -15,8 +15,6 @@ using HiveMQtt.Client.Options;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Prometheus;
-using Prometheus.HttpMetrics;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
