@@ -351,4 +351,4 @@ MigrationBackup/
 
 # Project specific
 *.sqlite*
-/src/Elektrifikatsiya/Elektrifikatsiya/appsettings.Development.json
+src/Elektrifikatsiya/Elektrifikatsiya/appsettings.Development.json
