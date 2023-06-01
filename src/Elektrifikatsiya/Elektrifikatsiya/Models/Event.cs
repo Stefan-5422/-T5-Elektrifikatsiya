@@ -11,14 +11,15 @@ namespace Elektrifikatsiya.Models
 		public string EventName { get; set; }
 		public string Description { get; set; }
 		public DateTime Date { get; set; }
+		public Device Plug { get; set; }
 
-		//if Plug Class implemented -> Property for which plug this event is from
-
-		public Event(string eventName, string description, DateTime date)
+		public Event() { }
+		public Event(string eventName, string description, DateTime date, Device plug)
 		{
 			EventName = eventName;
 			Description = description;
 			Date = date;
+			Plug = plug;
 		}
 	}
 }

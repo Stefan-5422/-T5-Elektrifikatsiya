@@ -173,6 +173,8 @@ public class DeviceManagmentService : IDeviceManagmentService
 
         PublishResult res = await hiveMQClient.PublishAsync($"shellies/shellyplug-s-{device.MacAddress}/relay/0/command", device.Enabled ? "on" : "off");
 
+        device.User = mainDatabaseContext.Users.First(u => u.Id == device.User.Id);
+
         _ = mainDatabaseContext.Update(device);
 
         return await Result.Try(Task () => mainDatabaseContext.SaveChangesAsync());

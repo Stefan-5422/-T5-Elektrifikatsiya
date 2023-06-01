@@ -1,5 +1,6 @@
 ﻿@page "/Settings"
 @using Blazorise.Components;
+@using Elektrifikatsiya.Database;
 @using Elektrifikatsiya.Models;
 @using System.Net
 @using System.Text.Json
@@ -9,6 +10,7 @@
 
 @inject IDeviceManagmentService DeviceManagmentService
 @inject IMessageService MessageService
+@inject MainDatabaseContext MainDatabaseContext
 
 <Div>
 	<Row Style="width: 100%; height: 100%" Margin="Margin.Is3.FromTop.OnMobile" Padding="Padding.Is4.FromStart.OnMobile">
@@ -90,21 +92,7 @@
 								Here you can change the name of your plug
 							</Paragraph>
 						</FieldLabel>
-						<TextEdit @bind-Text="@DeviceCopy.Name" Placeholder="Enter Name" />
-					</Field>
-					<br />
-					<br />
-					<Field>
-						<FieldLabel>
-							<h5>
-								Change Max Output
-							</h5>
-							<Paragraph>
-								Here you can limit how much power your plug uses
-							</Paragraph>
-						</FieldLabel>
-						<TextEdit Placeholder="Enter Max Output" />
-						<!--TODO: What is this?-->
+						<TextEdit MaxLength="30" @bind-Text="@DeviceCopy.Name" Placeholder="Enter Name" />
 					</Field>
 					<br />
 					<br />
@@ -117,7 +105,7 @@
 								Here you select or change the room the plug belongs to.
 							</Paragraph>
 						</FieldLabel>
-						<TextEdit @bind-text="@DeviceCopy.Room" Placeholder="Enter the name of the room here"/>
+							<TextEdit MaxLength="30" @bind-text="@DeviceCopy.Room" Placeholder="Enter the name of the room here" />
 					</Field>
 				</Div>
 				}
@@ -138,7 +126,7 @@
 								Here you enter your electricity price. This is gonna calculate the overall Price of your System
 							</Paragraph>
 						</FieldLabel>
-						<TextEdit Placeholder="Enter Electricity Price" />
+						<NumericEdit @bind-Value="electricityPrice" MaxLength="8" Placeholder="Enter Electricity Price" />
 					</Field>
 				</Div>
 				<Column ColumnSize="ColumnSize.IsFull" TextAlignment="TextAlignment.End">
@@ -153,7 +141,9 @@
 @code {
 	List<Device> plugs = new List<Device>();
 
-	private bool hideButtonSettings = true;
+	bool hideButtonSettings = true;
+
+	double electricityPrice = 0;
 
 	Device? SelectedDevice = null;
 	Device? DeviceCopy = null;
@@ -166,6 +156,8 @@
 		{
 			plugs = getDevicesResult.Value;
 		}
+
+		electricityPrice = MainDatabaseContext.EnergyPriceChanges.OrderByDescending(e=>e.DateTime).FirstOrDefault()?.EnergyPrice ?? 0;
 	}
 
 	private void Toggle(Device device)
@@ -175,16 +167,19 @@
 		DeviceCopy = device.CopyDevice();
 	}
 
-	private void OnSave()
+	private async void OnSave()
 	{
-		if (hideButtonSettings || DeviceCopy is null || SelectedDevice is null)
+		if (hideButtonSettings)
 		{
 
+			MainDatabaseContext.EnergyPriceChanges.Add(new EnergyPriceChange(electricityPrice));
+			await MainDatabaseContext.SaveChangesAsync();
 		}
-		else
+		else if(DeviceCopy is not null && SelectedDevice is not null)
 		{
+
 			SelectedDevice.OverwiteDevice(DeviceCopy);
-			DeviceManagmentService.UpdateDevice(SelectedDevice);
+			await DeviceManagmentService.UpdateDevice(SelectedDevice);
 		}
 	}
 

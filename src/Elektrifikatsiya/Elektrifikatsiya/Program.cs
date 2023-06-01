@@ -1,3 +1,5 @@
+global using INotificationService = Elektrifikatsiya.Services.INotifcationService;
+
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.Material;
@@ -7,20 +9,31 @@ using Elektrifikatsiya.Database;
 using Elektrifikatsiya.Models;
 using Elektrifikatsiya.Services;
 using Elektrifikatsiya.Services.Implementations;
-
+using Elektrifikatsiya.Utilities;
 using HiveMQtt.Client;
 using HiveMQtt.Client.Options;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+// Read configuration
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetRequiredSection("EmailSettings"));
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddOptions();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddHostedService<UpdateService>();
+builder.Services.AddHostedService<ServiceScheduler>();
+builder.Services.AddSingleton<IUpdateService, UpdateService>();
 builder.Services.AddSingleton<IDeviceStatusService, DeviceStatusService>();
+builder.Services.AddSingleton<INotificationService, NotifcationService>();
+builder.Services.AddSingleton<IScheduledService>(s => s.GetRequiredService<IUpdateService>());
+builder.Services.AddSingleton<IScheduledService>(s => s.GetRequiredService<INotificationService>());
+builder.Services.AddSingleton<IEmailService, EmailService>();
+builder.Services.AddSingleton<IEventService, EventService>();
 builder.Services.AddSingleton<IHiveMQClient, HiveMQClient>((provider)=>
 {
 	HiveMQClientOptions options = new()
@@ -30,7 +43,7 @@ builder.Services.AddSingleton<IHiveMQClient, HiveMQClient>((provider)=>
 		UseTLS = false,
 	};
 
-	HiveMQClient client =  new(options);
+	HiveMQClient client = new(options);
 	client.ConnectAsync().ConfigureAwait(false);
 	return client;
 });
@@ -67,6 +80,9 @@ app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 app.MapControllers();
 
+
+app.Services.GetRequiredService<IOptions<EmailSettings>>().Value.CompileTemplates();
+
 IServiceScope serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
 
 MainDatabaseContext mainDatabase = serviceScope.ServiceProvider.GetRequiredService<MainDatabaseContext>();
@@ -81,7 +97,7 @@ if (!mainDatabase.Users.Any())
 
 app.Run();
 
-void AddBlazorise(IServiceCollection services)
+static void AddBlazorise(IServiceCollection services)
 {
 	_ = services.AddBlazorise();
 	_ = services.AddMaterialProviders();

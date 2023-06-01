@@ -5,29 +5,30 @@ namespace Elektrifikatsiya.Models;
 
 public class User
 {
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    [Key]
-    public int Id { get; private set; }
+	[Required]
+	public List<Device> Devices { get; set; } = new();
 
-    [Required]
-    public string Name { get; private set; }
+	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+	[Key]
+	public int Id { get; private set; }
 
-    [Required]
-    public string PasswordHash { get; private set; }
+	public DateTime LastLoginDate { get; set; }
 
-    [Required]
-    public Role Role { get; set; }
+	[Required]
+	public string Name { get; private set; }
 
-    public string? SessionToken { get; set; }
-    public DateTime LastLoginDate { get; set; }
+	[Required]
+	public string PasswordHash { get; private set; }
 
-    [Required]
-    public List<Device> Devices { get; set; } = new();
+	[Required]
+	public Role Role { get; set; }
 
-    public User(string name, string passwordHash, Role role)
-    {
-        Name = name;
-        PasswordHash = passwordHash;
-        Role = role;
-    }
+	public string? SessionToken { get; set; }
+
+	public User(string name, string passwordHash, Role role)
+	{
+		Name = name;
+		PasswordHash = passwordHash;
+		Role = role;
+	}
 }

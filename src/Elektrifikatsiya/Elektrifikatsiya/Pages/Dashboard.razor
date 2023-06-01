@@ -1,5 +1,6 @@
 @page "/"
 @using Blazorise.Components;
+@using Elektrifikatsiya.Database;
 @using Elektrifikatsiya.Models;
 @using System.Net
 @using Elektrifikatsiya.Services
@@ -10,6 +11,8 @@
 
 @inject IDeviceStatusService DeviceStatusService;
 @inject IDeviceManagmentService DeviceManagmentService;
+@inject IEventService EventService;
+@inject MainDatabaseContext MainDatabaseContext;
 
 <Div>
 	<Row Padding="Padding.Is3">

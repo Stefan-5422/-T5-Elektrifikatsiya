@@ -6,7 +6,7 @@ namespace Elektrifikatsiya.Services;
 
 public interface IDeviceStatusService
 {
-    public event EventHandler<DeviceStatusChagedEventArgs> OnDeviceStatusChanged;
+    public event EventHandler<DeviceStatusChangedEventArgs> OnDeviceStatusChanged;
 
     public Result<List<Device>> GetDevices();
 
