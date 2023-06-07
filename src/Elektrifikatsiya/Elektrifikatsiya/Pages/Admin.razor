@@ -112,7 +112,7 @@
 								<br />
 								<Row>
 									<Column ColumnSize="ColumnSize.Is1.OnDesktop">
-										<Button Position="Position.Absolute.Top.Is50.Start.Is100.Translate.Middle" Color="Color.Dark" Outline>
+										<Button @onclick="() => Toggle(context.Item)" Position="Position.Absolute.Top.Is50.Start.Is100.Translate.Middle" Color="Color.Dark" Outline>
 											<BarIcon IconName="IconName.Pen" />
 										</Button>
 									</Column>
@@ -123,8 +123,8 @@
 					</ItemTemplate>
 				</ListView>
 			</Column>
-			<Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile" Margin="Margin.Is3.FromTop.OnMobile" Padding="Padding.Is4.FromStart.OnMobile">
-				<Div>
+			<Column  ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile" Margin="Margin.Is3.FromTop.OnMobile" Padding="Padding.Is4.FromStart.OnMobile">
+				<Div hidden="@hideButtonSettings">
 					<Field>
 						<FieldLabel>
 							<h2>
@@ -179,10 +179,10 @@
 							</DropdownMenu>
 						</Dropdown>
 					</Field>
+					<Column ColumnSize="ColumnSize.IsFull" TextAlignment="TextAlignment.End">
+						<Button Color="Color.Primary">Save</Button>
+					</Column>
 				</Div>
-				<Column ColumnSize="ColumnSize.IsFull" TextAlignment="TextAlignment.End">
-					<Button Color="Color.Primary">Save</Button>
-				</Column>
 			</Column>
 		</Div>
 	</Row>
@@ -191,10 +191,33 @@
 @code {
 	List<User> users = new List<User>() { new User("Silas", "aldjlfasd", Role.Admin), new User("Joe", "qiowruioewjfopa", Role.Admin), new User("Stefan", "adfadsdf", Role.Admin), new User("Manu", "öhöfldaösldf", Role.User) };
 
+	User? SelectedUser = null;
+	User? UserCopy = null;
+
+	bool hideButtonSettings = true;
+	bool newpage = true;
+
 	private Modal? modalRefDelete;
 
 	public Admin()
 	{
+	}
+
+	private void Toggle(User user)
+	{
+		if (user == SelectedUser || newpage)
+		{
+			hideButtonSettings = !hideButtonSettings;
+		}
+		else
+		{
+			if (hideButtonSettings)
+			{
+				hideButtonSettings = !hideButtonSettings;
+			}
+		}
+		SelectedUser = user;
+		newpage = false;
 	}
 
 	private Task ShowModalDelete()
