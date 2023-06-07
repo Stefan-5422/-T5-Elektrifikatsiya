@@ -92,7 +92,7 @@
 								Here you can change the name of your plug
 							</Paragraph>
 						</FieldLabel>
-						<TextEdit MaxLength="30" @bind-Text="@DeviceCopy.Name" Placeholder="Enter Name" />
+						<TextEdit MaxLength="20" @bind-Text="@DeviceCopy.Name" Placeholder="Enter Name" />
 					</Field>
 					<br />
 					<br />
@@ -171,8 +171,8 @@
 	{
 		if (hideButtonSettings)
 		{
-
-			MainDatabaseContext.EnergyPriceChanges.Add(new EnergyPriceChange(electricityPrice));
+			MainDatabaseContext.ChangeTracker.Clear();
+			MainDatabaseContext.EnergyPriceChanges.Add(new EnergyPriceChange(electricityPrice));		
 			await MainDatabaseContext.SaveChangesAsync();
 		}
 		else if(DeviceCopy is not null && SelectedDevice is not null)

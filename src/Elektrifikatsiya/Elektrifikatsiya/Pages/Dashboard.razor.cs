@@ -64,9 +64,9 @@ public partial class Dashboard
         double energyPrice = MainDatabaseContext.EnergyPriceChanges.OrderByDescending(e =>e.DateTime).FirstOrDefault()?.EnergyPrice ?? 0;
 
         PrometheusDataWrapper? deviceData = (await promQueryer.Query($$"""sum(power{sensor=~"{{plugnames}}"})[1h:1m]"""))?.Data;
-        PrometheusDataWrapper? priceData = (await promQueryer.Query($$"""sum(sum_over_time(power{sensor=~"{{plugnames}}"}[1y])*{{energyPrice}})"""))?.Data;
+        //PrometheusDataWrapper? priceData = (await promQueryer.Query($$"""sum(sum_over_time(power{sensor=~"{{plugnames}}"}[1y])*{{energyPrice}})"""))?.Data;
 
-        Console.WriteLine(priceData.VectorTypeToTimestampFloatTuple());
+        //Console.WriteLine(priceData.VectorTypeToTimestampFloatTuple());
 
         var r = new Random(DateTime.Now.Millisecond);
 

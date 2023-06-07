@@ -27,8 +27,8 @@ public class UpdateService : IUpdateService
         }
     }
 
-    public DateTime FirstExecutionTime { get;  } = DateTime.Now.AddSeconds(15);
-    public TimeSpan ExecutionRepeatDelay { get;  } = TimeSpan.FromSeconds(15);
+    public DateTime FirstExecutionTime { get;  } = DateTime.Now.AddSeconds(10);
+    public TimeSpan ExecutionRepeatDelay { get;  } = TimeSpan.FromSeconds(1);
 
     public async void Update()
     {
