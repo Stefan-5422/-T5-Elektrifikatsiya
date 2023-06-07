@@ -52,62 +52,67 @@
 								</Column>
 
 								<Column ColumnSize="ColumnSize.Is4.OnDesktop.Is7.OnMobile">
-									<Button Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
+									<Button class="btn1" Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
 										<BarIcon @onclick="() => Delete(context.Item)" IconName="IconName.Delete" />
 									</Button>
+									<style>
+										.btn1:hover {
+											background: #E50000;
+										}
+									</style>
 								</Column>
-									<br />
-									<br />
+								<br />
+								<br />
 								<Row>
 									<Column ColumnSize="ColumnSize.Is1.OnDesktop">
-									<Button @onclick="() => Toggle(context.Item)" Position="Position.Absolute.Top.Is50.Start.Is100.Translate.Middle" Color="Color.Dark" Outline>
+										<Button @onclick="() => Toggle(context.Item)" Position="Position.Absolute.Top.Is50.Start.Is100.Translate.Middle" Color="Color.Dark" Outline>
 											<BarIcon IconName="IconName.Pen" />
 										</Button>
 									</Column>
 								</Row>
-	
+
 							</Row>
 						</ListGroupItem>
 					</ItemTemplate>
 				</ListView>
 			</Column>
 			<Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile" Margin="Margin.Is3.FromTop.OnMobile" Padding="Padding.Is4.FromStart.OnMobile">
-				
+
 				@if (DeviceCopy is not null)
 				{
-				<Div hidden="@hideButtonSettings">
-					<Field>
-						<FieldLabel>
-							<h2>
-								Plug Settings
-							</h2>
-						</FieldLabel>
-					</Field>
-					<Field>
-						<FieldLabel>
-							<h5>
-								Plug Name
-							</h5>
-							<Paragraph>
-								Here you can change the name of your plug
-							</Paragraph>
-						</FieldLabel>
-						<TextEdit MaxLength="20" @bind-Text="@DeviceCopy.Name" Placeholder="Enter Name" />
-					</Field>
-					<br />
-					<br />
-					<Field>
-						<FieldLabel>
-							<h5>
-								Select Room
-							</h5>
-							<Paragraph>
-								Here you select or change the room the plug belongs to.
-							</Paragraph>
-						</FieldLabel>
+					<Div hidden="@hideButtonSettings">
+						<Field>
+							<FieldLabel>
+								<h2>
+									Plug Settings
+								</h2>
+							</FieldLabel>
+						</Field>
+						<Field>
+							<FieldLabel>
+								<h5>
+									Plug Name
+								</h5>
+								<Paragraph>
+									Here you can change the name of your plug
+								</Paragraph>
+							</FieldLabel>
+							<TextEdit MaxLength="20" @bind-Text="@DeviceCopy.Name" Placeholder="Enter Name" />
+						</Field>
+						<br />
+						<br />
+						<Field>
+							<FieldLabel>
+								<h5>
+									Select Room
+								</h5>
+								<Paragraph>
+									Here you select or change the room the plug belongs to.
+								</Paragraph>
+							</FieldLabel>
 							<TextEdit MaxLength="30" @bind-text="@DeviceCopy.Room" Placeholder="Enter the name of the room here" />
-					</Field>
-				</Div>
+						</Field>
+					</Div>
 				}
 				<Div hidden="@(!hideButtonSettings)">
 					<Field>
@@ -145,6 +150,7 @@
 	bool hideButtonSettings = true;
 
 	int clicks = 0;
+	bool test = false;
 
 	double electricityPrice = 0;
 
@@ -160,11 +166,12 @@
 			plugs = getDevicesResult.Value;
 		}
 
-		electricityPrice = MainDatabaseContext.EnergyPriceChanges.OrderByDescending(e=>e.DateTime).FirstOrDefault()?.EnergyPrice ?? 0;
+		electricityPrice = MainDatabaseContext.EnergyPriceChanges.OrderByDescending(e => e.DateTime).FirstOrDefault()?.EnergyPrice ?? 0;
 	}
 
 	private void Toggle(Device device)
 	{
+
 		if (device == SelectedDevice || clicks == 0)
 		{
 			hideButtonSettings = !hideButtonSettings;
@@ -176,7 +183,9 @@
 		{
 			SelectedDevice = device;
 			DeviceCopy = device.CopyDevice();
+			clicks = 0;
 		}
+
 	}
 
 	private async void OnSave()
@@ -184,10 +193,10 @@
 		if (hideButtonSettings)
 		{
 			MainDatabaseContext.ChangeTracker.Clear();
-			MainDatabaseContext.EnergyPriceChanges.Add(new EnergyPriceChange(electricityPrice));		
+			MainDatabaseContext.EnergyPriceChanges.Add(new EnergyPriceChange(electricityPrice));
 			await MainDatabaseContext.SaveChangesAsync();
 		}
-		else if(DeviceCopy is not null && SelectedDevice is not null)
+		else if (DeviceCopy is not null && SelectedDevice is not null)
 		{
 
 			SelectedDevice.OverwiteDevice(DeviceCopy);
@@ -197,18 +206,18 @@
 
 	private async Task Delete(Device contextItem)
 	{
-	    bool succ = await	MessageService.Confirm($"Do you really want to delete the device \"{contextItem.Name}\"?");
+		bool succ = await MessageService.Confirm($"Do you really want to delete the device \"{contextItem.Name}\"?");
 
-		if(!succ)
+		if (!succ)
 		{
-            return;
-        }
+			return;
+		}
 
 		await DeviceManagmentService.UnregisterDevice(contextItem.MacAddress);
 
 		int index = plugs.FindIndex(x => x.MacAddress == contextItem.MacAddress);
 
-		if(index != -1)
+		if (index != -1)
 		{
 			plugs.RemoveAt(index);
 		}
