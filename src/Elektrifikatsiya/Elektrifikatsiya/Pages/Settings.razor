@@ -139,9 +139,12 @@
 
 
 @code {
+	ListView<Device> deviceList = new ListView<Device>();
 	List<Device> plugs = new List<Device>();
 
 	bool hideButtonSettings = true;
+
+	int clicks = 0;
 
 	double electricityPrice = 0;
 
@@ -162,9 +165,18 @@
 
 	private void Toggle(Device device)
 	{
-		hideButtonSettings = !hideButtonSettings;
-		SelectedDevice = device;
-		DeviceCopy = device.CopyDevice();
+		if (device == SelectedDevice || clicks == 0)
+		{
+			hideButtonSettings = !hideButtonSettings;
+			SelectedDevice = device;
+			DeviceCopy = device.CopyDevice();
+			clicks++;
+		}
+		else
+		{
+			SelectedDevice = device;
+			DeviceCopy = device.CopyDevice();
+		}
 	}
 
 	private async void OnSave()
