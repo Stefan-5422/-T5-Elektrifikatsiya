@@ -21,14 +21,19 @@ public class User
 	public string PasswordHash { get; private set; }
 
 	[Required]
+	public string Email { get; set; }
+
+	[Required]
 	public Role Role { get; set; }
+
 
 	public string? SessionToken { get; set; }
 
-	public User(string name, string passwordHash, Role role)
+	public User(string name, string passwordHash, string email, Role role)
 	{
 		Name = name;
 		PasswordHash = passwordHash;
+		Email = email;
 		Role = role;
 	}
 }

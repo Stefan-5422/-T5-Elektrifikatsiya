@@ -120,7 +120,7 @@ public class AuthenticationService : IAuthenticationService
             return Result.Fail("User name already exists!");
         }
 
-        User user = new User(name, BC.HashPassword(password), role);
+        User user = new User(name, BC.HashPassword(password), "", role);
         _ = mainDatabaseContext.Users.Add(user);
 
         return (await Result.Try(() => mainDatabaseContext.SaveChangesAsync())).ToResult();

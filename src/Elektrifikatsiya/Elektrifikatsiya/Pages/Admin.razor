@@ -52,6 +52,8 @@
 											<Small>Name: @context.Item.Name</Small>
 											<br />
 											<Small>Rolle: @context.Item.Role</Small>
+											<br />
+											<Small>E-Mail: @context.Item.Email</Small>
 										</Column>
 									</Row>
 								</Column>
@@ -76,6 +78,10 @@
 												<Field>
 													<FieldLabel>User Name</FieldLabel>
 													<TextEdit Placeholder="Enter user name..." />
+												</Field>
+												<Field>
+													<FieldLabel>User E-Mail</FieldLabel>
+													<TextEdit Placeholder="Enter user E-mail..."  />
 												</Field>
 												<Field>
 													<FieldLabel>User Password</FieldLabel>
@@ -148,6 +154,18 @@
 					<Field>
 						<FieldLabel>
 							<h5>
+								E-Mail
+							</h5>
+							<Paragraph>
+								Here you can change the E-Mail of a User
+							</Paragraph>
+						</FieldLabel>
+						<TextEdit Placeholder="Enter new email" />
+					</Field>
+					<br />
+					<Field>
+						<FieldLabel>
+							<h5>
 								Password
 							</h5>
 							<Paragraph>
@@ -189,7 +207,7 @@
 </Div>
 
 @code {
-	List<User> users = new List<User>() { new User("Silas", "aldjlfasd", Role.Admin), new User("Joe", "qiowruioewjfopa", Role.Admin), new User("Stefan", "adfadsdf", Role.Admin), new User("Manu", "öhöfldaösldf", Role.User) };
+	List<User> users = new List<User>() { new User("Silas", "aldjlfasd", "funny@gmail.com", Role.Admin), new User("Joe", "qiowruioewjfopa", "fluffmcfluff@hotmail.com", Role.Admin), new User("Stefan", "adfadsdf", "hahababaman@mail.com" , Role.Admin), new User("Manu", "öhöfldaösldf", "megatollermanu69@mail.com", Role.User) };
 
 	User? SelectedUser = null;
 	User? UserCopy = null;
