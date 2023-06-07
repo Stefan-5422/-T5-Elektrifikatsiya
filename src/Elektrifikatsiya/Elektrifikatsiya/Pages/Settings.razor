@@ -148,9 +148,9 @@
 	List<Device> plugs = new List<Device>();
 
 	bool hideButtonSettings = true;
+	bool newpage = true;
 
 	int clicks = 0;
-	bool test = false;
 
 	double electricityPrice = 0;
 
@@ -171,21 +171,20 @@
 
 	private void Toggle(Device device)
 	{
-
-		if (device == SelectedDevice || clicks == 0)
+		if (device == SelectedDevice || newpage)
 		{
 			hideButtonSettings = !hideButtonSettings;
-			SelectedDevice = device;
-			DeviceCopy = device.CopyDevice();
-			clicks++;
 		}
 		else
 		{
-			SelectedDevice = device;
-			DeviceCopy = device.CopyDevice();
-			clicks = 0;
+			if (hideButtonSettings)
+			{
+				hideButtonSettings = !hideButtonSettings;
+			}
 		}
-
+		SelectedDevice = device;
+		DeviceCopy = device.CopyDevice();
+		newpage = false;
 	}
 
 	private async void OnSave()
