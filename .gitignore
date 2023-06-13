@@ -353,3 +353,4 @@ MigrationBackup/
 *.sqlite*
 src/Elektrifikatsiya/Elektrifikatsiya/appsettings.Development.json
 /src/Elektrifikatsiya/Elektrifikatsiya/appsettings.Development.json~origin_Development
+/src/Elektrifikatsiya/Elektrifikatsiya/appsettings.Development.json
