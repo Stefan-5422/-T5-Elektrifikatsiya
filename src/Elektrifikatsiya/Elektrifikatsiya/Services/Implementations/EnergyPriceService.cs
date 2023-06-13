@@ -40,6 +40,11 @@ public class EnergyPriceService : IEnergyPriceService
 		{
 			plugnames += $"shellyplug-s-{device.MacAddress}/relay/0|";
 		}
+
+		if(plugnames.Length <= 0)
+		{
+			return 0;
+		}
 		plugnames = plugnames[0..^1];
 
 		if (startime < endTime)

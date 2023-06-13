@@ -82,15 +82,15 @@
 											<ModalBody>
 												<Field>
 													<FieldLabel>User Name</FieldLabel>
-													<TextEdit @ref="modalAddUserName" Placeholder="Enter user name..." />
+													<TextEdit @ref="modalAddUserName" @bind-Text="@UserCopy.Name" Placeholder="Enter user name..." />
 												</Field>
 												<Field>
 													<FieldLabel>User E-Mail</FieldLabel>
-													<TextEdit @ref="modalAddUserEmail" Placeholder="Enter user E-mail..." />
+													<TextEdit @ref="modalAddUserEmail" @bind-Text="@UserCopy.Name" Placeholder="Enter user E-mail..." />
 												</Field>
 												<Field>
 													<FieldLabel>User Password</FieldLabel>
-													<TextEdit @ref="modalAddUserPW" Placeholder="Enter user password..." />
+													<TextEdit @ref="modalAddUserPW" @bind-Text="@UserCopy.Name" Placeholder="Enter user password..." />
 												</Field>
 											</ModalBody>
 											<ModalFooter>
@@ -248,7 +248,7 @@
 
 	private async Task RegisterUser()
 	{
-		Result<Device> result = await AuthenthicationService.RegisterUserAsync(modalAddUserName.Text.ToString(), modalAddUserEmail.Text.ToString(), modalAddUserPW.Text.ToString(), Role.User);
+		Result<Device> result = await AuthenthicationService.RegisterUserAsync(modalAddUserName.Text.ToString(), modalAddUserPW.Text.ToString(), modalAddUserEmail.Text.ToString(), Role.User);
 
 		if (result.IsSuccess)
 		{
