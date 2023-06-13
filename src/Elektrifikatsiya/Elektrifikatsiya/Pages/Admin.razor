@@ -14,196 +14,203 @@
 @inject IAuthenticationService AuthenthicationService;
 @inject NavigationManager NavigationManager;
 @inject MainDatabaseContext MainDatabaseContext;
-<Div>
-	<Row Style="width: 100%; height: 100%" Margin="Margin.Is3.FromTop.OnMobile" Padding="Padding.Is4.FromStart.OnMobile">
 
-		<Div Display="Display.Flex.Row.OnDesktop" Margin=" Margin.Is3.FromBottom" Width="Width.Is100">
-			<Column ColumnSize="ColumnSize.Is5.OnDesktop.Is12.OnMobile">
-				<Bar Breakpoint="Breakpoint.Desktop"
-					 Background="Background.White"
-					 ThemeContrast="ThemeContrast.None"
-					 Shadow="Shadow.Remove"
-					 Border="Border.Is1.RoundedTop">
-					<BarBrand>
-						<Column ColumnSize="ColumnSize.Is12">
-							Users
-						</Column>
-						<Column ColumnSize="ColumnSize.Is12.Is11.WithOffset.OnDesktop.IsAuto.OnMobile">
-							<Button Clicked="@ShowModalAddUser" TextAlignment="TextAlignment.End" Shadow="Shadow.Remove">
-								<BarIcon IconName="IconName.Add"></BarIcon>
-							</Button>
-						</Column>
-					</BarBrand>
-
-
-
-
-				</Bar>
-				<ListView TItem="User"
-						  Data="@users"
-						  TextField="@((_)=>(""))"
-						  ValueField="@((_)=>(""))"
-						  Style="border-radius: 0px 0px"
-						  Height="100%"
-						  MaxHeight="90%">
-					<ItemTemplate>
-						<ListGroupItem Border="Border.OnBottom">
-							<Row>
-
-								<Column ColumnSize="ColumnSize.Is6">
-									<Row>
-										<Column ColumnSize="ColumnSize.Is7">
-											<Heading Size="HeadingSize.Is6" Margin="Margin.Is1.FromBottom">@context.Item.Name</Heading>
-										</Column>
-									</Row>
-									<Row>
-										<Column>
-											<Small>Name: @context.Item.Name</Small>
-											<br />
-											<Small>Rolle: @context.Item.Role</Small>
-											<br />
-											<Small>E-Mail: @context.Item.Email</Small>
-										</Column>
-									</Row>
+<Protected RequiredRole="Role.Admin">
+	<Authorized>
+		<Div>
+			<Row Style="width: 100%; height: 100%" Margin="Margin.Is3.FromTop.OnMobile" Padding="Padding.Is4.FromStart.OnMobile">
+		
+				<Div Display="Display.Flex.Row.OnDesktop" Margin=" Margin.Is3.FromBottom" Width="Width.Is100">
+					<Column ColumnSize="ColumnSize.Is5.OnDesktop.Is12.OnMobile">
+						<Bar Breakpoint="Breakpoint.Desktop"
+							 Background="Background.White"
+							 ThemeContrast="ThemeContrast.None"
+							 Shadow="Shadow.Remove"
+							 Border="Border.Is1.RoundedTop">
+							<BarBrand>
+								<Column ColumnSize="ColumnSize.Is12">
+									Users
 								</Column>
-
-								<Column ColumnSize="ColumnSize.Is4.OnDesktop.Is7.OnMobile">
-									<Button @onclick="() => Delete(context.Item)" class="btn1" Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
-										<BarIcon IconName="IconName.Delete" />
+								<Column ColumnSize="ColumnSize.Is12.Is11.WithOffset.OnDesktop.IsAuto.OnMobile">
+									<Button Clicked="@ShowModalAddUser" TextAlignment="TextAlignment.End" Shadow="Shadow.Remove">
+										<BarIcon IconName="IconName.Add"></BarIcon>
 									</Button>
-									<style>
-										.btn1:hover {
-											background: #E50000;
-										}
-									</style>
-
-									<Modal @ref="modalRefAddUser">
-										<ModalContent Centered>
-											<ModalHeader>
-												<ModalTitle>Add User</ModalTitle>
-												<CloseButton />
-											</ModalHeader>
-											<ModalBody>
-												<Field>
-													<FieldLabel>User Name</FieldLabel>
-													<TextEdit @ref="modalAddUserName" Placeholder="Enter new name..." />
-												</Field>
-												<Field>
-													<FieldLabel>User E-Mail</FieldLabel>
-													<TextEdit @ref="modalAddUserEmail" Placeholder="Enter new E-mail..." />
-												</Field>
-												<Field>
-													<FieldLabel>User Password</FieldLabel>
-													<TextEdit @ref="modalAddUserPW" Placeholder="Enter new password..." />
-												</Field>
-											</ModalBody>
-											<ModalFooter>
-												<Button Color="Color.Secondary" style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px" Clicked="@HideModalAddUser">Close</Button>
-												<Button Color="Color.Primary" style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px" Clicked="@AddButtonPressed">Add</Button>
-											</ModalFooter>
-										</ModalContent>
-									</Modal>
 								</Column>
+							</BarBrand>
+		
+		
+		
+		
+						</Bar>
+						<ListView TItem="User"
+								  Data="@users"
+								  TextField="@((_)=>(""))"
+								  ValueField="@((_)=>(""))"
+								  Style="border-radius: 0px 0px"
+								  Height="100%"
+								  MaxHeight="90%">
+							<ItemTemplate>
+								<ListGroupItem Border="Border.OnBottom">
+									<Row>
+		
+										<Column ColumnSize="ColumnSize.Is6">
+											<Row>
+												<Column ColumnSize="ColumnSize.Is7">
+													<Heading Size="HeadingSize.Is6" Margin="Margin.Is1.FromBottom">@context.Item.Name</Heading>
+												</Column>
+											</Row>
+											<Row>
+												<Column>
+													<Small>Name: @context.Item.Name</Small>
+													<br />
+													<Small>Rolle: @context.Item.Role</Small>
+													<br />
+													<Small>E-Mail: @context.Item.Email</Small>
+												</Column>
+											</Row>
+										</Column>
+		
+										<Column ColumnSize="ColumnSize.Is4.OnDesktop.Is7.OnMobile">
+											<Button @onclick="() => Delete(context.Item)" class="btn1" Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
+												<BarIcon IconName="IconName.Delete" />
+											</Button>
+											<style>
+												.btn1:hover {
+													background: #E50000;
+												}
+											</style>
+		
+											<Modal @ref="modalRefAddUser">
+												<ModalContent Centered>
+													<ModalHeader>
+														<ModalTitle>Add User</ModalTitle>
+														<CloseButton />
+													</ModalHeader>
+													<ModalBody>
+														<Field>
+															<FieldLabel>User Name</FieldLabel>
+															<TextEdit @ref="modalAddUserName" Placeholder="Enter new name..." />
+														</Field>
+														<Field>
+															<FieldLabel>User E-Mail</FieldLabel>
+															<TextEdit @ref="modalAddUserEmail" Placeholder="Enter new E-mail..." />
+														</Field>
+														<Field>
+															<FieldLabel>User Password</FieldLabel>
+															<TextEdit @ref="modalAddUserPW" Placeholder="Enter new password..." />
+														</Field>
+													</ModalBody>
+													<ModalFooter>
+														<Button Color="Color.Secondary" style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px" Clicked="@HideModalAddUser">Close</Button>
+														<Button Color="Color.Primary" style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px" Clicked="@AddButtonPressed">Add</Button>
+													</ModalFooter>
+												</ModalContent>
+											</Modal>
+										</Column>
+										<br />
+										<br />
+										<Row>
+											<Column ColumnSize="ColumnSize.Is1.OnDesktop">
+												<Button @onclick="() => Toggle(context.Item)" Position="Position.Absolute.Top.Is50.Start.Is100.Translate.Middle" Color="Color.Dark" Outline>
+													<BarIcon IconName="IconName.Pen" />
+												</Button>
+											</Column>
+										</Row>
+		
+									</Row>
+								</ListGroupItem>
+							</ItemTemplate>
+						</ListView>
+					</Column>
+					<Column  ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile" Margin="Margin.Is3.FromTop.OnMobile" Padding="Padding.Is4.FromStart.OnMobile">
+						@if (SelectedUser is not null)
+						{
+							<Div hidden="@hideButtonSettings">
+								<Field>
+									<FieldLabel>
+										<h2>
+											User Settings
+										</h2>
+									</FieldLabel>
+								</Field>
+								<Validation @ref="updateValidation" Validator="ValidationRule.IsNotEmpty">
+									<Field>
+										<FieldLabel>
+											<h5>
+												User Name
+											</h5>
+											<Paragraph>
+												Here you can change the name of the User
+											</Paragraph>
+										</FieldLabel>
+										<TextEdit @ref="updateName" @bind-Text="@SelectedUser.Name" Placeholder="Enter User Name" />
+									</Field>
+								</Validation>
 								<br />
 								<br />
-								<Row>
-									<Column ColumnSize="ColumnSize.Is1.OnDesktop">
-										<Button @onclick="() => Toggle(context.Item)" Position="Position.Absolute.Top.Is50.Start.Is100.Translate.Middle" Color="Color.Dark" Outline>
-											<BarIcon IconName="IconName.Pen" />
-										</Button>
-									</Column>
-								</Row>
-
-							</Row>
-						</ListGroupItem>
-					</ItemTemplate>
-				</ListView>
-			</Column>
-			<Column  ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile" Margin="Margin.Is3.FromTop.OnMobile" Padding="Padding.Is4.FromStart.OnMobile">
-				@if (SelectedUser is not null)
-				{
-					<Div hidden="@hideButtonSettings">
-						<Field>
-							<FieldLabel>
-								<h2>
-									User Settings
-								</h2>
-							</FieldLabel>
-						</Field>
-						<Validation @ref="updateValidation" Validator="ValidationRule.IsNotEmpty">
-							<Field>
-								<FieldLabel>
-									<h5>
-										User Name
-									</h5>
-									<Paragraph>
-										Here you can change the name of the User
-									</Paragraph>
-								</FieldLabel>
-								<TextEdit @ref="updateName" @bind-Text="@SelectedUser.Name" Placeholder="Enter User Name" />
-							</Field>
-						</Validation>
-						<br />
-						<br />
-						<Validation @ref="updateValidation" Validator="ValidationRule.IsEmail">
-							<Field>
-								<FieldLabel>
-									<h5>
-										E-Mail
-									</h5>
-									<Paragraph>
-										Here you can change the E-Mail of a User
-									</Paragraph>
-								</FieldLabel>
-								<TextEdit @ref="updateEmail" @bind-Text="@SelectedUser.Email" Placeholder="Enter new email" />
-							</Field>
-						</Validation>
-						<br />
-						<br />
-						<Validation @ref="updateValidation" Validator="ValidatePW">
-							<Field>
-								<FieldLabel>
-									<h5>
-										Password
-									</h5>
-									<Paragraph>
-										Here you can change the password of a User
-									</Paragraph>
-								</FieldLabel>
-								<TextEdit @ref="updatePW" Placeholder="Enter new password" />
-							</Field>
-						</Validation>
-						<br />
-						<br />
-						<Field>
-							<FieldLabel>
-								<h5>
-									Select Role
-								</h5>
-								<Paragraph>
-									Here you select or change the role of to User or Admin
-								</Paragraph>
-							</FieldLabel>
-							<br />
-							<Dropdown Display="Display.InlineBlock">
-								<DropdownToggle Color="Color.Primary" Width="Width.Is100">Roles</DropdownToggle>
-								<DropdownMenu>
-									<DropdownItem @onclick="() => SetRoleAdmin()">Admin</DropdownItem>
-									<DropdownDivider />
-									<DropdownItem @onclick="() => SetRoleUser()">User</DropdownItem>
-								</DropdownMenu>
-							</Dropdown>
-						</Field>
-						<Column ColumnSize="ColumnSize.IsFull" TextAlignment="TextAlignment.End">
-							<Button @onclick="OnSave" Color="Color.Primary">Save</Button>
-						</Column>
-					</Div>
-				}
-			</Column>
+								<Validation @ref="updateValidation" Validator="ValidationRule.IsEmail">
+									<Field>
+										<FieldLabel>
+											<h5>
+												E-Mail
+											</h5>
+											<Paragraph>
+												Here you can change the E-Mail of a User
+											</Paragraph>
+										</FieldLabel>
+										<TextEdit @ref="updateEmail" @bind-Text="@SelectedUser.Email" Placeholder="Enter new email" />
+									</Field>
+								</Validation>
+								<br />
+								<br />
+								<Validation @ref="updateValidation" Validator="ValidationRule.IsNotEmpty">
+									<Field>
+										<FieldLabel>
+											<h5>
+												Password
+											</h5>
+											<Paragraph>
+												Here you can change the password of a User
+											</Paragraph>
+										</FieldLabel>
+										<TextEdit @ref="updatePW" Placeholder="Enter new password" />
+									</Field>
+								</Validation>
+								<br />
+								<br />
+								<Field>
+									<FieldLabel>
+										<h5>
+											Select Role
+										</h5>
+										<Paragraph>
+											Here you select or change the role of to User or Admin
+										</Paragraph>
+									</FieldLabel>
+									<br />
+									<Dropdown Display="Display.InlineBlock">
+										<DropdownToggle Color="Color.Primary" Width="Width.Is100">Roles</DropdownToggle>
+										<DropdownMenu>
+											<DropdownItem @onclick="() => SetRoleAdmin()">Admin</DropdownItem>
+											<DropdownDivider />
+											<DropdownItem @onclick="() => SetRoleUser()">User</DropdownItem>
+										</DropdownMenu>
+									</Dropdown>
+								</Field>
+								<Column ColumnSize="ColumnSize.IsFull" TextAlignment="TextAlignment.End">
+									<Button @onclick="OnSave" Color="Color.Primary">Save</Button>
+								</Column>
+							</Div>
+						}
+					</Column>
+				</Div>
+			</Row>
 		</Div>
-	</Row>
-</Div>
-
+	</Authorized>
+	<NotAuthorized>
+		Bro no! this page is only for admins! 😠
+	</NotAuthorized>
+</Protected>
 @code {
 	List<User> users = new List<User>();
 
@@ -333,50 +340,5 @@
 	private void SetRoleUser()
 	{
 		admin = false;
-	}
-	public void ValidateName(ValidatorEventArgs e)
-	{
-		string? input = Convert.ToString(e.Value);
-
-		if (string.IsNullOrWhiteSpace(input))
-		{
-			e.Status = ValidationStatus.None;
-			return;
-		}
-		else
-		{
-			e.Status = ValidationStatus.Success;
-			return;
-		}
-	}
-	public void ValidateEmail(ValidatorEventArgs e)
-	{
-		string? input = Convert.ToString(e.Value);
-
-		if (string.IsNullOrWhiteSpace(input))
-		{
-			e.Status = ValidationStatus.None;
-			return;
-		}
-		else
-		{
-			e.Status = ValidationStatus.Success;
-			return;
-		}
-	}
-	public void ValidatePW(ValidatorEventArgs e)
-	{
-		string? input = Convert.ToString(e.Value);
-
-		if (string.IsNullOrWhiteSpace(input))
-		{
-			e.Status = ValidationStatus.None;
-			return;
-		}
-		else
-		{
-			e.Status = ValidationStatus.Success;
-			return;
-		}
 	}
 }
