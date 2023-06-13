@@ -15,7 +15,7 @@ public class User
 	public DateTime LastLoginDate { get; set; }
 
 	[Required]
-	public string Name { get; private set; }
+	public string Name { get; set; }
 
 	[Required]
 	public string PasswordHash { get; private set; }

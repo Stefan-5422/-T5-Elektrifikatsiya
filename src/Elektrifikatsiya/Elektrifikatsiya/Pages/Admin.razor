@@ -82,15 +82,15 @@
 											<ModalBody>
 												<Field>
 													<FieldLabel>User Name</FieldLabel>
-													<TextEdit @ref="modalAddUserName" @bind-Text="@UserCopy.Name" Placeholder="Enter user name..." />
+													<TextEdit @ref="modalAddUserName" Placeholder="Enter new name..." />
 												</Field>
 												<Field>
 													<FieldLabel>User E-Mail</FieldLabel>
-													<TextEdit @ref="modalAddUserEmail" @bind-Text="@UserCopy.Name" Placeholder="Enter user E-mail..." />
+													<TextEdit @ref="modalAddUserEmail" Placeholder="Enter new E-mail..." />
 												</Field>
 												<Field>
 													<FieldLabel>User Password</FieldLabel>
-													<TextEdit @ref="modalAddUserPW" @bind-Text="@UserCopy.Name" Placeholder="Enter user password..." />
+													<TextEdit @ref="modalAddUserPW" Placeholder="Enter new password..." />
 												</Field>
 											</ModalBody>
 											<ModalFooter>
@@ -116,77 +116,80 @@
 				</ListView>
 			</Column>
 			<Column  ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile" Margin="Margin.Is3.FromTop.OnMobile" Padding="Padding.Is4.FromStart.OnMobile">
-				<Div hidden="@hideButtonSettings">
-					<Field>
-						<FieldLabel>
-							<h2>
-								User Settings
-							</h2>
-						</FieldLabel>
-					</Field>
-					<Field>
-						<FieldLabel>
-							<h5>
-								User Name
-							</h5>
-							<Paragraph>
-								Here you can change the name of the User
-							</Paragraph>
-						</FieldLabel>
-						<TextEdit Placeholder="Enter User Name" />
-					</Field>
-					<br />
-					<br />
-					<Field>
-						<FieldLabel>
-							<h5>
-								E-Mail
-							</h5>
-							<Paragraph>
-								Here you can change the E-Mail of a User
-							</Paragraph>
-						</FieldLabel>
-						<TextEdit Placeholder="Enter new email" />
-					</Field>
-					<br />
-					<Field>
-						<FieldLabel>
-							<h5>
-								Password
-							</h5>
-							<Paragraph>
-								Here you can change the password of a User
-							</Paragraph>
-						</FieldLabel>
-						<TextEdit Placeholder="Enter old password" />
+				@if (SelectedUser is not null)
+				{
+					<Div hidden="@hideButtonSettings">
+						<Field>
+							<FieldLabel>
+								<h2>
+									User Settings
+								</h2>
+							</FieldLabel>
+						</Field>
+						<Field>
+							<FieldLabel>
+								<h5>
+									User Name
+								</h5>
+								<Paragraph>
+									Here you can change the name of the User
+								</Paragraph>
+							</FieldLabel>
+							<TextEdit @bind-Text="@SelectedUser.Name" Placeholder="Enter User Name" />
+						</Field>
 						<br />
-						<TextEdit Placeholder="Enter new password" />
-					</Field>
-					<br />
-					<br />
-					<Field>
-						<FieldLabel>
-							<h5>
-								Select Role
-							</h5>
-							<Paragraph>
-								Here you select or change the role of to User or Admin
-							</Paragraph>
-						</FieldLabel>
 						<br />
-						<Dropdown Display="Display.InlineBlock">
-							<DropdownToggle Color="Color.Primary" Width="Width.Is100">Roles</DropdownToggle>
-							<DropdownMenu>
-								<DropdownItem>Admin</DropdownItem>
-								<DropdownDivider />
-								<DropdownItem>User</DropdownItem>
-							</DropdownMenu>
-						</Dropdown>
-					</Field>
-					<Column ColumnSize="ColumnSize.IsFull" TextAlignment="TextAlignment.End">
-						<Button Color="Color.Primary">Save</Button>
-					</Column>
-				</Div>
+						<Field>
+							<FieldLabel>
+								<h5>
+									E-Mail
+								</h5>
+								<Paragraph>
+									Here you can change the E-Mail of a User
+								</Paragraph>
+							</FieldLabel>
+							<TextEdit @bind-Text="@SelectedUser.Email" Placeholder="Enter new email" />
+						</Field>
+						<br />
+						<Field>
+							<FieldLabel>
+								<h5>
+									Password
+								</h5>
+								<Paragraph>
+									Here you can change the password of a User
+								</Paragraph>
+							</FieldLabel>
+							<TextEdit Placeholder="Enter old password" />
+							<br />
+							<TextEdit Placeholder="Enter new password" />
+						</Field>
+						<br />
+						<br />
+						<Field>
+							<FieldLabel>
+								<h5>
+									Select Role
+								</h5>
+								<Paragraph>
+									Here you select or change the role of to User or Admin
+								</Paragraph>
+							</FieldLabel>
+							<br />
+							<Dropdown Display="Display.InlineBlock">
+								<DropdownToggle Color="Color.Primary" Width="Width.Is100">Roles</DropdownToggle>
+								<DropdownMenu>
+									<DropdownItem>Admin</DropdownItem>
+									<DropdownDivider />
+									<DropdownItem>User</DropdownItem>
+								</DropdownMenu>
+							</Dropdown>
+						</Field>
+						<Column ColumnSize="ColumnSize.IsFull" TextAlignment="TextAlignment.End">
+							<Button Color="Color.Primary">Save</Button>
+						</Column>
+					</Div>
+				}
 			</Column>
 		</Div>
 	</Row>
@@ -196,7 +199,6 @@
 	List<User> users = new List<User>();
 
 	User? SelectedUser = null;
-	User? UserCopy = null;
 
 	bool hideButtonSettings = true;
 	bool newpage = true;
