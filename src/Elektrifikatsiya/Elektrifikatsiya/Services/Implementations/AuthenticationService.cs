@@ -36,7 +36,13 @@ public class AuthenticationService : IAuthenticationService
         return (await Result.Try(() => mainDatabaseContext.SaveChangesAsync())).ToResult();
     }
 
-    public async Task<Result<User>> GetUserAsync()
+	public async Task<Result> DeleteUser(User user)
+	{
+		_ = mainDatabaseContext.Users.Remove(user);
+		return (await Result.Try(() => mainDatabaseContext.SaveChangesAsync())).ToResult();
+	}
+
+	public async Task<Result<User>> GetUserAsync()
     {
         string? token = httpContextAccessor.HttpContext?.Request.Cookies["token"]?.ToString();
 
@@ -55,7 +61,12 @@ public class AuthenticationService : IAuthenticationService
         return user;
     }
 
-    public async Task<Result<bool>> IsAuthenticated()
+	public async Task<Result<List<User>>> GetUsers()
+	{
+		return await mainDatabaseContext.Users.ToListAsync();
+	}
+
+	public async Task<Result<bool>> IsAuthenticated()
     {
         return (await GetUserAsync()).IsSuccess;
     }
@@ -111,7 +122,7 @@ public class AuthenticationService : IAuthenticationService
         return Result.Ok();
     }
 
-    public async Task<Result> RegisterUserAsync(string name, string password, Role role)
+    public async Task<Result> RegisterUserAsync(string name, string password, string email, Role role)
     {
         Result<bool> userExistsResult = await UserExistsAsync(name);
 
@@ -120,7 +131,7 @@ public class AuthenticationService : IAuthenticationService
             return Result.Fail("User name already exists!");
         }
 
-        User user = new User(name, BC.HashPassword(password), "", role);
+        User user = new User(name, BC.HashPassword(password), email, role);
         _ = mainDatabaseContext.Users.Add(user);
 
         return (await Result.Try(() => mainDatabaseContext.SaveChangesAsync())).ToResult();

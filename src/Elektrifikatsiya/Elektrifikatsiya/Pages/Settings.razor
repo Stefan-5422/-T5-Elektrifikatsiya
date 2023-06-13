@@ -52,8 +52,8 @@
 								</Column>
 
 								<Column ColumnSize="ColumnSize.Is4.OnDesktop.Is7.OnMobile">
-									<Button class="btn1" Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
-										<BarIcon @onclick="() => Delete(context.Item)" IconName="IconName.Delete" />
+									<Button @onclick="() => Delete(context.Item)" class="btn1" Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
+										<BarIcon IconName="IconName.Delete" />
 									</Button>
 									<style>
 										.btn1:hover {

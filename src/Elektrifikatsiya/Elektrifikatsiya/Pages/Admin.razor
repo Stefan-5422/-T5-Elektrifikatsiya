@@ -3,8 +3,13 @@
 @using Elektrifikatsiya.Models;
 @using System.Net
 @using Elektrifikatsiya.Services;
+@using Elektrifikatsiya.Services.Implementations;
+@using FluentResults;
 
+@inject IDeviceManagmentService DeviceManagmentService
+@inject IMessageService MessageService
 @inject IAuthenticationService AuthenthicationService;
+@inject NavigationManager NavigationManager;
 <Div>
 	<Row Style="width: 100%; height: 100%" Margin="Margin.Is3.FromTop.OnMobile" Padding="Padding.Is4.FromStart.OnMobile">
 
@@ -59,7 +64,7 @@
 								</Column>
 
 								<Column ColumnSize="ColumnSize.Is4.OnDesktop.Is7.OnMobile">
-									<Button Clicked="@ShowModalDelete" class="btn1" Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
+									<Button @onclick="() => Delete(context.Item)" class="btn1" Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
 										<BarIcon IconName="IconName.Delete" />
 									</Button>
 									<style>
@@ -77,39 +82,20 @@
 											<ModalBody>
 												<Field>
 													<FieldLabel>User Name</FieldLabel>
-													<TextEdit Placeholder="Enter user name..." />
+													<TextEdit @ref="modalAddUserName" Placeholder="Enter user name..." />
 												</Field>
 												<Field>
 													<FieldLabel>User E-Mail</FieldLabel>
-													<TextEdit Placeholder="Enter user E-mail..."  />
+													<TextEdit @ref="modalAddUserEmail" Placeholder="Enter user E-mail..." />
 												</Field>
 												<Field>
 													<FieldLabel>User Password</FieldLabel>
-													<TextEdit Placeholder="Enter user password..." />
+													<TextEdit @ref="modalAddUserPW" Placeholder="Enter user password..." />
 												</Field>
 											</ModalBody>
 											<ModalFooter>
 												<Button Color="Color.Secondary" style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px" Clicked="@HideModalAddUser">Close</Button>
-												<Button Color="Color.Primary" style="border-bottom-left-radius: 0px; border-bottom-right-radius: 0" Clicked="@HideModalAddUser">Add</Button>
-											</ModalFooter>
-										</ModalContent>
-									</Modal>
-
-									<Modal @ref="modalRefDelete">
-										<ModalContent Centered>
-											<ModalHeader>
-												<ModalTitle>Delete User</ModalTitle>
-												<CloseButton />
-											</ModalHeader>
-											<ModalBody>
-												<Field>
-													<FieldLabel>Admin Password</FieldLabel>
-													<TextEdit Placeholder="Enter admin password..." />
-												</Field>
-											</ModalBody>
-											<ModalFooter>
-												<Button Color="Color.Secondary" style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px" Clicked="@HideModalDelete">Close</Button>
-												<Button Color="Color.Primary" style="border-bottom-left-radius: 0px; border-bottom-right-radius: 0px" Clicked="@HideModalDelete">Delete</Button>
+												<Button Color="Color.Primary" style="border-bottom-left-radius: 0px; border-bottom-right-radius: 0" Clicked="@AddButtonPressed">Add</Button>
 											</ModalFooter>
 										</ModalContent>
 									</Modal>
@@ -207,7 +193,7 @@
 </Div>
 
 @code {
-	List<User> users = new List<User>() { new User("Silas", "aldjlfasd", "funny@gmail.com", Role.Admin), new User("Joe", "qiowruioewjfopa", "fluffmcfluff@hotmail.com", Role.Admin), new User("Stefan", "adfadsdf", "hahababaman@mail.com" , Role.Admin), new User("Manu", "öhöfldaösldf", "megatollermanu69@mail.com", Role.User) };
+	List<User> users = new List<User>();
 
 	User? SelectedUser = null;
 	User? UserCopy = null;
@@ -215,10 +201,19 @@
 	bool hideButtonSettings = true;
 	bool newpage = true;
 
-	private Modal? modalRefDelete;
+	private Modal? modalRefAddUser;
+	private TextEdit? modalAddUserName;
+	private TextEdit? modalAddUserEmail;
+	private TextEdit? modalAddUserPW;
 
-	public Admin()
+	protected override async void OnInitialized()
 	{
+		Result<List<User>> getUsersResult = await AuthenthicationService.GetUsers();
+
+		if (getUsersResult.IsSuccess)
+		{
+			users = getUsersResult.Value;
+		}
 	}
 
 	private void Toggle(User user)
@@ -238,28 +233,53 @@
 		newpage = false;
 	}
 
-	private Task ShowModalDelete()
-	{
-		return modalRefDelete!.Show();
-	}
-
-	private Task HideModalDelete() => modalRefDelete!.Hide();
-
-	private Modal? modalRefAddUser;
-
-
 	private Task ShowModalAddUser()
 	{
 		return modalRefAddUser!.Show();
 	}
 
 	private Task HideModalAddUser() => modalRefAddUser!.Hide();
-	private async Task AddModalAddUser(string name, string passwort)
+
+	private async void AddButtonPressed()
 	{
-		await AuthenthicationService.RegisterUserAsync(name, passwort, Role.User);
 		await HideModalAddUser();
+		await RegisterUser();
 	}
 
+	private async Task RegisterUser()
+	{
+		Result<Device> result = await AuthenthicationService.RegisterUserAsync(modalAddUserName.Text.ToString(), modalAddUserEmail.Text.ToString(), modalAddUserPW.Text.ToString(), Role.User);
 
+		if (result.IsSuccess)
+		{
+			await MessageService.Success("User added!");
+		}
+		else
+		{
+			await MessageService.Error(string.Join(',', result.Errors.Select(e => e.Message)), "Adding User failed!");
+		}
 
+		Result<List<User>> getUsersResult = await AuthenthicationService.GetUsers();
+
+		if (getUsersResult.IsSuccess)
+		{
+			users = getUsersResult.Value;
+		}
+
+		StateHasChanged();
+	}
+
+	private async Task Delete(User contextItem)
+	{
+		bool succ = await MessageService.Confirm($"Do you really want to delete the User \"{contextItem.Name}\"?");
+
+		if (!succ)
+		{
+			return;
+		}
+
+		await AuthenthicationService.DeleteUser(contextItem);
+
+		NavigationManager.NavigateTo(NavigationManager.Uri, true);
+	}
 }
