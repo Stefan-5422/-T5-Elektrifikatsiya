@@ -1,15 +1,18 @@
 ﻿@page "/Admin"
 @using Blazorise.Components;
 @using Elektrifikatsiya.Models;
+@using Elektrifikatsiya.Database;
 @using System.Net
 @using Elektrifikatsiya.Services;
 @using Elektrifikatsiya.Services.Implementations;
 @using FluentResults;
+@using BC = BCrypt.Net.BCrypt;
 
 @inject IDeviceManagmentService DeviceManagmentService
 @inject IMessageService MessageService
 @inject IAuthenticationService AuthenthicationService;
 @inject NavigationManager NavigationManager;
+@inject MainDatabaseContext MainDatabaseContext;
 <Div>
 	<Row Style="width: 100%; height: 100%" Margin="Margin.Is3.FromTop.OnMobile" Padding="Padding.Is4.FromStart.OnMobile">
 
@@ -95,7 +98,7 @@
 											</ModalBody>
 											<ModalFooter>
 												<Button Color="Color.Secondary" style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px" Clicked="@HideModalAddUser">Close</Button>
-												<Button Color="Color.Primary" style="border-bottom-left-radius: 0px; border-bottom-right-radius: 0" Clicked="@AddButtonPressed">Add</Button>
+												<Button Color="Color.Primary" style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px" Clicked="@AddButtonPressed">Add</Button>
 											</ModalFooter>
 										</ModalContent>
 									</Modal>
@@ -126,44 +129,49 @@
 								</h2>
 							</FieldLabel>
 						</Field>
-						<Field>
-							<FieldLabel>
-								<h5>
-									User Name
-								</h5>
-								<Paragraph>
-									Here you can change the name of the User
-								</Paragraph>
-							</FieldLabel>
-							<TextEdit @bind-Text="@SelectedUser.Name" Placeholder="Enter User Name" />
-						</Field>
+						<Validation @ref="updateValidation" Validator="ValidationRule.IsNotEmpty">
+							<Field>
+								<FieldLabel>
+									<h5>
+										User Name
+									</h5>
+									<Paragraph>
+										Here you can change the name of the User
+									</Paragraph>
+								</FieldLabel>
+								<TextEdit @ref="updateName" @bind-Text="@SelectedUser.Name" Placeholder="Enter User Name" />
+							</Field>
+						</Validation>
 						<br />
 						<br />
-						<Field>
-							<FieldLabel>
-								<h5>
-									E-Mail
-								</h5>
-								<Paragraph>
-									Here you can change the E-Mail of a User
-								</Paragraph>
-							</FieldLabel>
-							<TextEdit @bind-Text="@SelectedUser.Email" Placeholder="Enter new email" />
-						</Field>
+						<Validation @ref="updateValidation" Validator="ValidationRule.IsEmail">
+							<Field>
+								<FieldLabel>
+									<h5>
+										E-Mail
+									</h5>
+									<Paragraph>
+										Here you can change the E-Mail of a User
+									</Paragraph>
+								</FieldLabel>
+								<TextEdit @ref="updateEmail" @bind-Text="@SelectedUser.Email" Placeholder="Enter new email" />
+							</Field>
+						</Validation>
 						<br />
-						<Field>
-							<FieldLabel>
-								<h5>
-									Password
-								</h5>
-								<Paragraph>
-									Here you can change the password of a User
-								</Paragraph>
-							</FieldLabel>
-							<TextEdit Placeholder="Enter old password" />
-							<br />
-							<TextEdit Placeholder="Enter new password" />
-						</Field>
+						<br />
+						<Validation @ref="updateValidation" Validator="ValidatePW">
+							<Field>
+								<FieldLabel>
+									<h5>
+										Password
+									</h5>
+									<Paragraph>
+										Here you can change the password of a User
+									</Paragraph>
+								</FieldLabel>
+								<TextEdit @ref="updatePW" Placeholder="Enter new password" />
+							</Field>
+						</Validation>
 						<br />
 						<br />
 						<Field>
@@ -179,14 +187,14 @@
 							<Dropdown Display="Display.InlineBlock">
 								<DropdownToggle Color="Color.Primary" Width="Width.Is100">Roles</DropdownToggle>
 								<DropdownMenu>
-									<DropdownItem>Admin</DropdownItem>
+									<DropdownItem @onclick="() => SetRoleAdmin()">Admin</DropdownItem>
 									<DropdownDivider />
-									<DropdownItem>User</DropdownItem>
+									<DropdownItem @onclick="() => SetRoleUser()">User</DropdownItem>
 								</DropdownMenu>
 							</Dropdown>
 						</Field>
 						<Column ColumnSize="ColumnSize.IsFull" TextAlignment="TextAlignment.End">
-							<Button Color="Color.Primary">Save</Button>
+							<Button @onclick="OnSave" Color="Color.Primary">Save</Button>
 						</Column>
 					</Div>
 				}
@@ -199,6 +207,7 @@
 	List<User> users = new List<User>();
 
 	User? SelectedUser = null;
+	User? UserCopy = null;
 
 	bool hideButtonSettings = true;
 	bool newpage = true;
@@ -207,6 +216,12 @@
 	private TextEdit? modalAddUserName;
 	private TextEdit? modalAddUserEmail;
 	private TextEdit? modalAddUserPW;
+	private TextEdit? updateName;
+	private TextEdit? updateEmail;
+	private TextEdit? updatePW;
+	bool admin = false;
+
+	Validation? updateValidation;
 
 	protected override async void OnInitialized()
 	{
@@ -232,6 +247,7 @@
 			}
 		}
 		SelectedUser = user;
+		UserCopy = user.CopyUser();
 		newpage = false;
 	}
 
@@ -271,6 +287,31 @@
 		StateHasChanged();
 	}
 
+	private async Task OnSave()
+	{
+		if (UserCopy is not null && SelectedUser is not null)
+		{
+			MainDatabaseContext.ChangeTracker.Clear();
+
+			UserCopy.Name = updateName.Text.ToString();
+			UserCopy.Email = updateEmail.Text.ToString();
+			UserCopy.PasswordHash = BC.HashPassword(updatePW.Text.ToString());
+			if (admin)
+			{
+				UserCopy.Role = Role.Admin;
+			}
+			else
+			{
+				UserCopy.Role = Role.User;
+			}
+
+			MainDatabaseContext.Update(UserCopy);
+
+			await Result.Try(Task () => MainDatabaseContext.SaveChangesAsync());
+			await MessageService.Success("User updated!");
+		}
+	}
+
 	private async Task Delete(User contextItem)
 	{
 		bool succ = await MessageService.Confirm($"Do you really want to delete the User \"{contextItem.Name}\"?");
@@ -283,5 +324,58 @@
 		await AuthenthicationService.DeleteUser(contextItem);
 
 		NavigationManager.NavigateTo(NavigationManager.Uri, true);
+	}
+	private void SetRoleAdmin()
+	{
+		admin = true;
+	}
+	private void SetRoleUser()
+	{
+		admin = false;
+	}
+	public void ValidateName(ValidatorEventArgs e)
+	{
+		string? input = Convert.ToString(e.Value);
+
+		if (string.IsNullOrWhiteSpace(input))
+		{
+			e.Status = ValidationStatus.None;
+			return;
+		}
+		else
+		{
+			e.Status = ValidationStatus.Success;
+			return;
+		}
+	}
+	public void ValidateEmail(ValidatorEventArgs e)
+	{
+		string? input = Convert.ToString(e.Value);
+
+		if (string.IsNullOrWhiteSpace(input))
+		{
+			e.Status = ValidationStatus.None;
+			return;
+		}
+		else
+		{
+			e.Status = ValidationStatus.Success;
+			return;
+		}
+	}
+	public void ValidatePW(ValidatorEventArgs e)
+	{
+		string? input = Convert.ToString(e.Value);
+
+		if (string.IsNullOrWhiteSpace(input))
+		{
+			e.Status = ValidationStatus.None;
+			return;
+		}
+		else
+		{
+			e.Status = ValidationStatus.Success;
+			return;
+		}
 	}
 }

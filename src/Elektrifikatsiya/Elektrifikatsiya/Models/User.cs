@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Net.Mail;
 
 namespace Elektrifikatsiya.Models;
 
@@ -10,7 +11,7 @@ public class User
 
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 	[Key]
-	public int Id { get; private set; }
+	public int Id { get; set; }
 
 	public DateTime LastLoginDate { get; set; }
 
@@ -18,7 +19,7 @@ public class User
 	public string Name { get; set; }
 
 	[Required]
-	public string PasswordHash { get; private set; }
+	public string PasswordHash { get; set; }
 
 	[Required]
 	public string Email { get; set; }
@@ -35,5 +36,9 @@ public class User
 		PasswordHash = passwordHash;
 		Email = email;
 		Role = role;
+	}
+	public User CopyUser()
+	{
+		return new User(Name, PasswordHash, Email, Role) { Id = Id };
 	}
 }
