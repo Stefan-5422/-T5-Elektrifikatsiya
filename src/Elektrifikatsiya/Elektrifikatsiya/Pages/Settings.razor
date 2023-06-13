@@ -10,6 +10,7 @@
 
 @inject IDeviceManagmentService DeviceManagmentService
 @inject IMessageService MessageService
+@inject IAuthenticationService AuthenticationService
 @inject MainDatabaseContext MainDatabaseContext
 
 <Div>
@@ -157,9 +158,9 @@
 	Device? SelectedDevice = null;
 	Device? DeviceCopy = null;
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
-		Result<List<Device>> getDevicesResult = DeviceManagmentService.GetDevices();
+		Result<List<Device>> getDevicesResult = DeviceManagmentService.GetDevices((await AuthenticationService.GetUserAsync()).ValueOrDefault);
 
 		if (getDevicesResult.IsSuccess)
 		{
