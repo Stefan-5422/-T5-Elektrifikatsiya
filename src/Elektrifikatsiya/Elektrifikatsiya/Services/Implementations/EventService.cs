@@ -1,55 +1,53 @@
 ﻿using Elektrifikatsiya.Models;
-using FluentResults;
+
 using System.Reflection;
 
-namespace Elektrifikatsiya.Services.Implementations
+namespace Elektrifikatsiya.Services.Implementations;
+
+public class EventService : IEventService
 {
-	public class EventService : IEventService
+	public event EventHandler<EventServiceEventArgs>? OnEventCalled;
+
+	public List<Event> Events { get; } = new();
+
+	public EventService(IDeviceStatusService deviceStatusService, IDeviceManagmentService deviceManagmentService)
 	{
-		private readonly ILogger<EventService> logger;
-		public event EventHandler<EventServiceEventArgs> OnEventCalled;
-		public List<Event> Events { get; } = new();
+		List<Device> deviceList = deviceStatusService.GetDevices().ValueOrDefault.Select(x => x.CopyDevice()).ToList();
 
-		public EventService(ILogger<EventService> logger, IDeviceStatusService deviceStatusService, IDeviceManagmentService deviceManagmentService)
+		deviceStatusService.OnDeviceStatusChanged += (_, e) =>
 		{
-			this.logger = logger;
-			List<Device> deviceList = deviceManagmentService.GetDevices().ValueOrDefault.Select(x=>x.CopyDevice()).ToList();
+			bool newDevice = true;
+			Device currentDevice = deviceManagmentService.GetDevice(e.MacAddress).ValueOrDefault;
 
-			deviceStatusService.OnDeviceStatusChanged += (_, e) =>
+			for (int i = 0; i < deviceList.Count; i++)
 			{
-				bool newDevice = true;
-				Device currentDevice = deviceManagmentService.GetDevice(e.MacAddress).ValueOrDefault;
-
-				for (int i = 0; i < deviceList.Count; i++)
+				if (deviceList[i].MacAddress == currentDevice.MacAddress)
 				{
-					if (deviceList[i].MacAddress == currentDevice.MacAddress)
+					PropertyInfo[] properties = typeof(Device).GetProperties();
+
+					foreach (PropertyInfo property in properties)
 					{
-						PropertyInfo[] properties = typeof(Device).GetProperties();
+						object? currentvalue = property.GetValue(deviceList[i], null);
+						object? newvalue = property.GetValue(currentDevice, null);
+						if (newvalue is not null && !newvalue?.ToString()?.Equals(currentvalue?.ToString()) == true)
+						{
+							string eventName = $"Plug {deviceList[i].Name} changed: {property.Name}";
+							string description = $"Changed {property.Name} of plug [{currentvalue}] to [{newvalue}]";
+							DateTime dateTime = DateTime.Now;
 
-						foreach(PropertyInfo property in properties) { 
-							var currentvalue = property.GetValue(deviceList[i], null);
-							var newvalue = property.GetValue(currentDevice, null);
-							if(newvalue is not null && !newvalue.ToString().Equals(currentvalue.ToString()))
-							{
-								string eventName = $"Plug {deviceList[i].Name} changed: {property.Name}";
-								string description = $"Changed {property.Name} of plug [{currentvalue}] to [{newvalue}]";
-								DateTime dateTime = DateTime.Now;
-
-								Event newEvent = new Event(eventName, description, dateTime, currentDevice);
-								Events.Insert(0,newEvent);
-								OnEventCalled?.Invoke(this, new EventServiceEventArgs(newEvent));
-							}
-
+							Event newEvent = new Event(eventName, description, dateTime, currentDevice);
+							Events.Insert(0, newEvent);
+							OnEventCalled?.Invoke(this, new EventServiceEventArgs(newEvent));
 						}
-						deviceList[i].OverwiteDevice(currentDevice);
-						newDevice = false; break;
 					}
+					deviceList[i].OverwiteDevice(currentDevice);
+					newDevice = false; break;
 				}
-				if (newDevice)
-				{
-					deviceList.Add(deviceManagmentService.GetDevice(e.MacAddress).ValueOrDefault);
-				}
-			};
-		}
+			}
+			if (newDevice)
+			{
+				deviceList.Add(deviceManagmentService.GetDevice(e.MacAddress).ValueOrDefault);
+			}
+		};
 	}
 }

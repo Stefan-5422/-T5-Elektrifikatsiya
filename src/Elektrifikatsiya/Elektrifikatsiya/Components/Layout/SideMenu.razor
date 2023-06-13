@@ -1,4 +1,5 @@
-﻿<Bar Breakpoint="Breakpoint.Desktop" NavigationBreakpoint="Breakpoint.Tablet" ThemeContrast="ThemeContrast.Dark"
+﻿@using Elektrifikatsiya.Models;
+<Bar Breakpoint="Breakpoint.Desktop" NavigationBreakpoint="Breakpoint.Tablet" ThemeContrast="ThemeContrast.Dark"
      Mode="BarMode.VerticalInline" CollapseMode="BarCollapseMode.Small">
     <BarToggler TextColor="TextColor.Primary" />
     <BarBrand>
@@ -16,13 +17,17 @@
                     <BarIcon Style="color:white" IconName="IconName.Dashboard" />
                     Dashboard
                 </BarLink>
-			</BarItem>
-            <BarItem>
-                <BarLink To="/admin" TextColor="TextColor.White">
-                    <BarIcon Style="color:white" IconName="IconName.ShieldAlt" />
-                    Admin
-                </BarLink>
             </BarItem>
+            <Protected RequiredRole="Role.Admin">
+                <Authorized>
+                    <BarItem>
+                        <BarLink To="/admin" TextColor="TextColor.White">
+                            <BarIcon Style="color:white" IconName="IconName.ShieldAlt" />
+                            Admin
+                        </BarLink>
+                    </BarItem>
+                </Authorized>
+            </Protected>
             <BarItem>
                 <BarLink To="/settings" TextColor="TextColor.White">
                     <BarIcon Style="color:white" IconName="IconName.Wrench" />
