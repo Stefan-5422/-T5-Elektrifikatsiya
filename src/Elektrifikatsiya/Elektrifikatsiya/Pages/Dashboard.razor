@@ -12,6 +12,7 @@
 @inject IDeviceStatusService DeviceStatusService;
 @inject IDeviceManagmentService DeviceManagmentService;
 @inject IEventService EventService;
+@inject IEnergyPriceService EnergyPriceService;
 @inject MainDatabaseContext MainDatabaseContext;
 
 <Div>
@@ -107,19 +108,19 @@
 					<Div Flex="Flex.JustifyContent.Between" Width="Width.Is100">
 						<Heading Size="HeadingSize.Is6">Daily Cost</Heading>
 					</Div>
-					<Paragraph Margin="Margin.Is1.FromBottom">2€</Paragraph>
+					<Paragraph Margin="Margin.Is1.FromBottom">@($"{EnergyPriceService.DailyEnergyCost:F2}")€</Paragraph>
 				</ListGroupItem>
 				<ListGroupItem>
 					<Div Flex="Flex.JustifyContent.Between" Width="Width.Is100">
 						<Heading Size="HeadingSize.Is6">Monthly Cost</Heading>
 					</Div>
-					<Paragraph Margin="Margin.Is1.FromBottom">60€</Paragraph>
+					<Paragraph Margin="Margin.Is1.FromBottom">@($"{EnergyPriceService.MonthlyEnergyCost:F2}")€</Paragraph>
 				</ListGroupItem>
 				<ListGroupItem>
 					<Div Flex="Flex.JustifyContent.Between" Width="Width.Is100">
 						<Heading Size="HeadingSize.Is6">Yearly Cost</Heading>
 					</Div>
-					<Paragraph Margin="Margin.Is1.FromBottom">720€</Paragraph>
+					<Paragraph Margin="Margin.Is1.FromBottom">@($"{EnergyPriceService.YearlyEnergyCost:F2}")€</Paragraph>
 				</ListGroupItem>
 
 			</ListGroup>

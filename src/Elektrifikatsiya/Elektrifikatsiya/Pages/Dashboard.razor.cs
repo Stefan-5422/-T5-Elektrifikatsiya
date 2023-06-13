@@ -1,21 +1,17 @@
 using Blazorise.Charts;
 
+using Elektrifikatsiya.Database;
 using Elektrifikatsiya.Models;
 using Elektrifikatsiya.Utilities;
-
-using System.Diagnostics;
-using System.Text;
-using Elektrifikatsiya.Services.Implementations;
-using Elektrifikatsiya.Database;
 
 namespace Elektrifikatsiya.Pages;
 
 public partial class Dashboard
 {
+    private readonly List<string> labels = new List<string>();
+
     //TODO: insert new event here if plug produces one
     private List<Event> events = new List<Event>() { new Event("Text", "Text", DateTime.Today, null) };
-
-    private List<string> labels = new List<string>();
 
     //code for graph
     private LineChart<double> lineChart;
@@ -36,11 +32,11 @@ public partial class Dashboard
         plugs = DeviceStatusService.GetDevices().ValueOrDefault ?? new List<Device>();
         events = EventService.Events;
 
-        EventService.OnEventCalled += (_, e) =>
+        EventService.OnEventCalled += (__, e) =>
         {
             _ = InvokeAsync(StateHasChanged);
         };
-        DeviceStatusService.OnDeviceStatusChanged += (_, e) =>
+        DeviceStatusService.OnDeviceStatusChanged += (__, e) =>
         {
             _ = InvokeAsync(StateHasChanged);
         };
@@ -61,14 +57,14 @@ public partial class Dashboard
         }
         plugnames = plugnames[0..^1];
 
-        double energyPrice = MainDatabaseContext.EnergyPriceChanges.OrderByDescending(e =>e.DateTime).FirstOrDefault()?.EnergyPrice ?? 0;
+        double energyPrice = MainDatabaseContext.EnergyPriceChanges.OrderByDescending(e => e.DateTime).FirstOrDefault()?.EnergyPrice ?? 0;
 
         PrometheusDataWrapper? deviceData = (await promQueryer.Query($$"""sum(power{sensor=~"{{plugnames}}"})[1h:1m]"""))?.Data;
         //PrometheusDataWrapper? priceData = (await promQueryer.Query($$"""sum(sum_over_time(power{sensor=~"{{plugnames}}"}[1y])*{{energyPrice}})"""))?.Data;
 
         //Console.WriteLine(priceData.VectorTypeToTimestampFloatTuple());
 
-        var r = new Random(DateTime.Now.Millisecond);
+        Random r = new Random(DateTime.Now.Millisecond);
 
         return deviceData?.MatrixTypeToTimestampFloatTuple().ValueOrDefault?.Select(x =>
         {
