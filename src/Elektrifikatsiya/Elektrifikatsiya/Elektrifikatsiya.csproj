@@ -14,13 +14,46 @@
 		<Copyright>Copyright 2018-2022 Megabit</Copyright>
 		<UserSecretsId>bd144edc-e5c5-4b97-84d6-38c6b1edcbf9</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Blazorise" Version="1.1.*" />
-		<PackageReference Include="Blazorise.Material" Version="1.1.*" />
-		<PackageReference Include="Blazorise.Icons.Material" Version="1.1.*" />
-		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
+	  <Compile Remove="Middleware\**" />
+	  <Compile Remove="Model\**" />
+	  <Content Remove="Middleware\**" />
+	  <Content Remove="Model\**" />
+	  <EmbeddedResource Remove="Middleware\**" />
+	  <EmbeddedResource Remove="Model\**" />
+	  <None Remove="Middleware\**" />
+	  <None Remove="Model\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Models\NewFile.txt" />
+	  <None Remove="Models\ShellyResponse" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Blazorise" Version="1.2.0" />
+		<PackageReference Include="Blazorise.Charts" Version="1.2.0" />
+		<PackageReference Include="Blazorise.Components" Version="1.2.0" />
+		<PackageReference Include="Blazorise.LoadingIndicator" Version="1.2.0" />
+		<PackageReference Include="Blazorise.Material" Version="1.2.0" />
+		<PackageReference Include="Blazorise.Icons.Material" Version="1.2.0" />
+		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+		<PackageReference Include="FluentResults" Version="3.15.2" />
+		<PackageReference Include="Handlebars.Net" Version="2.1.4" />
+		<PackageReference Include="HiveMQtt" Version="0.1.10" />
+		<PackageReference Include="MailKit" Version="4.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.4" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.4" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.4">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
+		<PackageReference Include="Mjml.Net" Version="1.22.0" />
+		<PackageReference Include="Tmds.MDns" Version="0.7.1" />
 	</ItemGroup>
 
 </Project>

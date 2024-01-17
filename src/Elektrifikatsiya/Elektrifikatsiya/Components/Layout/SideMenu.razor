@@ -1,6 +1,7 @@
-﻿<Bar Breakpoint="Breakpoint.Desktop" NavigationBreakpoint="Breakpoint.Tablet" ThemeContrast="ThemeContrast.Dark"
+﻿@using Elektrifikatsiya.Models;
+<Bar Breakpoint="Breakpoint.Desktop" NavigationBreakpoint="Breakpoint.Tablet" ThemeContrast="ThemeContrast.Dark"
      Mode="BarMode.VerticalInline" CollapseMode="BarCollapseMode.Small">
-    <BarToggler />
+    <BarToggler TextColor="TextColor.Primary" />
     <BarBrand>
         <BarItem>
             <BarLink To="">
@@ -12,42 +13,45 @@
     <BarMenu>
         <BarStart>
             <BarItem>
-                <BarLink To="/">
-                    <BarIcon IconName="IconName.Dashboard" />
+                <BarLink To="/" TextColor="TextColor.White">
+                    <BarIcon Style="color:white" IconName="IconName.Dashboard" />
                     Dashboard
                 </BarLink>
             </BarItem>
+            <Protected RequiredRole="Role.Admin">
+                <Authorized>
+                    <BarItem>
+                        <BarLink To="/admin" TextColor="TextColor.White">
+                            <BarIcon Style="color:white" IconName="IconName.ShieldAlt" />
+                            Admin
+                        </BarLink>
+                    </BarItem>
+                </Authorized>
+            </Protected>
             <BarItem>
-                <BarDropdown @bind-Visible="pagesBarVisible">
-                    <BarDropdownToggle>
-                        <BarIcon IconName="IconName.Edit" />
-                        Pages
-                    </BarDropdownToggle>
-                    <BarDropdownMenu>
-                        <BarDropdownItem To="/simple-form">Simple Form</BarDropdownItem>
-                    </BarDropdownMenu>
-                </BarDropdown>
+                <BarLink To="/settings" TextColor="TextColor.White">
+                    <BarIcon Style="color:white" IconName="IconName.Wrench" />
+                    Settings
+                </BarLink>
+            </BarItem>
+            <BarItem>
+                <BarLink To="/addplug" TextColor="TextColor.White">
+                    <BarIcon Style="color:white" IconName="IconName.Plug" />
+                    Add Plug
+                </BarLink>
             </BarItem>
         </BarStart>
         <BarEnd>
             <BarItem>
-                <BarDropdown>
-                    <BarDropdownToggle>
-                        <BarIcon IconName="IconName.Smartphone" />
-                        Apps
-                    </BarDropdownToggle>
-                    <BarDropdownMenu>
-                        <BarDropdownItem To="/apps/todo">
-                            Todo
-                        </BarDropdownItem>
-                    </BarDropdownMenu>
-                </BarDropdown>
+                <BarLink To="/login" TextColor="TextColor.White">
+                    <BarIcon Style="color:white" IconName="IconName.Running" />
+                    Logout
+                </BarLink>
             </BarItem>
         </BarEnd>
     </BarMenu>
 </Bar>
 @code {
     private bool pagesBarVisible = true;
-
-    RenderFragment customIcon =@<img src="/brand-logo.png" style="width:32px; height: 32px" />;
+    RenderFragment customIcon =@<img src="/logo.png" style="width:32px; height: 32px" />;
 }

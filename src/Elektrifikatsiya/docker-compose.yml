@@ -1,0 +1,38 @@
+version: '3.4'
+
+services:
+  #elektrifikatsiya:
+  #  build:
+  #    context: .
+  #    dockerfile: Elektrifikatsiya/Dockerfile
+  #  ports: 
+  #   - target: 5353
+  #     published: 5353
+  #     protocol: udp
+  #     mode: host
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./host/prometheus/:/etc/prometheus/
+      - prometheus_data:/prometheus
+    ports:
+      - 9090:9090
+  mqtt2prom:
+    image: ghcr.io/hikhvar/mqtt2prometheus:latest
+    volumes:
+      - ./host/mqtt/mqtt2prom/config.yaml:/config.yaml
+    ports:
+      - 9641:9641
+  mosquitto:
+    image: eclipse-mosquitto:2
+    volumes:
+      - ./host/mqtt/mosquitto/config/:/mosquitto/config/:ro
+      - ./host/log/mqtt/mosquitto/:/mosquitto/log/
+      - mosquitto_data:/mosquitto/data/
+    ports:
+      - 1883:1883
+      - 9001:9001
+
+volumes:
+  mosquitto_data:
+  prometheus_data:

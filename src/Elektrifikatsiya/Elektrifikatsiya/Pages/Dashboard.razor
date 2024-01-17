@@ -1,31 +1,136 @@
-ï»¿@page "/"
+@page "/"
+@using Blazorise.Components;
+@using Elektrifikatsiya.Database;
+@using Elektrifikatsiya.Models;
+@using System.Net
+@using Elektrifikatsiya.Services
+@using Elektrifikatsiya.Utilities
+@using System.Diagnostics
+@using Elektrifikatsiya.Services.Implementations
 @inject IVersionProvider VersionProvider
-<Heading Size="HeadingSize.Is1" Margin="Margin.Is3.FromBottom">Blazorise</Heading>
 
-<Paragraph>
-    Blazorise is a component library built on top of Blazor and CSS frameworks like <Anchor To="https://getbootstrap.com/" Target="Target.Blank">Bootstrap</Anchor>, <Anchor To="https://bulma.io/" Target="Target.Blank">Bulma</Anchor>, <Anchor To="https://ant.design/" Target="Target.Blank">Ant Design</Anchor>, and <Anchor To="http://daemonite.github.io/material/" Target="Target.Blank">Material</Anchor>. It can be used to build responsive, single-page web applications.
-</Paragraph>
+@inject IDeviceStatusService DeviceStatusService;
+@inject IDeviceManagmentService DeviceManagmentService;
+@inject IEventService EventService;
+@inject IAuthenticationService AuthenticationService;
+@inject IEnergyPriceService EnergyPriceService;
+@inject MainDatabaseContext MainDatabaseContext;
 
-<Alert Color="Color.Info" Visible>
-    <Paragraph>
-        This is a Blazorise Starting Template allowing you to quickly get started building your project!
-    </Paragraph>
+<Div>
+	<Row Padding="Padding.Is3">
+		<Div Display="Display.Flex.Row.OnDesktop" Margin=" Margin.Is3.FromBottom" Width="Width.Is100">
+			<Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12">
+				<Bar Breakpoint="Breakpoint.Desktop"
+					 Background="Background.White"
+					 ThemeContrast="ThemeContrast.None"
+					 Shadow="Shadow.Remove"
+					 Border="Border.Is1.RoundedTop">
+					<BarBrand>
+						Plugs
+					</BarBrand>
+				</Bar>
+				<ListView TItem="Device"
+						  Data="@plugs"
+						  TextField="@((_)=>(""))"
+						  ValueField="@((_)=>(""))"
+						  Mode="ListGroupMode.Static"
+						  Style="border-radius: 0px 0px">
+					<ItemTemplate>
+						<ListGroupItem>
+							<Row>
+								<Column ColumnSize="ColumnSize.Is8">
+									<Row>
+										<Column ColumnSize="ColumnSize.Is7">
+											<Heading Size="HeadingSize.Is6" Margin="Margin.Is1.FromBottom">@context.Item.Name</Heading>
+										</Column>
+									</Row>
+									<Row>
+										<Column>
+											<Small>User: @context.Item.User.Name</Small>
+											<br />
+											<Small>Room: @context.Item.Room</Small>
+										</Column>
+										<Column ColumnSize="ColumnSize.Is5">
+											<Paragraph Margin="Margin.Is1.OnY">@context.Item.PowerUsage W</Paragraph>
+										</Column>
+									</Row>
+								</Column>
+								<Column ColumnSize="ColumnSize.Is4">
+									<Button Clicked="() => Switch(context.Item)" Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Primary" Primary Outline>
+										<BarIcon TextColor="(context.Item.Enabled?TextColor.Success:TextColor.Danger)" IconName="IconName.Bolt" />
+									</Button>
+								</Column>
+							</Row>
+						</ListGroupItem>
+					</ItemTemplate>
+				</ListView>
+			</Column>
+			<Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12">
+				<Bar Breakpoint="Breakpoint.Desktop"
+					 Background="Background.White"
+					 ThemeContrast="ThemeContrast.None"
+					 Shadow="Shadow.Remove"
+					 Border="Border.Is1.Rounded.RoundedTop">
+					<BarBrand>
+						Logs
+					</BarBrand>
+				</Bar>
+				<ListView TItem="Event"
+						  Data="@events"
+						  TextField="@((_)=>(""))"
+						  ValueField="@((_)=>(""))"
+						  Mode="ListGroupMode.Static"
+						  Style="border-radius: 0px 0px">
+					<ItemTemplate>
+						<Div Flex="Flex.InlineFlex.JustifyContent.Between" Width="Width.Is100">
+							<Heading Size="HeadingSize.Is6" Margin="Margin.Is2.FromBottom">@context.Item.EventName</Heading>
+							<Small>@context.Item.Date</Small>
+						</Div>
+						<Paragraph Margin="Margin.Is2.FromBottom">@context.Item.Description</Paragraph>
+					</ItemTemplate>
+				</ListView>
+			</Column>
+		</Div>
+	</Row>
+	<Row>
+		<Column ColumnSize="ColumnSize.Is3.OnDesktop.Is11.OnMobile" Margin="Margin.Is1.Is3.OnMobile.FromStart">
+			<Bar Breakpoint="Breakpoint.Desktop"
+				 Background="Background.White"
+				 ThemeContrast="ThemeContrast.None"
+				 Shadow="Shadow.Remove"
+				 Border="Border.Is1.RoundedTop">
+				<BarBrand>
+					Electricity Cost
+				</BarBrand>
+			</Bar>
 
-    <Paragraph>
-        The bare minimum has been installed for you:
-        <ul>
-            <li>Blazorise @($"v{VersionProvider.MilestoneVersion}")</li>
-            <li>The Blazorise Provider you have selected</li>
-            <li>The corresponding icon provider</li>
-        </ul>
-        However Blazorise has many more extensions at your disposal.
-        You can find them <Anchor To="https://blazorise.com/docs/extensions" Target="Target.Blank">here</Anchor>.
-    </Paragraph>
+			<ListGroup Flush Border="Border.Is1.Is1.Is1.Is1">
+				<ListGroupItem>
+					<Div Flex="Flex.JustifyContent.Between" Width="Width.Is100">
+						<Heading Size="HeadingSize.Is6">Daily Cost</Heading>
+					</Div>
+					<Paragraph Margin="Margin.Is1.FromBottom">@($"{EnergyPriceService.DailyEnergyCost:F2}")€</Paragraph>
+				</ListGroupItem>
+				<ListGroupItem>
+					<Div Flex="Flex.JustifyContent.Between" Width="Width.Is100">
+						<Heading Size="HeadingSize.Is6">Monthly Cost</Heading>
+					</Div>
+					<Paragraph Margin="Margin.Is1.FromBottom">@($"{EnergyPriceService.MonthlyEnergyCost:F2}")€</Paragraph>
+				</ListGroupItem>
+				<ListGroupItem>
+					<Div Flex="Flex.JustifyContent.Between" Width="Width.Is100">
+						<Heading Size="HeadingSize.Is6">Yearly Cost</Heading>
+					</Div>
+					<Paragraph Margin="Margin.Is1.FromBottom">@($"{EnergyPriceService.YearlyEnergyCost:F2}")€</Paragraph>
+				</ListGroupItem>
 
-    <Paragraph>
-        Please visit the official <Anchor To="https://bootstrapdemo.blazorise.com/" Target="Target.Blank">Blazorise Demo</Anchor> for component examples.
-    </Paragraph>
-    <Paragraph>
-        Please visit the official <Anchor To="https://blazorise.com/docs/" Target="Target.Blank">Blazorise Documentation</Anchor> to learn more about the available components.
-    </Paragraph>
-</Alert>
+			</ListGroup>
+		</Column>
+	</Row>
+	<Row Padding="Padding.Is3">
+		<Column>
+			<Button Color="Color.Primary" Style="border-radius: 0px" Clicked="@(async () => await HandleRedraw())">Bouton Actualiser</Button>
+			<LineChart Height="Height.Is100" Width="Width.Is100" @ref="lineChart" TItem="double" />
+		</Column>
+	</Row>
+</Div>

@@ -1,0 +1,49 @@
+<mjml>
+    <mj-head>
+        <mj-attributes>
+             <mj-class name="primary" background-color="#1a237e"/>
+        </mj-attributes>
+        <mj-style>
+            @font-face {
+                font-family: Nunito;
+                src: url(https://fonts.gstatic.com/s/nunito/v16/XRXV3I6Li01BKofINeaB.woff2)
+                format('truetype');
+            } 
+        </mj-style>
+    </mj-head>
+    <mj-body background-color="white">
+        <mj-wrapper padding-right="20px" padding-left="20px" padding-top="7%" >
+            <mj-section border-right="2px solid #B0B0B0" border-top="2px solid #B0B0B0" border-left="2px solid #B0B0B0" border-radius="33px">
+            </mj-section>
+            <mj-section padding-bottom="0px" padding-top="0px" border-left="2px solid #B0B0B0" border-right="2px solid #B0B0B0">
+                <mj-column>
+                    <mj-text align="center" font-family="Nunito, Sans-Serif" font-weight="bold" font-size="30px">
+                        Daily Notification
+                    </mj-text>
+                </mj-column>
+            </mj-section>
+            <mj-section padding-bottom="0px" border-left="2px solid #B0B0B0" border-right="2px solid #B0B0B0">
+                <mj-column padding-left="5%" padding-right="5%">
+                    <mj-text font-family="Nunito, Sans-Serif" align="center" font-size="18px">
+                       Energy Consumption yesterday: {{yesterday}}
+                    </mj-text>
+                 </mj-column>
+                 <mj-column>
+                    <mj-text font-family="Nunito, Sans-Serif" algin="center" font-size="18px">
+                       Energy Consumption since the start of the year: {{yearly}}
+                   </mj-text>
+                 </mj-column>
+            </mj-section>
+            <mj-section padding-top="0px" border-right="2px solid #B0B0B0" border-left="2px solid #B0B0B0" border-bottom="2px solid #B0B0B0" border-radius="33px">
+                <mj-column>
+                    <mj-button font-size="16px" mj-class="primary" font-weight="bold" font-family="Nunito, Sans-Serif">
+                        <mj-text>
+                            <a href="{{link}}" target="_blank" style="color:white; text-decoration:none;">Goto Dashboard</a>
+                        </mj-text>
+                    </mj-button>
+                </mj-column>
+            </mj-section>
+        </mj-wrapper>
+
+    </mj-body>
+</mjml>

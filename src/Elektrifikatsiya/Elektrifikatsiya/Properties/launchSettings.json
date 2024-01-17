@@ -7,7 +7,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:7297;http://localhost:5255"
+      "applicationUrl": "https://localhost:56656;http://localhost:55552"
     },
     "IIS Express": {
       "commandName": "IISExpress",
@@ -19,7 +19,7 @@
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": true,
-      "launchUrl": "{Scheme}://{IPAdress}:{ServicePort}",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
       "publishAllPorts": true,
       "useSSL": true,
       "DockerfileRunArguments": "-p 80:80 -p 443:443"

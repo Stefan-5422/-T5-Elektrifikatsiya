@@ -1,0 +1,225 @@
+﻿@page "/Settings"
+@using Blazorise.Components;
+@using Elektrifikatsiya.Database;
+@using Elektrifikatsiya.Models;
+@using System.Net
+@using System.Text.Json
+@using Elektrifikatsiya.Services.Implementations
+@using Elektrifikatsiya.Services;
+@using FluentResults
+
+@inject IDeviceManagmentService DeviceManagmentService
+@inject IMessageService MessageService
+@inject IAuthenticationService AuthenticationService
+@inject MainDatabaseContext MainDatabaseContext
+
+<Div>
+	<Row Style="width: 100%; height: 100%" Margin="Margin.Is3.FromTop.OnMobile" Padding="Padding.Is4.FromStart.OnMobile">
+		<Div Display="Display.Flex.Row.OnDesktop" Margin=" Margin.Is3.FromBottom" Width="Width.Is100">
+			<Column ColumnSize="ColumnSize.Is5.OnDesktop.Is12.OnMobile">
+				<Bar Breakpoint="Breakpoint.Desktop"
+					 Background="Background.White"
+					 ThemeContrast="ThemeContrast.None"
+					 Shadow="Shadow.Remove"
+					 Border="Border.Is1.RoundedTop">
+					<BarBrand>
+						Plugs
+					</BarBrand>
+				</Bar>
+				<ListView TItem="Device"
+						  Data="@plugs"
+						  TextField="@((_)=>(""))"
+						  ValueField="@((_)=>(""))"
+						  Style="border-radius: 0px 0px"
+						  Height="100%"
+						  MaxHeight="90%">
+					<ItemTemplate>
+						<ListGroupItem Border="Border.OnBottom">
+							<Row>
+
+								<Column ColumnSize="ColumnSize.Is6">
+									<Row>
+										<Column ColumnSize="ColumnSize.Is7">
+											<Heading Size="HeadingSize.Is6" Margin="Margin.Is1.FromBottom">@context.Item.Name</Heading>
+										</Column>
+									</Row>
+									<Row>
+										<Column>
+											<Small>User: @context.Item.User.Name</Small>
+											<br />
+											<Small>Room: @context.Item.Room</Small>
+										</Column>
+									</Row>
+								</Column>
+
+								<Column ColumnSize="ColumnSize.Is4.OnDesktop.Is7.OnMobile">
+									<Button @onclick="() => Delete(context.Item)" class="btn1" Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle" Color="Color.Dark" Outline>
+										<BarIcon IconName="IconName.Delete" />
+									</Button>
+									<style>
+										.btn1:hover {
+											background: #E50000;
+										}
+									</style>
+								</Column>
+								<br />
+								<br />
+								<Row>
+									<Column ColumnSize="ColumnSize.Is1.OnDesktop">
+										<Button @onclick="() => Toggle(context.Item)" Position="Position.Absolute.Top.Is50.Start.Is100.Translate.Middle" Color="Color.Dark" Outline>
+											<BarIcon IconName="IconName.Pen" />
+										</Button>
+									</Column>
+								</Row>
+
+							</Row>
+						</ListGroupItem>
+					</ItemTemplate>
+				</ListView>
+			</Column>
+			<Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile" Margin="Margin.Is3.FromTop.OnMobile" Padding="Padding.Is4.FromStart.OnMobile">
+
+				@if (DeviceCopy is not null)
+				{
+					<Div hidden="@hideButtonSettings">
+						<Field>
+							<FieldLabel>
+								<h2>
+									Plug Settings
+								</h2>
+							</FieldLabel>
+						</Field>
+						<Field>
+							<FieldLabel>
+								<h5>
+									Plug Name
+								</h5>
+								<Paragraph>
+									Here you can change the name of your plug
+								</Paragraph>
+							</FieldLabel>
+							<TextEdit MaxLength="20" @bind-Text="@DeviceCopy.Name" Placeholder="Enter Name" />
+						</Field>
+						<br />
+						<br />
+						<Field>
+							<FieldLabel>
+								<h5>
+									Select Room
+								</h5>
+								<Paragraph>
+									Here you select or change the room the plug belongs to.
+								</Paragraph>
+							</FieldLabel>
+							<TextEdit MaxLength="30" @bind-text="@DeviceCopy.Room" Placeholder="Enter the name of the room here" />
+						</Field>
+					</Div>
+				}
+				<Div hidden="@(!hideButtonSettings)">
+					<Field>
+						<FieldLabel>
+							<h2>
+								General Settings
+							</h2>
+						</FieldLabel>
+					</Field>
+					<Field>
+						<FieldLabel>
+							<h5>
+								Electricity Price
+							</h5>
+							<Paragraph>
+								Here you enter your electricity price. This is gonna calculate the overall Price of your System
+							</Paragraph>
+						</FieldLabel>
+						<NumericEdit @bind-Value="electricityPrice" MaxLength="8" Placeholder="Enter Electricity Price" />
+					</Field>
+				</Div>
+				<Column ColumnSize="ColumnSize.IsFull" TextAlignment="TextAlignment.End">
+					<Button @onclick="OnSave" Color="Color.Primary">Save</Button>
+				</Column>
+			</Column>
+		</Div>
+	</Row>
+</Div>
+
+
+@code {
+	ListView<Device> deviceList = new ListView<Device>();
+	List<Device> plugs = new List<Device>();
+
+	bool hideButtonSettings = true;
+	bool newpage = true;
+
+	int clicks = 0;
+
+	double electricityPrice = 0;
+
+	Device? SelectedDevice = null;
+	Device? DeviceCopy = null;
+
+	protected override async Task OnInitializedAsync()
+	{
+		Result<List<Device>> getDevicesResult = DeviceManagmentService.GetDevices((await AuthenticationService.GetUserAsync()).ValueOrDefault);
+
+		if (getDevicesResult.IsSuccess)
+		{
+			plugs = getDevicesResult.Value;
+		}
+
+		electricityPrice = MainDatabaseContext.EnergyPriceChanges.OrderByDescending(e => e.DateTime).FirstOrDefault()?.EnergyPrice ?? 0;
+	}
+
+	private void Toggle(Device device)
+	{
+		if (device == SelectedDevice || newpage)
+		{
+			hideButtonSettings = !hideButtonSettings;
+		}
+		else
+		{
+			if (hideButtonSettings)
+			{
+				hideButtonSettings = !hideButtonSettings;
+			}
+		}
+		SelectedDevice = device;
+		DeviceCopy = device.CopyDevice();
+		newpage = false;
+	}
+
+	private async void OnSave()
+	{
+		if (hideButtonSettings)
+		{
+			MainDatabaseContext.ChangeTracker.Clear();
+			MainDatabaseContext.EnergyPriceChanges.Add(new EnergyPriceChange(electricityPrice));
+			await MainDatabaseContext.SaveChangesAsync();
+		}
+		else if (DeviceCopy is not null && SelectedDevice is not null)
+		{
+
+			SelectedDevice.OverwiteDevice(DeviceCopy);
+			await DeviceManagmentService.UpdateDevice(SelectedDevice);
+		}
+	}
+
+	private async Task Delete(Device contextItem)
+	{
+		bool succ = await MessageService.Confirm($"Do you really want to delete the device \"{contextItem.Name}\"?");
+
+		if (!succ)
+		{
+			return;
+		}
+
+		await DeviceManagmentService.UnregisterDevice(contextItem.MacAddress);
+
+		int index = plugs.FindIndex(x => x.MacAddress == contextItem.MacAddress);
+
+		if (index != -1)
+		{
+			plugs.RemoveAt(index);
+		}
+	}
+}
